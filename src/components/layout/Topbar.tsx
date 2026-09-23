@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Bell, LogOut, Menu, Search } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { BusinessSwitcher } from '@/components/layout/BusinessSwitcher'
+import { GlobalSearch } from '@/components/layout/GlobalSearch'
+import { NotificationsBell } from '@/components/layout/NotificationsBell'
 
 export function Topbar({ onMenu }: { onMenu: () => void }) {
   const { user, signOut } = useAuth()
@@ -33,14 +35,8 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
       <BusinessSwitcher />
 
       <div className="ml-auto flex items-center gap-2 sm:gap-3">
-        <label className="hidden items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-plum-200 md:flex">
-          <Search className="size-4" />
-          <input
-            disabled
-            placeholder="Search (coming in week 2)"
-            className="w-52 bg-transparent placeholder:text-plum-200/70 focus:outline-none"
-          />
-        </label>
+       <GlobalSearch />
+       <NotificationsBell />
 
         <button type="button" aria-label="Notifications" className="rounded-lg p-2 hover:bg-white/10">
           <Bell className="size-5" />
