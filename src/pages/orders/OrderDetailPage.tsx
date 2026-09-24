@@ -12,6 +12,7 @@ import { inputClass } from '@/components/ui/Field'
 import { OrderForm } from '@/pages/orders/OrderForm'
 import type { Order } from '@/types/database'
 import { PaymentsSection } from '@/pages/orders/PaymentSection'
+import { OrderQuotes } from '@/components/quotes/OrderQuotes'
 
 export function OrderDetailPage() {
   const { id } = useParams()
@@ -98,6 +99,20 @@ export function OrderDetailPage() {
               <dd className="mt-1 whitespace-pre-wrap">{order.notes ?? '–'}</dd>
             </div>
           </dl>
+          {order.invitation_details && (
+            <div className="mt-6 border-t border-line pt-5">
+              <h3 className="mb-3 font-display text-lg text-plum-900">Invitation brief</h3>
+              <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                <div><dt className="text-muted">Event</dt><dd className="mt-1">{order.invitation_details.eventName}</dd></div>
+                <div><dt className="text-muted">Template</dt><dd className="mt-1">{order.invitation_details.template}</dd></div>
+                <div><dt className="text-muted">Host / celebrant</dt><dd className="mt-1">{order.invitation_details.hostName}</dd></div>
+                <div><dt className="text-muted">Event type</dt><dd className="mt-1">{order.invitation_details.eventType}</dd></div>
+                <div><dt className="text-muted">Event date</dt><dd className="mt-1">{order.invitation_details.eventDate} {order.invitation_details.eventTime}</dd></div>
+                <div><dt className="text-muted">Venue</dt><dd className="mt-1">{order.invitation_details.venue}{order.invitation_details.address ? `, ${order.invitation_details.address}` : ''}</dd></div>
+                <div className="sm:col-span-2"><dt className="text-muted">RSVP</dt><dd className="mt-1">{order.invitation_details.rsvp?.enabled ? `Enabled${order.invitation_details.rsvp.deadline ? ` · deadline ${order.invitation_details.rsvp.deadline}` : ''}` : 'Disabled'}</dd></div>
+              </dl>
+            </div>
+          )}
           {error && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}
         </section>
 
@@ -110,6 +125,7 @@ export function OrderDetailPage() {
         </section>
       </div>
 
+<OrderQuotes order={order} />
 <PaymentsSection order={order} onChanged={load} />
 
       <Modal open={editing} onClose={() => setEditing(false)} title="Edit order">

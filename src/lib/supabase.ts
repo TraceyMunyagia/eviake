@@ -10,3 +10,5 @@ if (!url || !anonKey) {
 }
 
 export const supabase = createClient(url, anonKey)
+export const supabaseAnonKey = anonKey
+export const functionsUrl = `${url}/functions/v1`
