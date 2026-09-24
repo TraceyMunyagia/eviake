@@ -77,6 +77,7 @@ async function loadOverviewFallback(businessId: string): Promise<Overview | null
 export function Dashboard() {
   const { active } = useBusiness()
   const [overview, setOverview] = useState<Overview | null>(null)
+  const [inviteStats, setInviteStats] = useState<{ upcoming: number; rsvpsReceived: number } | null>(null)
   const [deadlines, setDeadlines] = useState<Deadline[]>([])
   const [activity, setActivity] = useState<AppNotification[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -85,6 +86,7 @@ export function Dashboard() {
     if (!active) return
     let cancelled = false
     setOverview(null)
+    setInviteStats(null)
     setDeadlines([])
     setActivity([])
     setError(null)
@@ -95,6 +97,15 @@ export function Dashboard() {
       const ov = (data as Overview | null) ?? (err ? await loadOverviewFallback(active.id) : null)
       if (!ov) return setError(err?.message ?? 'Could not load the dashboard.')
       setOverview(ov)
+
+      if (active.slug === 'evia_invites') {
+        const today = new Date().toISOString().slice(0, 10)
+        const [ev, rs] = await Promise.all([
+          supabase.from('events').select('id', { count: 'exact', head: true }).eq('business_id', active.id).gte('event_date', today),
+          supabase.from('rsvps').select('guest_id', { count: 'exact', head: true }).eq('business_id', active.id).neq('status', 'pending'),
+        ])
+        if (!cancelled) setInviteStats({ upcoming: ev.count ?? 0, rsvpsReceived: rs.count ?? 0 })
+      }
 
       const finalKey = ov.pipeline[ov.pipeline.length - 1]?.key ?? ''
       const [d, a] = await Promise.all([
@@ -141,10 +152,10 @@ export function Dashboard() {
           { label: 'Outstanding payments', value: overview ? formatKES(overview.outstanding) : '–', href: '/orders' },
         ]
       : [
-          { label: 'Upcoming events', value: '–', note: 'Arrives with Events' },
+          { label: 'Upcoming events', value: inviteStats ? String(inviteStats.upcoming) : '–', href: '/events' },
           { label: 'New orders', value: show(firstKey ? count([firstKey]) : null), href: firstKey ? `/orders?status=${firstKey}` : '/orders' },
           { label: 'Invitations published', value: show(count(['published', 'completed'])), href: '/orders' },
-          { label: 'RSVPs received', value: '–', note: 'Arrives with RSVPs' },
+          { label: 'RSVPs received', value: inviteStats ? String(inviteStats.rsvpsReceived) : '–', href: '/events' },
           { label: 'Monthly revenue', value: overview ? formatKES(overview.revenue_month) : '–', href: '/payments' },
           { label: 'Outstanding payments', value: overview ? formatKES(overview.outstanding) : '–', href: '/orders' },
         ]

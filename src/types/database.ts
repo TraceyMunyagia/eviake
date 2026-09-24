@@ -1,6 +1,8 @@
 export type BusinessSlug = 'evia_web' | 'evia_invites'
 export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'rejected'
 export type RevisionStatus = 'requested' | 'in_progress' | 'done'
+export type SslStatus = 'unknown' | 'active' | 'expiring' | 'expired' | 'none'
+export type RsvpStatus = 'pending' | 'attending' | 'declined'
 
 export type Business = {
   id: string
@@ -181,4 +183,38 @@ export type ChecklistItem = {
   label: string
   done: boolean
   sort_order: number
+}
+export type DomainsHosting = {
+  order_id: string
+  business_id: string
+  domain: string | null
+  domain_provider: string | null
+  domain_expiry: string | null
+  hosting_provider: string | null
+  hosting_plan: string | null
+  hosting_renewal: string | null
+  ssl_status: SslStatus
+  notes: string | null
+}
+export type EventRecord = {
+  id: string
+  business_id: string
+  order_id: string | null
+  client_id: string
+  name: string
+  event_type: string | null
+  event_date: string | null
+  venue: string | null
+  notes: string | null
+}
+
+export type Guest = {
+  id: string
+  business_id: string
+  event_id: string
+  name: string
+  phone: string | null
+  email: string | null
+  group_name: string | null
+  plus_ones: number
 }

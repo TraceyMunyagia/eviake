@@ -17,6 +17,7 @@ import { PaymentsSection } from '@/pages/orders/PaymentSection'
 import type { Order } from '@/types/database'
 import { RequirementsTab } from '@/components/workspace/RequirementsTab'
 import { RevisionsTab } from '@/components/workspace/RevisionsTab'
+import { HostingTab } from '@/components/workspace/HostingTab'
 
 const TABS = [
   { key: 'overview', label: 'Overview' },
@@ -25,6 +26,7 @@ const TABS = [
   { key: 'payments', label: 'Payments' },
   { key: 'requirements', label: 'Requirements', webOnly: true },
   { key: 'revisions', label: 'Revisions', webOnly: true },
+  { key: 'hosting', label: 'Hosting', webOnly: true },
 ]
 
 export function OrderDetailPage() {
@@ -150,6 +152,7 @@ export function OrderDetailPage() {
       {tab === 'quote' && <OrderQuotes order={order} />}
       {tab === 'website' && <WebsiteTab order={order} />}
       {tab === 'revisions' && <RevisionsTab order={order} />}
+      {tab === 'hosting' && <HostingTab order={order} />}
       {tab === 'payments' && <PaymentsSection order={order} onChanged={load} />}
 
       <Modal open={editing} onClose={() => setEditing(false)} title="Edit order">

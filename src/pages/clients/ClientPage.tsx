@@ -108,6 +108,11 @@ export function ClientPage() {
               <Button variant="secondary"><FilePlus className="size-4" /> New quote</Button>
             </Link>
           )}
+          {!isWeb && (
+            <Link to={`/events?client=${client.id}`}>
+              <Button variant="secondary">View events</Button>
+            </Link>
+          )}
           <Button onClick={() => setCreating(true)}><Plus className="size-4" /> New order</Button>
         </div>
       </div>

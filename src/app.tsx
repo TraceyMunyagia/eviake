@@ -15,6 +15,9 @@ import { QuotationsPage } from '@/pages/quotes/QuotationsPage'
 import { QuoteEditorPage } from '@/pages/quotes/QuoteEditorPage'
 import { PublicQuotePage } from '@/pages/quotes/PublicQuotePage'
 import { ClientPage } from '@/pages/clients/ClientPage'
+import { HostingPage } from '@/pages/hosting/HostingPage'
+import { EventsPage } from '@/pages/events/EventsPage'
+import { EventDetailPage } from '@/pages/events/EventDetailPage'
 
 export default function App() {
   return (
@@ -36,6 +39,9 @@ export default function App() {
                 <Route path="quotations/new" element={<QuoteEditorPage />} />
                 <Route path="quotations/:id" element={<QuoteEditorPage />} />
                 <Route path="clients/:id" element={<ClientPage />} />
+                <Route path="domains-hosting" element={<HostingPage />} />
+                <Route path="events" element={<EventsPage />} />
+                <Route path="events/:id" element={<EventDetailPage />} />
 
                 <Route path="*" element={<Placeholder />} />
               </Route>
