@@ -14,6 +14,7 @@ import { PaymentsPage } from '@/pages/payments/PaymentsPage'
 import { QuotationsPage } from '@/pages/quotes/QuotationsPage'
 import { QuoteEditorPage } from '@/pages/quotes/QuoteEditorPage'
 import { PublicQuotePage } from '@/pages/quotes/PublicQuotePage'
+import { ClientPage } from '@/pages/clients/ClientPage'
 
 export default function App() {
   return (
@@ -34,7 +35,7 @@ export default function App() {
                 <Route path="quotations" element={<QuotationsPage />} />
                 <Route path="quotations/new" element={<QuoteEditorPage />} />
                 <Route path="quotations/:id" element={<QuoteEditorPage />} />
-
+                <Route path="clients/:id" element={<ClientPage />} />
 
                 <Route path="*" element={<Placeholder />} />
               </Route>

@@ -6,10 +6,11 @@ import type { Business, Order, OrderStatus, PriceItem } from '@/types/database'
 
 type ClientOption = { id: string; name: string; business_name: string | null }
 
-export function OrderForm({ business, order, statuses, onClose, onSaved }: {
+export function OrderForm({ business, order, statuses, defaultClientId, onClose, onSaved }: {
   business: Business
   order: Order | null
   statuses: OrderStatus[]
+  defaultClientId?: string
   onClose: () => void
   onSaved: () => void
 }) {
@@ -17,7 +18,7 @@ export function OrderForm({ business, order, statuses, onClose, onSaved }: {
   const [packages, setPackages] = useState<PriceItem[]>([])
   const [ready, setReady] = useState(false)
 
-  const [clientId, setClientId] = useState(order?.client_id ?? '')
+  const [clientId, setClientId] = useState(order?.client_id ?? defaultClientId ?? '')
   const [pkg, setPkg] = useState(order?.package ?? '')
   const [total, setTotal] = useState(order ? String(order.total_kes) : '')
   const [totalTouched, setTotalTouched] = useState(!!order)

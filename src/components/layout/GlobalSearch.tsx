@@ -95,7 +95,7 @@ export function GlobalSearch() {
           {clients.map((c) => (
             <button
               key={c.id}
-              onClick={() => go(`/clients?q=${encodeURIComponent(c.name)}`)}
+              onClick={() => go(`/clients/${c.id}`)}
               className="block w-full rounded-lg px-2.5 py-2 text-left text-sm hover:bg-gold-100"
             >
               {c.name}

@@ -39,6 +39,7 @@ export function PricingPage() {
   const section = (kind: PriceItem['kind'], title: string, hint: string) => {
     const list = items.filter((i) => i.kind === kind)
     const nextOrder = (list[list.length - 1]?.sort_order ?? 0) + 10
+    const showRevisions = kind === 'package' && active.slug === 'evia_web'
     return (
       <section className="mb-10">
         <div className="mb-3 flex items-end justify-between gap-3">
@@ -57,6 +58,7 @@ export function PricingPage() {
                 <th className="px-4 py-3 font-medium">Name</th>
                 <th className="px-4 py-3 font-medium">Description</th>
                 <th className="px-4 py-3 font-medium">Price</th>
+                {showRevisions && <th className="px-4 py-3 font-medium">Revisions</th>}
                 <th className="px-4 py-3 font-medium">Status</th>
               </tr>
             </thead>
@@ -76,6 +78,7 @@ export function PricingPage() {
                   <td className="px-4 py-3">
                     <StatusBadge tone={i.active ? 'live' : 'neutral'}>{i.active ? 'Active' : 'Hidden'}</StatusBadge>
                   </td>
+                  {showRevisions && <td className="px-4 py-3">{i.included_revisions}</td>}
                 </tr>
               ))}
             </tbody>

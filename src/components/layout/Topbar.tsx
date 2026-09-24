@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Bell, LogOut, Menu, Search } from 'lucide-react'
+import { LogOut, Menu } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { BusinessSwitcher } from '@/components/layout/BusinessSwitcher'
 import { GlobalSearch } from '@/components/layout/GlobalSearch'
@@ -35,12 +35,8 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
       <BusinessSwitcher />
 
       <div className="ml-auto flex items-center gap-2 sm:gap-3">
-       <GlobalSearch />
-       <NotificationsBell />
-
-        <button type="button" aria-label="Notifications" className="rounded-lg p-2 hover:bg-white/10">
-          <Bell className="size-5" />
-        </button>
+        <GlobalSearch />
+        <NotificationsBell />
 
         <div ref={ref} className="relative">
           <button

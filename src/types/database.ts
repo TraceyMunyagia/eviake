@@ -1,5 +1,6 @@
 export type BusinessSlug = 'evia_web' | 'evia_invites'
 export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'rejected'
+export type RevisionStatus = 'requested' | 'in_progress' | 'done'
 
 export type Business = {
   id: string
@@ -72,6 +73,8 @@ export type PriceItem = {
   price_kes: number
   active: boolean
   sort_order: number
+  included_revisions: number
+
 }
 
 export type Payment = {
@@ -142,4 +145,40 @@ export type QuoteDocument = {
   client_name: string
   client_business_name: string | null
   items: QuoteItem[]
+}
+export type Revision = {
+  id: string
+  business_id: string
+  order_id: string
+  request_no: number
+  title: string
+  description: string | null
+  status: RevisionStatus
+  requested_on: string
+  completed_on: string | null
+  notes: string | null
+}
+
+export type ProjectDetails = {
+  order_id: string
+  business_id: string
+  business_summary: string | null
+  website_goals: string | null
+  pages_needed: string | null
+  reference_sites: string | null
+  technical_notes: string | null
+  assets_url: string | null
+  website_url: string | null
+  staging_url: string | null
+  cms: string | null
+  deployment_notes: string | null
+}
+
+export type ChecklistItem = {
+  id: string
+  business_id: string
+  order_id: string
+  label: string
+  done: boolean
+  sort_order: number
 }

@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Plus, Search } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { formatDate, formatKES, formatOrderNo } from '@/lib/format'
@@ -20,7 +20,8 @@ export function OrdersPage() {
   const [rows, setRows] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [statusFilter, setStatusFilter] = useState('')
+  const [params] = useSearchParams()
+  const [statusFilter, setStatusFilter] = useState(params.get('status') ?? '') 
   const [payFilter, setPayFilter] = useState('')
   const [text, setText] = useState('')
   const [creating, setCreating] = useState(false)
@@ -46,10 +47,13 @@ export function OrdersPage() {
     load()
   }, [load])
 
-  useEffect(() => {
-    setStatusFilter('')
-    setPayFilter('')
-  }, [active])
+  const lastBusiness = useRef(active?.id)
+useEffect(() => {
+  if (lastBusiness.current === active?.id) return
+  lastBusiness.current = active?.id
+  setStatusFilter('')
+  setPayFilter('')
+}, [active])
 
   const visible = useMemo(() => {
     const term = text.trim().toLowerCase().replace('#', '')

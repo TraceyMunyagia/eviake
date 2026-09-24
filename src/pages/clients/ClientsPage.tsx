@@ -8,7 +8,7 @@ import { Modal } from '@/components/ui/Modal'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { ClientForm } from '@/pages/clients/ClientForm'
 import type { Client } from '@/types/database'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 
 export function ClientsPage() {
   const { active } = useBusiness()
@@ -90,9 +90,9 @@ export function ClientsPage() {
             {rows.map((c) => (
               <tr key={c.id} className="border-b border-line last:border-0">
                 <td className="px-4 py-3">
-                  <button onClick={() => setEditing(c)} className="font-medium text-plum-900 hover:underline">
+                  <Link to={`/clients/${c.id}`} className="font-medium text-plum-900 hover:underline">
                     {c.name}
-                  </button>
+                  </Link>
                 </td>
                 <td className="px-4 py-3">{c.business_name ?? '–'}</td>
                 <td className="px-4 py-3">

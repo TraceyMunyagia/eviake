@@ -16,6 +16,8 @@ export function PriceForm({ business, kind, item, nextOrder, onClose, onSaved }:
   const [description, setDescription] = useState(item?.description ?? '')
   const [price, setPrice] = useState(String(item?.price_kes ?? ''))
   const [active, setActive] = useState(item?.active ?? true)
+  const [revisions, setRevisions] = useState(String(item?.included_revisions ?? 0))
+  const showRevisions = kind === 'package' && business.slug === 'evia_web'
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -28,6 +30,7 @@ export function PriceForm({ business, kind, item, nextOrder, onClose, onSaved }:
       description: description.trim() || null,
       price_kes: Number(price) || 0,
       active,
+      ...(showRevisions ? { included_revisions: Math.max(0, Math.floor(Number(revisions) || 0)) } : {}),
     }
     const { error: err } = item
       ? await supabase.from('price_items').update(values).eq('id', item.id)
@@ -42,6 +45,9 @@ export function PriceForm({ business, kind, item, nextOrder, onClose, onSaved }:
       <TextInput id="p-name" label="Name" required value={name} onChange={(e) => setName(e.target.value)} />
       <TextArea id="p-desc" label="Description" value={description} onChange={(e) => setDescription(e.target.value)} />
       <TextInput id="p-price" label="Price (KSh)" type="number" min={0} step={50} required value={price} onChange={(e) => setPrice(e.target.value)} />
+      {showRevisions && (
+        <TextInput id="p-rev" label="Revisions included" type="number" min={0} step={1} value={revisions} onChange={(e) => setRevisions(e.target.value)} />
+      )}
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} className="size-4 accent-plum-800" />
         Active (available when creating orders)
