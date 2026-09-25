@@ -18,13 +18,18 @@ import { ClientPage } from '@/pages/clients/ClientPage'
 import { HostingPage } from '@/pages/hosting/HostingPage'
 import { EventsPage } from '@/pages/events/EventsPage'
 import { EventDetailPage } from '@/pages/events/EventDetailPage'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { CommandPalette } from '@/components/layout/CommandPalette'
+import { LaunchChecklistPage } from '@/pages/settings/LaunchChecklistPage'
 
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <BusinessProvider>
-          <Routes>
+          <ErrorBoundary>
+            <CommandPalette />
+            <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/q/:token" element={<PublicQuotePage />} />
             <Route element={<RequireAuth />}>
@@ -42,12 +47,14 @@ export default function App() {
                 <Route path="domains-hosting" element={<HostingPage />} />
                 <Route path="events" element={<EventsPage />} />
                 <Route path="events/:id" element={<EventDetailPage />} />
+                <Route path="settings/launch-checklist" element={<LaunchChecklistPage />} />
 
                 <Route path="*" element={<Placeholder />} />
               </Route>
 
             </Route>
-          </Routes>
+            </Routes>
+          </ErrorBoundary>
         </BusinessProvider>
       </AuthProvider>
     </BrowserRouter>

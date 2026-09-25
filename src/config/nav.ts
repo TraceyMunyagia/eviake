@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, ShoppingBag, Users, FileText, CreditCard, FolderKanban,
   MessageSquareMore, Globe, Search, MapPin, Tag, Settings, CalendarDays,
-  Mail, UserCheck, QrCode, ScanLine, type LucideIcon,
+  Mail, UserCheck, QrCode, ScanLine, ListChecks, type LucideIcon,
 } from 'lucide-react'
 import type { BusinessSlug } from '@/types/database'
 
@@ -39,6 +39,7 @@ export const NAV: Record<BusinessSlug, NavGroup[]> = {
       items: [
         { label: 'Pricing', path: '/pricing', icon: Tag },
         { label: 'Settings', path: '/settings', icon: Settings },
+        { label: 'Launch Checklist', path: '/settings/launch-checklist', icon: ListChecks },
       ],
     },
   ],
@@ -67,6 +68,7 @@ export const NAV: Record<BusinessSlug, NavGroup[]> = {
       items: [
         { label: 'Templates', path: '/templates', icon: FileText },
         { label: 'Settings', path: '/settings', icon: Settings },
+        { label: 'Launch Checklist', path: '/settings/launch-checklist', icon: ListChecks },
       ],
     },
   ],

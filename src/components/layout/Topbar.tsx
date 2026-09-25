@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
-import { LogOut, Menu } from 'lucide-react'
+import { LogOut, Search } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { BusinessSwitcher } from '@/components/layout/BusinessSwitcher'
 import { GlobalSearch } from '@/components/layout/GlobalSearch'
 import { NotificationsBell } from '@/components/layout/NotificationsBell'
+import { MobileNav } from '@/components/layout/MobileNav'
+import { Modal } from '@/components/ui/Modal'
 
 export function Topbar({ onMenu }: { onMenu: () => void }) {
   const { user, signOut } = useAuth()
   const [menu, setMenu] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const initial = (user?.email ?? '?').charAt(0).toUpperCase()
 
@@ -22,20 +25,20 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
 
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center gap-4 bg-plum-900 px-4 text-white lg:px-6">
-      <button
-        type="button"
-        aria-label="Open navigation"
-        onClick={onMenu}
-        className="rounded-lg p-2 hover:bg-white/10 lg:hidden"
-      >
-        <Menu className="size-5" />
-      </button>
-
+      <MobileNav onOpen={onMenu} />
       <span className="font-display text-xl tracking-wide text-gold-400">Evia</span>
       <BusinessSwitcher />
 
       <div className="ml-auto flex items-center gap-2 sm:gap-3">
-        <GlobalSearch />
+        <div className="hidden sm:block"><GlobalSearch /></div>
+        <button
+          type="button"
+          aria-label="Search"
+          className="rounded-lg p-2 text-white sm:hidden"
+          onClick={() => setSearchOpen(true)}
+        >
+          <Search className="size-5" />
+        </button>
         <NotificationsBell />
 
         <div ref={ref} className="relative">
@@ -60,6 +63,9 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
           )}
         </div>
       </div>
+      <Modal open={searchOpen} onClose={() => setSearchOpen(false)} title="Search">
+        <GlobalSearch inModal onNavigate={() => setSearchOpen(false)} />
+      </Modal>
     </header>
   )
 }

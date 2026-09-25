@@ -8,7 +8,7 @@ import { useBusiness } from '@/context/BusinessContext'
 type ClientHit = { id: string; name: string; business_name: string | null }
 type OrderHit = { id: string; order_no: number; package: string | null; clients: { name: string } | null }
 
-export function GlobalSearch() {
+export function GlobalSearch({ inModal = false, onNavigate }: { inModal?: boolean; onNavigate?: () => void }) {
   const { active } = useBusiness()
   const navigate = useNavigate()
   const [term, setTerm] = useState('')
@@ -69,12 +69,15 @@ export function GlobalSearch() {
   function go(path: string) {
     setOpen(false)
     setTerm('')
+    onNavigate?.()
     navigate(path)
   }
 
   return (
-    <div ref={ref} className="relative hidden md:block">
-      <label className="flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-plum-200">
+    <div ref={ref} className={inModal ? 'relative w-full' : 'relative hidden sm:block'}>
+      <label className={inModal
+        ? 'flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm text-muted'
+        : 'flex items-center gap-2 rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-plum-200'}>
         <Search className="size-4" />
         <input
           value={term}
@@ -82,7 +85,9 @@ export function GlobalSearch() {
           onFocus={() => searched && setOpen(true)}
           placeholder="Search clients and orders"
           aria-label="Search clients and orders"
-          className="w-56 bg-transparent text-white placeholder:text-plum-200/70 focus:outline-none"
+          className={inModal
+            ? 'min-w-0 flex-1 bg-transparent text-ink placeholder:text-muted focus:outline-none'
+            : 'w-56 bg-transparent text-white placeholder:text-plum-200/70 focus:outline-none'}
         />
       </label>
 

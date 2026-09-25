@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Plus, Search } from 'lucide-react'
+import { Plus, Search, UsersRound } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { formatDate } from '@/lib/format'
 import { useBusiness } from '@/context/BusinessContext'
@@ -8,13 +8,18 @@ import { Modal } from '@/components/ui/Modal'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { ClientForm } from '@/pages/clients/ClientForm'
 import type { Client } from '@/types/database'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { ErrorState } from '@/components/ui/ErrorState'
+import { DataCard } from '@/components/ui/DataCard'
+import { TableSkeleton } from '@/components/ui/Skeleton.'
 
 export function ClientsPage() {
   const { active } = useBusiness()
+  const navigate = useNavigate()
   const [rows, setRows] = useState<Client[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [params] = useSearchParams()
   const [query, setQuery] = useState(params.get('q') ?? '')
   const [editing, setEditing] = useState<Client | 'new' | null>(null)
@@ -35,7 +40,12 @@ export function ClientsPage() {
     }
 
     const { data, error: err } = await q
-    setError(err ? err.message : null)
+    if (err) {
+      setLoadError(err.message)
+      setLoading(false)
+      return
+    }
+    setLoadError(null)
     setRows((data ?? []) as Client[])
     setLoading(false)
   }, [active, query])
@@ -74,9 +84,23 @@ export function ClientsPage() {
         />
       </label>
 
-      {error && <p role="alert" className="mb-4 text-sm text-red-700">Could not load clients: {error}</p>}
-
-      <div className="overflow-x-auto rounded-2xl border border-line bg-white shadow-sm">
+      {loadError ? (
+        <ErrorState message={`Could not load clients: ${loadError}`} onRetry={load} />
+      ) : loading ? (
+        <TableSkeleton />
+      ) : rows.length === 0 ? (
+        <div className="rounded-2xl border border-line bg-white shadow-sm">
+          <EmptyState
+            icon={UsersRound}
+            title={query ? 'No clients match that search' : 'No clients yet'}
+            body={query ? 'Try a different search.' : 'Add your first client to get started.'}
+            actionLabel={!query ? 'Add client' : undefined}
+            onAction={!query ? () => setEditing('new') : undefined}
+          />
+        </div>
+      ) : (
+      <>
+      <div className="hidden overflow-x-auto rounded-2xl border border-line bg-white shadow-sm sm:block">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-line text-muted">
             <tr>
@@ -105,13 +129,24 @@ export function ClientsPage() {
           </tbody>
         </table>
 
-        {!loading && rows.length === 0 && (
-          <p className="p-8 text-center text-sm text-muted">
-            {query ? 'No clients match that search.' : 'No clients yet. Add your first client to get started.'}
-          </p>
-        )}
-        {loading && rows.length === 0 && <p className="p-8 text-center text-sm text-muted">Loading…</p>}
       </div>
+      <div className="space-y-3 sm:hidden">
+        {rows.map((c) => (
+          <DataCard
+            key={c.id}
+            onClick={() => navigate(`/clients/${c.id}`)}
+            title={c.name}
+            subtitle={c.business_name ?? undefined}
+            rows={[
+              { label: 'Email', value: c.email ?? '–' },
+              { label: 'Phone', value: c.phone ?? '–' },
+              { label: 'Added', value: formatDate(c.created_at) },
+            ]}
+          />
+        ))}
+      </div>
+      </>
+      )}
 
       <Modal
         open={editing !== null}

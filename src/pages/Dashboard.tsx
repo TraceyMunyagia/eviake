@@ -7,6 +7,7 @@ import { useBusiness } from '@/context/BusinessContext'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge'
 import type { AppNotification } from '@/types/database'
+import { ErrorState } from '@/components/ui/ErrorState'
 
 type Stage = { key: string; label: string; tone: string; count: number }
 type Overview = { pipeline: Stage[]; pending_quotes: number; revenue_month: number; outstanding: number }
@@ -80,7 +81,9 @@ export function Dashboard() {
   const [inviteStats, setInviteStats] = useState<{ upcoming: number; rsvpsReceived: number } | null>(null)
   const [deadlines, setDeadlines] = useState<Deadline[]>([])
   const [activity, setActivity] = useState<AppNotification[]>([])
-  const [error, setError] = useState<string | null>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
     if (!active) return
@@ -89,13 +92,18 @@ export function Dashboard() {
     setInviteStats(null)
     setDeadlines([])
     setActivity([])
-    setError(null)
+    setLoadError(null)
+    setLoading(true)
 
     ;(async () => {
       const { data, error: err } = await supabase.rpc('dashboard_overview', { p_business_id: active.id })
       if (cancelled) return
       const ov = (data as Overview | null) ?? (err ? await loadOverviewFallback(active.id) : null)
-      if (!ov) return setError(err?.message ?? 'Could not load the dashboard.')
+      if (!ov) {
+        setLoadError(err?.message ?? 'Could not load the dashboard.')
+        setLoading(false)
+        return
+      }
       setOverview(ov)
 
       if (active.slug === 'evia_invites') {
@@ -104,6 +112,11 @@ export function Dashboard() {
           supabase.from('events').select('id', { count: 'exact', head: true }).eq('business_id', active.id).gte('event_date', today),
           supabase.from('rsvps').select('guest_id', { count: 'exact', head: true }).eq('business_id', active.id).neq('status', 'pending'),
         ])
+        if (ev.error || rs.error) {
+          setLoadError(ev.error?.message ?? rs.error?.message ?? 'Could not load invitation statistics.')
+          setLoading(false)
+          return
+        }
         if (!cancelled) setInviteStats({ upcoming: ev.count ?? 0, rsvpsReceived: rs.count ?? 0 })
       }
 
@@ -125,14 +138,20 @@ export function Dashboard() {
           .limit(8),
       ])
       if (cancelled) return
+      if (d.error || a.error) {
+        setLoadError(d.error?.message ?? a.error?.message ?? 'Could not load dashboard details.')
+        setLoading(false)
+        return
+      }
       setDeadlines((d.data ?? []) as unknown as Deadline[])
       setActivity((a.data ?? []) as AppNotification[])
+      setLoading(false)
     })()
 
     return () => {
       cancelled = true
     }
-  }, [active])
+  }, [active, reloadKey])
 
   if (!active) return null
 
@@ -165,8 +184,12 @@ export function Dashboard() {
   return (
     <div>
       <PageHeader title={active.name} subtitle="What needs your attention today." />
-      {error && <p role="alert" className="mb-4 text-sm text-red-700">{error}</p>}
-
+      {loadError ? (
+        <ErrorState message={loadError} onRetry={() => setReloadKey((key) => key + 1)} />
+      ) : loading ? (
+        <div className="rounded-2xl border border-line bg-white p-8 text-center text-sm text-muted shadow-sm">Loading…</div>
+      ) : (
+      <>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {cards.map((c) => {
           const body = (
@@ -264,6 +287,8 @@ export function Dashboard() {
           </div>
         </section>
       </div>
+      </>
+      )}
     </div>
   )
 }
