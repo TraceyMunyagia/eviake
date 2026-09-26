@@ -6,6 +6,10 @@ import { Modal } from '@/components/ui/Modal'
 import { TextInput } from '@/components/ui/Field'
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge'
 import type { EventRecord, Guest, RsvpStatus } from '@/types/database'
+import { DataCard } from '@/components/ui/DataCard'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { ErrorState } from '@/components/ui/ErrorState'
+import { Users } from 'lucide-react'
 
 const RSVP_LABEL: Record<RsvpStatus, string> = { pending: 'Pending', attending: 'Attending', declined: 'Declined' }
 const RSVP_TONE: Record<RsvpStatus, Tone> = { pending: 'pending', attending: 'live', declined: 'overdue' }
@@ -47,9 +51,13 @@ export function GuestsTab({ event }: { event: EventRecord }) {
         <Button onClick={() => setEditing('new')}><Plus className="size-4" /> Add guest</Button>
       </div>
 
-      {error && <p role="alert" className="mb-3 text-sm text-red-700">{error}</p>}
-
-      <div className="overflow-x-auto rounded-2xl border border-line bg-white shadow-sm">
+      {error ? (
+        <ErrorState message={error} onRetry={load} />
+      ) : !loading && rows.length === 0 ? (
+        <EmptyState icon={Users} title="No guests yet" body="Add your first guest to start tracking RSVPs." />
+      ) : (
+        <>
+      <div className="hidden overflow-x-auto rounded-2xl border border-line bg-white shadow-sm sm:block">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-line text-muted">
             <tr>{['Name', 'Group', 'Contact', 'Plus ones', 'RSVP', ''].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr>
@@ -70,8 +78,24 @@ export function GuestsTab({ event }: { event: EventRecord }) {
             ))}
           </tbody>
         </table>
-        {!loading && rows.length === 0 && <p className="p-6 text-center text-sm text-muted">No guests yet.</p>}
       </div>
+      <div className="space-y-3 sm:hidden">
+        {rows.map((g) => (
+          <DataCard
+            key={g.id}
+            onClick={() => setEditing(g)}
+            title={g.name}
+            subtitle={g.group_name || undefined}
+            rows={[
+              { label: 'Contact', value: g.phone || g.email || '–' },
+              { label: 'Plus ones', value: g.plus_ones },
+              { label: 'RSVP', value: <StatusBadge tone={RSVP_TONE[g.rsvps?.status ?? 'pending']}>{RSVP_LABEL[g.rsvps?.status ?? 'pending']}</StatusBadge> },
+            ]}
+          />
+        ))}
+      </div>
+        </>
+      )}
 
       <Modal open={editing !== null} onClose={() => setEditing(null)} title={editing === 'new' ? 'Add guest' : 'Edit guest'}>
         {editing !== null && (
@@ -128,6 +152,18 @@ function GuestForm({ event, guest, onClose, onSaved }: {
       </div>
       {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
       <div className="flex justify-end gap-2 pt-2">
+        {guest && (
+          <button
+            type="button"
+            onClick={async () => {
+              await supabase.from('guests').delete().eq('id', guest.id)
+              onSaved()
+            }}
+            className="mr-auto text-sm text-red-700 underline"
+          >
+            Remove guest
+          </button>
+        )}
         <Button type="button" variant="secondary" onClick={onClose}>Cancel</Button>
         <Button disabled={busy}>{busy ? 'Saving…' : guest ? 'Save changes' : 'Add guest'}</Button>
       </div>

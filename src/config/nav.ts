@@ -73,7 +73,6 @@ export const NAV: Record<BusinessSlug, NavGroup[]> = {
     },
   ],
 }
-
 export const STAT_CARDS: Record<BusinessSlug, string[]> = {
   evia_web: [
     'Active websites', 'New orders', 'Pending quotes',

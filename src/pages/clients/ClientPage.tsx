@@ -13,6 +13,11 @@ import { StatusBadge } from '@/components/ui/StatusBadge'
 import { ClientForm } from '@/pages/clients/ClientForm'
 import { OrderForm } from '@/pages/orders/OrderForm'
 import type { Client, Order, Quote } from '@/types/database'
+import { DataCard } from '@/components/ui/DataCard'
+import { TableSkeleton } from '@/components/ui/Skeleton'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { ErrorState } from '@/components/ui/ErrorState'
+import { PackageSearch } from 'lucide-react'
 
 export function ClientPage() {
   const { id } = useParams()
@@ -25,6 +30,7 @@ export function ClientPage() {
   const [state, setState] = useState<'loading' | 'ready' | 'missing'>('loading')
   const [editing, setEditing] = useState(false)
   const [creating, setCreating] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     if (!active || !id) return
@@ -40,6 +46,12 @@ export function ClientPage() {
             .order('created_at', { ascending: false })
         : Promise.resolve({ data: [] }),
     ])
+    if (c.error || o.error) {
+      setLoadError((c.error ?? o.error)!.message)
+      setState('ready')
+      return
+    }
+    setLoadError(null)
     if (!c.data) return setState('missing')
 
     const orderRows = (o.data ?? []) as Order[]
@@ -63,6 +75,7 @@ export function ClientPage() {
   }, [load])
 
   if (!active) return null
+  if (loadError && !client) return <ErrorState message={loadError} onRetry={load} />
   if (state === 'loading') return <p className="text-sm text-muted">Loading…</p>
   if (state === 'missing' || !client) {
     return (
@@ -132,7 +145,13 @@ export function ClientPage() {
 
       <section className="mb-6">
         <h2 className="mb-3 font-display text-xl text-plum-900">Orders</h2>
-        <div className="overflow-x-auto rounded-2xl border border-line bg-white shadow-sm">
+        {loadError ? (
+          <ErrorState message={loadError} onRetry={load} />
+        ) : orders.length === 0 ? (
+          <EmptyState icon={PackageSearch} title="No orders yet" body="Orders placed by this client will show up here." />
+        ) : (
+          <>
+        <div className="hidden overflow-x-auto rounded-2xl border border-line bg-white shadow-sm sm:block">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-line text-muted">
               <tr>
@@ -154,10 +173,27 @@ export function ClientPage() {
                   <td className="px-4 py-3">{formatDate(o.deadline)}</td>
                 </tr>
               ))}
-            </tbody>
+          </tbody>
           </table>
-          {orders.length === 0 && <p className="p-6 text-center text-sm text-muted">No orders for this client yet.</p>}
         </div>
+        <div className="space-y-3 sm:hidden">
+          {orders.map((o) => (
+            <Link key={o.id} to={`/orders/${o.id}`}>
+              <DataCard
+                title={formatOrderNo(o.order_no)}
+                subtitle={o.package ?? undefined}
+                rows={[
+                  { label: 'Stage', value: <OrderStatusBadge status={o.status} statuses={statuses} /> },
+                  { label: 'Payment', value: <PaymentBadge value={o.payment_status} /> },
+                  { label: 'Total', value: formatKES(o.total_kes) },
+                  { label: 'Deadline', value: formatDate(o.deadline) },
+                ]}
+              />
+            </Link>
+          ))}
+        </div>
+          </>
+        )}
       </section>
 
       {isWeb && (

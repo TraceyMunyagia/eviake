@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/context/AuthContext'
 import type { Business } from '@/types/database'
@@ -10,6 +10,7 @@ type BusinessState = {
   active: Business | null
   loading: boolean
   setActive: (slug: Business['slug']) => void
+  refresh: () => Promise<void>
 }
 
 const BusinessContext = createContext<BusinessState | null>(null)
@@ -21,6 +22,11 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
     localStorage.getItem(STORAGE_KEY),
   )
   const [loading, setLoading] = useState(true)
+
+  const refresh = useCallback(async () => {
+    const { data } = await supabase.from('businesses').select('*').order('slug')
+    if (data) setBusinesses(data as Business[])
+  }, [])
 
   useEffect(() => {
     if (!user) {
@@ -55,12 +61,13 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
       businesses,
       active,
       loading,
+      refresh,
       setActive: (slug) => {
         localStorage.setItem(STORAGE_KEY, slug)
         setActiveSlug(slug)
       },
     }),
-    [businesses, active, loading],
+    [businesses, active, loading, refresh],
   )
 
   return <BusinessContext.Provider value={value}>{children}</BusinessContext.Provider>

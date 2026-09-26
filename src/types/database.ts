@@ -6,6 +6,7 @@ export type RsvpStatus = 'pending' | 'attending' | 'declined'
 export type InviteTemplateKey = 'editorial' | 'romance' | 'celebration'
 export type InvitePackage = 'essential' | 'signature' | 'experience'
 export type InviteStatus = 'draft' | 'published'
+export type MembershipRole = 'owner' | 'member'
 
 
 export type Business = {
@@ -274,4 +275,21 @@ export type Invite = {
   public_slug: string | null
   rsvp_track_token: string | null
   published_at: string | null
+}
+export type MembershipInvite = {
+  id: string
+  business_id: string
+  email: string
+  role: MembershipRole
+  invited_by: string | null
+  token: string
+  accepted_at: string | null
+  created_at: string
+}
+
+export type Membership = {
+  business_id: string
+  user_id: string
+  role: MembershipRole
+  profiles?: { email: string; full_name: string | null } | null
 }

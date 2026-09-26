@@ -4,6 +4,10 @@ import { formatDateTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { StatusBadge, type Tone } from '@/components/ui/StatusBadge'
 import type { EventRecord, Guest, RsvpStatus } from '@/types/database'
+import { DataCard } from '@/components/ui/DataCard'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { ErrorState } from '@/components/ui/ErrorState'
+import { ClipboardList } from 'lucide-react'
 
 const RSVP_LABEL: Record<RsvpStatus, string> = { pending: 'Pending', attending: 'Attending', declined: 'Declined' }
 const RSVP_TONE: Record<RsvpStatus, Tone> = { pending: 'pending', attending: 'live', declined: 'overdue' }
@@ -69,9 +73,13 @@ export function RsvpsTab({ event }: { event: EventRecord }) {
         ))}
       </section>
 
-      {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
-
-      <div className="overflow-x-auto rounded-2xl border border-line bg-white shadow-sm">
+      {error ? (
+        <ErrorState message={error} onRetry={load} />
+      ) : !loading && rows.length === 0 ? (
+        <EmptyState icon={ClipboardList} title="No RSVPs to track yet" body="Add guests on the Guests tab — every guest gets an RSVP row automatically." />
+      ) : (
+        <>
+      <div className="hidden overflow-x-auto rounded-2xl border border-line bg-white shadow-sm sm:block">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-line text-muted">
             <tr>{['Guest', 'Group', 'Status', 'Responded'].map((h) => <th key={h} className="px-4 py-3 font-medium">{h}</th>)}</tr>
@@ -99,8 +107,34 @@ export function RsvpsTab({ event }: { event: EventRecord }) {
             ))}
           </tbody>
         </table>
-        {!loading && rows.length === 0 && <p className="p-6 text-center text-sm text-muted">Add guests first — every guest gets an RSVP row automatically.</p>}
       </div>
+      <div className="space-y-3 sm:hidden">
+        {rows.map((r) => (
+          <DataCard
+            key={r.guest_id}
+            title={r.guests.name}
+            subtitle={r.guests.group_name || undefined}
+            rows={[
+              {
+                label: 'Status',
+                value: (
+                  <select
+                    aria-label={`RSVP status for ${r.guests.name}`}
+                    value={r.status}
+                    onChange={(e) => setStatus(r, e.target.value as RsvpStatus)}
+                    className="rounded-lg border border-line bg-white px-2 py-1 text-sm"
+                  >
+                    {Object.entries(RSVP_LABEL).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
+                  </select>
+                ),
+              },
+              { label: 'Responded', value: r.responded_at ? formatDateTime(r.responded_at) : '–' },
+            ]}
+          />
+        ))}
+      </div>
+        </>
+      )}
     </div>
   )
 }
