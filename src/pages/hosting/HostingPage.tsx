@@ -10,7 +10,7 @@ import type { DomainsHosting } from '@/types/database'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { DataCard } from '@/components/ui/DataCard'
-import { TableSkeleton } from '@/components/ui/Skeleton.'
+import { TableSkeleton } from '@/components/ui/Skeleton'
 
 type Row = DomainsHosting & { orders: { order_no: number; clients: { name: string } | null } | null }
 

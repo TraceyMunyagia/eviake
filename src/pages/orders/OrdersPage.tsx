@@ -16,7 +16,7 @@ import { PackageSearch } from 'lucide-react'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { DataCard } from '@/components/ui/DataCard'
-import { TableSkeleton } from '@/components/ui/Skeleton.'
+import { TableSkeleton } from '@/components/ui/Skeleton'
 
 export function OrdersPage() {
   const { active } = useBusiness()

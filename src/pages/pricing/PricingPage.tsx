@@ -75,10 +75,10 @@ export function PricingPage() {
                   </td>
                   <td className="px-4 py-3 text-muted">{i.description ?? ''}</td>
                   <td className="px-4 py-3">{formatKES(i.price_kes)}</td>
+                  {showRevisions && <td className="px-4 py-3">{i.included_revisions}</td>}
                   <td className="px-4 py-3">
                     <StatusBadge tone={i.active ? 'live' : 'neutral'}>{i.active ? 'Active' : 'Hidden'}</StatusBadge>
                   </td>
-                  {showRevisions && <td className="px-4 py-3">{i.included_revisions}</td>}
                 </tr>
               ))}
             </tbody>

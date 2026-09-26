@@ -21,6 +21,11 @@ import { EventDetailPage } from '@/pages/events/EventDetailPage'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { CommandPalette } from '@/components/layout/CommandPalette'
 import { LaunchChecklistPage } from '@/pages/settings/LaunchChecklistPage'
+import { InviteBuilderPage } from '@/pages/invites/InviteBuilderPage'
+import { InviteEditPage } from '@/pages/invites/InviteEditPage'
+import { PublicInvitePage } from '@/pages/public/PublicInvitePage'
+import { RsvpTrackPage } from '@/pages/public/RsvpTrackPage'
+
 
 export default function App() {
   return (
@@ -48,6 +53,10 @@ export default function App() {
                 <Route path="events" element={<EventsPage />} />
                 <Route path="events/:id" element={<EventDetailPage />} />
                 <Route path="settings/launch-checklist" element={<LaunchChecklistPage />} />
+                <Route path="invites" element={<InviteBuilderPage />} />
+                <Route path="invites/:id" element={<InviteEditPage />} />
+                <Route path="/invite/:slug" element={<PublicInvitePage />} />
+                <Route path="/rsvp-track/:token" element={<RsvpTrackPage />} />
 
                 <Route path="*" element={<Placeholder />} />
               </Route>

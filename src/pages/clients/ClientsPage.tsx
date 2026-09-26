@@ -12,7 +12,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { DataCard } from '@/components/ui/DataCard'
-import { TableSkeleton } from '@/components/ui/Skeleton.'
+import { TableSkeleton } from '@/components/ui/Skeleton'
 
 export function ClientsPage() {
   const { active } = useBusiness()

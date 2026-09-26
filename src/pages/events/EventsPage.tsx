@@ -12,7 +12,7 @@ import type { EventRecord } from '@/types/database'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { DataCard } from '@/components/ui/DataCard'
-import { TableSkeleton } from '@/components/ui/Skeleton.'
+import { TableSkeleton } from '@/components/ui/Skeleton'
 
 type Row = EventRecord & { clients: { name: string } | null; guest_count: number; attending_count: number }
 

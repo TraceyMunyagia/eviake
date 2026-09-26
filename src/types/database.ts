@@ -3,6 +3,10 @@ export type QuoteStatus = 'draft' | 'sent' | 'accepted' | 'rejected'
 export type RevisionStatus = 'requested' | 'in_progress' | 'done'
 export type SslStatus = 'unknown' | 'active' | 'expiring' | 'expired' | 'none'
 export type RsvpStatus = 'pending' | 'attending' | 'declined'
+export type InviteTemplateKey = 'editorial' | 'romance' | 'celebration'
+export type InvitePackage = 'essential' | 'signature' | 'experience'
+export type InviteStatus = 'draft' | 'published'
+
 
 export type Business = {
   id: string
@@ -217,4 +221,57 @@ export type Guest = {
   email: string | null
   group_name: string | null
   plus_ones: number
+}
+export type InviteTemplate = {
+  key: InviteTemplateKey
+  label: string
+  description: string | null
+  sample_image_url: string | null
+  sort_order: number
+}
+
+export type InviteContent = {
+  couple_names?: string
+  event_name?: string
+  event_date?: string
+  event_time?: string
+  venue?: string
+  description?: string
+  dress_code?: string
+  schedule?: { time: string; label: string }[]
+  [key: string]: unknown
+}
+
+export type InviteTokens = {
+  primary?: string
+  accent?: string
+  background?: string
+  heading_font?: string
+  body_font?: string
+}
+
+export type InviteSections = {
+  countdown?: boolean
+  schedule?: boolean
+  gallery?: boolean
+  video?: boolean
+  rsvp?: boolean
+  guestbook?: boolean
+  guest_management?: boolean
+}
+
+export type Invite = {
+  id: string
+  business_id: string
+  order_id: string
+  event_id: string | null
+  template: InviteTemplateKey
+  package: InvitePackage
+  content: InviteContent
+  tokens: InviteTokens
+  sections: InviteSections
+  status: InviteStatus
+  public_slug: string | null
+  rsvp_track_token: string | null
+  published_at: string | null
 }
