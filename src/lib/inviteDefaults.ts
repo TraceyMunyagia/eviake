@@ -27,7 +27,14 @@ export const TEMPLATE_DEFAULT_TOKENS: Record<InviteTemplateKey, InviteTokens> = 
     heading_font: 'Cormorant Garamond',
     body_font: 'Inter',
   },
-  romance:     { primary: '#7A4356', accent: '#E8B4BC', background: '#FFF7F5', heading_font: 'Playfair Display', body_font: 'Lora' },
+  romance: {
+    primary: '#6B3F45',        // dusty rose ink — soft but still readable
+    accent: '#E8B4BC',         // blush pink
+    background: '#FFF6F3',     // soft ivory-blush
+    heading_font: 'Playfair Display',
+    body_font: 'Lora',
+    accent_font: 'Parisienne',
+  },
   celebration: { primary: '#1F3A5F', accent: '#F2994A', background: '#FFFDF7', heading_font: 'Poppins', body_font: 'Inter' },
 }
 

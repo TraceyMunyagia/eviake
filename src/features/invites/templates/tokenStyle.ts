@@ -11,8 +11,7 @@ export function tokenStyle(tokens: InviteTokens): CSSProperties {
     '--invite-background': background,
     '--invite-heading-font': tokens.heading_font || 'Georgia, serif',
     '--invite-body-font': tokens.body_font || 'system-ui, sans-serif',
-    // Derived, not configurable — keeps every section's borders/muted text/
-    // subtle fills consistent without adding more fields to InviteTokens.
+    '--invite-accent-font': tokens.accent_font || tokens.heading_font || 'Georgia, serif',
     '--invite-hairline': `color-mix(in srgb, ${accent} 45%, transparent)`,
     '--invite-muted': `color-mix(in srgb, ${primary} 58%, transparent)`,
     '--invite-surface': `color-mix(in srgb, ${primary} 4%, ${background})`,

@@ -50,8 +50,9 @@ export function DetailsPanel({ invite, onSaved }: { invite: Invite; onSaved: (in
       <TextArea id="d-about-text" label="Story text" value={form.about_text || ''} onChange={(e) => set('about_text', e.target.value)} />
       <TextInput id="d-dress" label="Dress code" value={form.dress_code || ''} onChange={(e) => set('dress_code', e.target.value)} />
       <TextArea id="d-dress-note" label="Dress code notes" value={form.dress_code_note || ''} onChange={(e) => set('dress_code_note', e.target.value)} />
-        <TextInput id="d-address" label="Address" value={form.address || ''} onChange={(e) => set('address', e.target.value)} />
-<TextInput id="d-parking" label="Parking notes" value={form.parking_info || ''} onChange={(e) => set('parking_info', e.target.value)} />
+      <TextInput id="d-address" label="Address" value={form.address || ''} onChange={(e) => set('address', e.target.value)} />
+      <TextInput id="d-parking" label="Parking notes" value={form.parking_info || ''} onChange={(e) => set('parking_info', e.target.value)} />
+      <TextInput id="d-welcome-quote" label="Quote (optional — shown above the welcome message)" value={form.welcome_quote || ''} onChange={(e) => set('welcome_quote', e.target.value)} />
       {message && <p role={message.ok ? 'status' : 'alert'} className={message.ok ? 'text-sm text-green-800' : 'text-sm text-red-700'}>{message.text}</p>}
       <Button onClick={save} disabled={busy}>{busy ? 'Saving…' : 'Save details'}</Button>
       <p className="text-xs text-muted">The preview on the right updates once you save — live-as-you-type comes with the Design tab next week.</p>

@@ -257,6 +257,10 @@ export type InviteContent = {
   dress_code_palette?: string[]
   dress_code_image_urls?: string[]
   parking_info?: string
+  welcome_quote?: string
+  floral_accent_url?: string
+  closing_image_url?: string
+  gallery_captions?: string[] // index-aligned with gallery_urls
   [key: string]: unknown
 }
 export type InviteTokens = {
@@ -265,6 +269,7 @@ export type InviteTokens = {
   background?: string
   heading_font?: string
   body_font?: string
+  accent_font?: string // decorative/script font — introduced for Romance; optional for every template
 }
 
 export type InviteSections = {

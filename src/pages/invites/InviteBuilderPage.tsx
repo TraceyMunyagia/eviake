@@ -11,11 +11,55 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { CardSkeleton } from '@/components/ui/Skeleton'
 import { formatDateTime, formatOrderNo } from '@/lib/format'
 import { OrderPickerModal } from '@/components/invites/OrderPickerModal'
+import { getTemplateComponent } from '@/features/invites/templates/registry'
+import { SAMPLE_CONTENT } from '@/features/invites/templates/sampleRegistry'
+import type { InviteTemplate, InviteTemplateKey } from '@/types/database'
+
+const SAMPLE_TOKENS = {
+  primary: '#2B1530',
+  accent: '#C7A046',
+  background: '#FBF7F0',
+  heading_font: 'Georgia, serif',
+  body_font: 'system-ui, sans-serif',
+}
+
+function TemplateSample({ templateKey, imageUrl, label }: { templateKey: InviteTemplateKey; imageUrl: string | null; label: string }) {
+  const Template = getTemplateComponent(templateKey)
+  const sample = SAMPLE_CONTENT[templateKey]
+
+  if (!Template || !sample) {
+    return imageUrl ? <img src={imageUrl} alt={label} className="h-full w-full object-cover" /> : <LayoutTemplate className="size-8" />
+  }
+
+  return (
+    <div className="relative h-48 overflow-hidden bg-gold-100">
+      <div className="pointer-events-none absolute left-0 top-0 w-[357%] origin-top-left scale-[.28]">
+        <Template content={sample.content} tokens={SAMPLE_TOKENS} sections={sample.sections} mode="preview" />
+      </div>
+    </div>
+  )
+}
+
+function FullTemplatePreview({ templateKey, imageUrl, label }: { templateKey: InviteTemplateKey; imageUrl: string | null; label: string }) {
+  const Template = getTemplateComponent(templateKey)
+  const sample = SAMPLE_CONTENT[templateKey]
+
+  if (!Template || !sample) {
+    return imageUrl ? <img src={imageUrl} alt={label} className="w-full rounded-xl object-cover" /> : <div className="flex min-h-48 items-center justify-center text-muted"><LayoutTemplate className="size-10" /></div>
+  }
+
+  return (
+    <div className="max-h-[70vh] overflow-y-auto rounded-xl border border-line bg-white">
+      <Template content={sample.content} tokens={SAMPLE_TOKENS} sections={sample.sections} mode="preview" />
+    </div>
+  )
+}
 
 export function InviteBuilderPage() {
   const { templates, loading: templatesLoading, error: templatesError } = useInviteTemplates()
   const { invites, loading: invitesLoading, error: invitesError, reload } = useInvites()
   const [pickerOpen, setPickerOpen] = useState(false)
+  const [selectedTemplate, setSelectedTemplate] = useState<InviteTemplate | null>(null)
 
   return (
     <div>
@@ -37,11 +81,19 @@ export function InviteBuilderPage() {
           <div className="grid gap-4 sm:grid-cols-3">
             {templates.map((t) => (
               <div key={t.key} className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
-                <div className="flex h-36 items-center justify-center bg-gold-100 text-muted">
-                  {t.sample_image_url ? <img src={t.sample_image_url} alt={t.label} className="h-full w-full object-cover" /> : <LayoutTemplate className="size-8" />}
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedTemplate(t)}
+                  className="block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-inset"
+                  aria-label={`View full ${t.label} preview`}
+                >
+                  <TemplateSample templateKey={t.key} imageUrl={t.sample_image_url} label={t.label} />
+                </button>
                 <div className="p-4">
-                  <p className="font-medium text-plum-900">{t.label}</p>
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="font-medium text-plum-900">{t.label}</p>
+                    <span className="shrink-0 text-xs text-muted">View preview</span>
+                  </div>
                   {t.description && <p className="mt-1 text-sm text-muted">{t.description}</p>}
                 </div>
               </div>
@@ -81,9 +133,18 @@ export function InviteBuilderPage() {
         )}
       </section>
 
-    <Modal open={pickerOpen} onClose={() => setPickerOpen(false)} title="Build invite">
+<Modal open={pickerOpen} onClose={() => setPickerOpen(false)} title="Build invite">
   {pickerOpen && <OrderPickerModal templates={templates} onClose={() => setPickerOpen(false)} onCreated={() => reload()} />}
 </Modal>
+    {selectedTemplate && (
+      <Modal open={Boolean(selectedTemplate)} onClose={() => setSelectedTemplate(null)} title={`${selectedTemplate.label} preview`}>
+        <FullTemplatePreview
+          templateKey={selectedTemplate.key}
+          imageUrl={selectedTemplate.sample_image_url}
+          label={selectedTemplate.label}
+        />
+      </Modal>
+    )}
     </div>
   )
 }
