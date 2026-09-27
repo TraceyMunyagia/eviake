@@ -247,6 +247,16 @@ export type InviteContent = {
   gallery_urls?: string[]
   video_url?: string
   closing_message?: string
+  invitation_message?: string
+  invitation_signature?: string
+  about_title?: string
+  about_text?: string
+  about_image_url?: string
+  about_image_url_2?: string
+  dress_code_note?: string
+  dress_code_palette?: string[]
+  dress_code_image_urls?: string[]
+  parking_info?: string
   [key: string]: unknown
 }
 export type InviteTokens = {

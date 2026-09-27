@@ -8,6 +8,10 @@ import { Gallery } from './sections/Gallery'
 import { RsvpSection } from './sections/RsvpSection'
 import { Guestbook } from './sections/Guestbook'
 import { Closing } from './sections/Closing'
+import { InvitationMessage } from './sections/InvitationMessage'
+import { AboutStory } from './sections/AboutStory'
+import { DressCode } from './sections/DressCode'
+import { Location } from './sections/Location'
 
 // Section order follows the Editorial spec: Hero, [Invitation Message —
 // Week 11], Event Details, Countdown, [About/Story — Week 11], Schedule,
@@ -19,13 +23,18 @@ export function EditorialTemplate({ content, tokens, sections, mode }: TemplateP
   return (
     <div style={{ ...tokenStyle(tokens), backgroundColor: 'var(--invite-background)' }} className="min-h-full">
       <Hero content={content} />
-      <EventDetails content={content} mode={mode} />
-      {sections.countdown && <Countdown eventDate={content.event_date} eventTime={content.event_time} mode={mode} />}
-      {sections.schedule && <Schedule items={content.schedule} mode={mode} />}
-      {sections.gallery && <Gallery urls={content.gallery_urls} mode={mode} />}
-      {sections.rsvp && <RsvpSection content={content} mode={mode} />}
-      {sections.guestbook && <Guestbook />}
-      <Closing content={content} mode={mode} />
+      <Hero content={content} />
+<InvitationMessage content={content} mode={mode} />
+<EventDetails content={content} mode={mode} />
+{sections.countdown && <Countdown eventDate={content.event_date} eventTime={content.event_time} mode={mode} />}
+<AboutStory content={content} mode={mode} />
+{sections.schedule && <Schedule items={content.schedule} mode={mode} />}
+{sections.gallery && <Gallery urls={content.gallery_urls} mode={mode} />}
+<DressCode content={content} mode={mode} />
+<Location content={content} mode={mode} />
+{sections.rsvp && <RsvpSection content={content} mode={mode} />}
+{sections.guestbook && <Guestbook />}
+<Closing content={content} mode={mode} />
     </div>
   )
 }
