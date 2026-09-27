@@ -240,6 +240,10 @@ export type InviteContent = {
   description?: string
   dress_code?: string
   schedule?: { time: string; label: string }[]
+  hero_image_url?: string
+  logo_url?: string
+  gallery_urls?: string[]
+  video_url?: string
   [key: string]: unknown
 }
 

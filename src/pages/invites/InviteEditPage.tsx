@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Copy } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useBusiness } from '@/context/BusinessContext'
+import { usePublishInvite } from '@/hooks/usePublishInvite'
+import { Button } from '@/components/ui/Button'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { ErrorState } from '@/components/ui/ErrorState'
+import { InviteLivePreview } from '@/features/invites/builder/InviteLivePreview'
+import { BuilderTabs } from '@/features/invites/builder/BuilderTabs'
+import { DetailsPanel } from '@/features/invites/builder/DetailsPanel'
 import type { Invite } from '@/types/database'
-import { usePublishInvite } from '@/hooks/usePublishInvite'
-import { Copy } from 'lucide-react'
-import { Button } from '@/components/ui/Button'
+import { TemplateSwitcher } from '@/features/invites/builder/TemplateSwitcher'
 
 export function InviteEditPage() {
   const { id } = useParams()
@@ -16,19 +19,9 @@ export function InviteEditPage() {
   const [invite, setInvite] = useState<Invite | null>(null)
   const [state, setState] = useState<'loading' | 'ready' | 'missing'>('loading')
   const [error, setError] = useState<string | null>(null)
+  const [tab, setTab] = useState('details')
   const { publish, busy, error: publishError } = usePublishInvite()
   const [copied, setCopied] = useState<'invite' | 'rsvp' | null>(null)
-
-  async function onPublish() {
-    const updated = await publish(invite!, invite!.content.couple_names || invite!.content.event_name || '')
-    if (updated) setInvite(updated)
-  }
-
-  function copy(text: string, which: 'invite' | 'rsvp') {
-    navigator.clipboard.writeText(text)
-    setCopied(which)
-    setTimeout(() => setCopied(null), 1500)
-  }
 
   const load = useCallback(async () => {
     if (!active || !id) return
@@ -41,6 +34,18 @@ export function InviteEditPage() {
   }, [active, id])
 
   useEffect(() => { load() }, [load])
+
+  async function onPublish() {
+    if (!invite) return
+    const updated = await publish(invite, invite.content.couple_names || invite.content.event_name || '')
+    if (updated) setInvite(updated)
+  }
+
+  function copy(text: string, which: 'invite' | 'rsvp') {
+    navigator.clipboard.writeText(text)
+    setCopied(which)
+    setTimeout(() => setCopied(null), 1500)
+  }
 
   if (!active) return null
   if (error) return <ErrorState message={error} onRetry={load} />
@@ -60,7 +65,7 @@ export function InviteEditPage() {
         <ArrowLeft className="size-4" /> Invite Builder
       </Link>
 
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl capitalize text-plum-900">{invite.template} invite</h1>
           <p className="mt-1 text-sm capitalize text-muted">{invite.package} package</p>
@@ -93,15 +98,19 @@ export function InviteEditPage() {
         </div>
       )}
 
-      <div className="rounded-2xl border border-line bg-white p-5 shadow-sm">
-        <p className="text-sm text-muted">
-          The full customization builder (live preview, colours, media, sections) ships in Week 9–10.
-          For now this confirms the invite was created correctly with its starting content.
-        </p>
-        <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
-          <div><dt className="text-muted">Couple / client names</dt><dd className="mt-1">{invite.content.couple_names || '–'}</dd></div>
-          <div><dt className="text-muted">Event date</dt><dd className="mt-1">{invite.content.event_date || 'Not set'}</dd></div>
-        </dl>
+      <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
+        <div>
+          <div className="mb-4"><TemplateSwitcher invite={invite} onSaved={setInvite} /></div>
+          <BuilderTabs active={tab} onChange={setTab} />
+          <div className="mt-4">
+            {tab === 'details' && <DetailsPanel invite={invite} onSaved={setInvite} />}
+            {tab === 'design' && <p className="text-sm text-muted">Colours and fonts arrive Week 10.</p>}
+            {tab === 'sections' && <p className="text-sm text-muted">Section on/off toggles arrive Week 10.</p>}
+            {tab === 'media' && <p className="text-sm text-muted">Hero, gallery, video and logo uploads arrive Week 10.</p>}
+            {tab === 'rsvp' && <p className="text-sm text-muted">RSVP deadline, guest limits and custom questions arrive later in the build.</p>}
+          </div>
+        </div>
+        <InviteLivePreview invite={invite} />
       </div>
     </div>
   )

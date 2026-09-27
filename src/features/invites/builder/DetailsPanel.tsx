@@ -1,0 +1,53 @@
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
+import { Button } from '@/components/ui/Button'
+import { TextArea, TextInput } from '@/components/ui/Field'
+import type { Invite, InviteContent } from '@/types/database'
+import { ScheduleEditor } from './ScheduleEditor'
+
+export function DetailsPanel({ invite, onSaved }: { invite: Invite; onSaved: (invite: Invite) => void }) {
+  const [form, setForm] = useState<InviteContent>(invite.content)
+  const [busy, setBusy] = useState(false)
+  const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null)
+
+  // Resets local form state if the invite prop changes from elsewhere
+  // (e.g. after a publish action reloads it).
+  useEffect(() => { setForm(invite.content) }, [invite.id])
+
+  function set<K extends keyof InviteContent>(key: K, value: InviteContent[K]) {
+    setForm((prev) => ({ ...prev, [key]: value }))
+  }
+<ScheduleEditor items={form.schedule || []} onChange={(schedule) => set('schedule', schedule)} />
+    
+  async function save() {
+    setBusy(true)
+    setMessage(null)
+    const { data, error } = await supabase.from('invites').update({ content: form }).eq('id', invite.id).select('*').single()
+    setBusy(false)
+    if (error) return setMessage({ ok: false, text: error.message })
+    onSaved(data as Invite)
+    setMessage({ ok: true, text: 'Saved.' })
+  }
+
+  return (
+    <div className="space-y-4 rounded-2xl border border-line bg-white p-5 shadow-sm">
+      <TextInput
+        id="d-names"
+        label="Couple / event names"
+        value={form.couple_names || form.event_name || ''}
+        onChange={(e) => set('couple_names', e.target.value)}
+      />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <TextInput id="d-date" label="Event date" type="date" value={form.event_date || ''} onChange={(e) => set('event_date', e.target.value)} />
+        <TextInput id="d-time" label="Event time" type="time" value={form.event_time || ''} onChange={(e) => set('event_time', e.target.value)} />
+      </div>
+      <TextInput id="d-venue" label="Venue" value={form.venue || ''} onChange={(e) => set('venue', e.target.value)} />
+      <TextInput id="d-dress" label="Dress code" value={form.dress_code || ''} onChange={(e) => set('dress_code', e.target.value)} />
+      <TextArea id="d-desc" label="Description / message to guests" value={form.description || ''} onChange={(e) => set('description', e.target.value)} />
+
+      {message && <p role={message.ok ? 'status' : 'alert'} className={message.ok ? 'text-sm text-green-800' : 'text-sm text-red-700'}>{message.text}</p>}
+      <Button onClick={save} disabled={busy}>{busy ? 'Saving…' : 'Save details'}</Button>
+      <p className="text-xs text-muted">The preview on the right updates once you save — live-as-you-type comes with the Design tab next week.</p>
+    </div>
+  )
+}
