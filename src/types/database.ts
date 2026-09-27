@@ -237,6 +237,8 @@ export type InviteContent = {
   event_date?: string
   event_time?: string
   venue?: string
+  address?: string
+  event_type?: string
   description?: string
   dress_code?: string
   schedule?: { time: string; label: string }[]
@@ -244,9 +246,9 @@ export type InviteContent = {
   logo_url?: string
   gallery_urls?: string[]
   video_url?: string
+  closing_message?: string
   [key: string]: unknown
 }
-
 export type InviteTokens = {
   primary?: string
   accent?: string

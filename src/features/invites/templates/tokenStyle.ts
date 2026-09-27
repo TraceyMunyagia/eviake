@@ -1,16 +1,20 @@
 import type { CSSProperties } from 'react'
 import type { InviteTokens } from '@/types/database'
 
-// Converts an invite's saved tokens into CSS custom properties that every
-// template reads instead of hardcoding colours or fonts. "Customize colours
-// and fonts" in the builder becomes editing this object, not editing a
-// component's source.
 export function tokenStyle(tokens: InviteTokens): CSSProperties {
+  const primary = tokens.primary || '#2B1530'
+  const accent = tokens.accent || '#C7A046'
+  const background = tokens.background || '#FBF7F0'
   return {
-    '--invite-primary': tokens.primary || '#2B1530',
-    '--invite-accent': tokens.accent || '#C7A046',
-    '--invite-background': tokens.background || '#FBF7F0',
+    '--invite-primary': primary,
+    '--invite-accent': accent,
+    '--invite-background': background,
     '--invite-heading-font': tokens.heading_font || 'Georgia, serif',
     '--invite-body-font': tokens.body_font || 'system-ui, sans-serif',
+    // Derived, not configurable — keeps every section's borders/muted text/
+    // subtle fills consistent without adding more fields to InviteTokens.
+    '--invite-hairline': `color-mix(in srgb, ${accent} 45%, transparent)`,
+    '--invite-muted': `color-mix(in srgb, ${primary} 58%, transparent)`,
+    '--invite-surface': `color-mix(in srgb, ${primary} 4%, ${background})`,
   } as CSSProperties
 }
