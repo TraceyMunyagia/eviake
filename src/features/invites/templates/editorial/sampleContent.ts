@@ -35,3 +35,25 @@ export const EDITORIAL_SAMPLE_CONTENT: InviteContent = {
 export const EDITORIAL_SAMPLE_SECTIONS: InviteSections = {
   countdown: true, schedule: true, gallery: true, video: false, rsvp: true, guestbook: false, guest_management: false,
 }
+// A second, intentionally messy dataset — very long names/venue, a missing
+// hero image but present gallery, no schedule despite the flag being on.
+// Exists purely for QA; never used as a real default.
+export const EDITORIAL_STRESS_CONTENT: InviteContent = {
+  couple_names: 'Nyokabi Wangari Muthoni & Alexander Fitzgerald-Thompson the Third',
+  event_date: '2027-12-31',
+  event_time: '19:30',
+  venue: 'The Grand Ballroom at the Historic Riverside Country Club and Gardens',
+  address: '1 Very Long Street Name That Goes On For Quite A While, Nairobi',
+  event_type: 'Wedding',
+  gallery_urls: [
+    'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=600',
+    'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600',
+  ],
+  // hero_image_url deliberately omitted
+  // schedule deliberately omitted despite sections.schedule = true below
+  dress_code: 'Black Tie Optional But Strongly Encouraged For This Formal Evening Event',
+}
+
+export const EDITORIAL_STRESS_SECTIONS: InviteSections = {
+  countdown: true, schedule: true, gallery: true, video: true, rsvp: true, guestbook: true, guest_management: true,
+}

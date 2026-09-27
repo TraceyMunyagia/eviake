@@ -1,12 +1,18 @@
+
+import { useState } from 'react'
 import { MapPin, Navigation } from 'lucide-react'
 import { editorialType } from '@/features/invites/templates/editorial/type'
 import { Divider } from '@/features/invites/templates/editorial/components/Divider'
 import { SectionLabel } from '@/features/invites/templates/editorial/components/SectionLabel'
 import { Reveal } from '@/features/invites/templates/editorial/components/Reveal'
 import { buildDirectionsUrl } from '@/lib/directionsLink'
+import { buildMapEmbedUrl } from '@/lib/mapEmbed'
 import type { InviteContent } from '@/types/database'
 
 export function Location({ content, mode }: { content: InviteContent; mode?: 'preview' | 'public' }) {
+  const [mapFailed, setMapFailed] = useState(false)
+  const embedUrl = buildMapEmbedUrl(content)
+
   if (!content.venue && !content.address) return null
 
   return (
@@ -18,13 +24,24 @@ export function Location({ content, mode }: { content: InviteContent; mode?: 'pr
         </h2>
         <Divider className="my-6" />
 
-        {/* Placeholder in place of an embedded map — Week 12 swaps this
-            block for a real map while keeping everything else unchanged. */}
         <div
-          className="mx-auto flex h-44 w-full max-w-sm items-center justify-center rounded-sm border"
+          className="mx-auto h-52 w-full max-w-sm overflow-hidden rounded-sm border"
           style={{ borderColor: 'var(--invite-hairline)', backgroundColor: 'var(--invite-surface)' }}
         >
-          <MapPin className="size-6" style={{ color: 'var(--invite-accent)' }} />
+          {embedUrl && !mapFailed ? (
+            <iframe
+              title={`Map to ${content.venue || 'venue'}`}
+              src={embedUrl}
+              className="h-full w-full grayscale-[15%] contrast-[1.05]"
+              style={{ border: 0 }}
+              loading="lazy"
+              onError={() => setMapFailed(true)}
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <MapPin className="size-6" style={{ color: 'var(--invite-accent)' }} />
+            </div>
+          )}
         </div>
 
         {content.address && (

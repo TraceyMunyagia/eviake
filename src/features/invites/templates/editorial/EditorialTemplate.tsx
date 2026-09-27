@@ -23,7 +23,6 @@ export function EditorialTemplate({ content, tokens, sections, mode }: TemplateP
   return (
     <div style={{ ...tokenStyle(tokens), backgroundColor: 'var(--invite-background)' }} className="min-h-full">
       <Hero content={content} />
-      <Hero content={content} />
 <InvitationMessage content={content} mode={mode} />
 <EventDetails content={content} mode={mode} />
 {sections.countdown && <Countdown eventDate={content.event_date} eventTime={content.event_time} mode={mode} />}
@@ -33,7 +32,7 @@ export function EditorialTemplate({ content, tokens, sections, mode }: TemplateP
 <DressCode content={content} mode={mode} />
 <Location content={content} mode={mode} />
 {sections.rsvp && <RsvpSection content={content} mode={mode} />}
-{sections.guestbook && <Guestbook />}
+{sections.guestbook && <Guestbook mode={mode} />}
 <Closing content={content} mode={mode} />
     </div>
   )
