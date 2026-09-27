@@ -262,6 +262,10 @@ export type InviteContent = {
   closing_image_url?: string
   gallery_captions?: string[] // index-aligned with gallery_urls
   [key: string]: unknown
+  story_items?: { date?: string; title?: string; text?: string; image_url?: string }[]
+  venue_image_url?: string
+  gift_message?: string
+  registries?: { name: string; url?: string }[]
 }
 export type InviteTokens = {
   primary?: string

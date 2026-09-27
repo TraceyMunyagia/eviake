@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/Button'
 import { TextArea, TextInput } from '@/components/ui/Field'
 import type { Invite, InviteContent } from '@/types/database'
 import { ScheduleEditor } from './ScheduleEditor'
+import { StoryEditor } from './StoryEditor'
+import { RegistryEditor } from './RegistryEditor'
 
 export function DetailsPanel({ invite, onSaved }: { invite: Invite; onSaved: (invite: Invite) => void }) {
   const [form, setForm] = useState<InviteContent>(invite.content)
@@ -44,6 +46,9 @@ export function DetailsPanel({ invite, onSaved }: { invite: Invite; onSaved: (in
       <TextInput id="d-dress" label="Dress code" value={form.dress_code || ''} onChange={(e) => set('dress_code', e.target.value)} />
       <TextArea id="d-desc" label="Description / message to guests" value={form.description || ''} onChange={(e) => set('description', e.target.value)} />
       <ScheduleEditor items={form.schedule || []} onChange={(schedule) => set('schedule', schedule)} />
+      <StoryEditor items={form.story_items || []} onChange={(story_items) => set('story_items', story_items)} />
+      <TextArea id="d-gift-msg" label="Gift message (optional)" value={form.gift_message || ''} onChange={(e) => set('gift_message', e.target.value)} />
+      <RegistryEditor items={form.registries || []} onChange={(registries) => set('registries', registries)} />
       <TextArea id="d-invite-msg" label="Invitation message (leave blank for an auto-generated line)" value={form.invitation_message || ''} onChange={(e) => set('invitation_message', e.target.value)} />
       <TextInput id="d-invite-sig" label={'Signature (e.g. "The Otieno & Wanjiru families")'} value={form.invitation_signature || ''} onChange={(e) => set('invitation_signature', e.target.value)} />
       <TextInput id="d-about-title" label="Story heading" placeholder="How it began" value={form.about_title || ''} onChange={(e) => set('about_title', e.target.value)} />
