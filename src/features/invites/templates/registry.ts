@@ -3,6 +3,7 @@ import { EditorialTemplate } from '@/features/invites/templates/editorial/Editor
 import type { InviteTemplateKey } from '@/types/database'
 import type { TemplateProps } from '@/features/invites/templates/types'
 import { RomanceTemplate } from '@/features/invites/templates/romance/RomanceTemplate'
+import { CelebrationTemplate } from '@/features/invites/templates/celebration/CelebrationTemplate'
 
 // Romance and Celebration register here once built (Week 11–12). The
 // builder and the public page both look templates up through this map —
@@ -11,6 +12,7 @@ import { RomanceTemplate } from '@/features/invites/templates/romance/RomanceTem
 export const TEMPLATE_COMPONENTS: Partial<Record<InviteTemplateKey, ComponentType<TemplateProps>>> = {
   editorial: EditorialTemplate,
   romance: RomanceTemplate,
+  celebration: CelebrationTemplate,
 }
 
 export function getTemplateComponent(key: InviteTemplateKey) {

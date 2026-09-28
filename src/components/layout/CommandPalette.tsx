@@ -14,6 +14,7 @@ export function CommandPalette() {
   const [results, setResults] = useState<Result[]>([])
   const [index, setIndex] = useState(0)
 
+  if (window.self !== window.top) return // don't open the palette inside the preview iframe
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {

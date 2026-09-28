@@ -1,11 +1,18 @@
 import type { InviteContent, InviteSections, InviteTokens } from '@/types/database'
 
-// The single contract every template component implements. The builder's
-// live preview and the public invite page both render templates through
-// this exact prop shape — a template never reaches into anything else.
+export type RsvpPayload = {
+  name: string
+  attending: boolean
+  party_size: number
+  answers: Record<string, string>
+}
+
 export type TemplateProps = {
   content: InviteContent
   tokens: InviteTokens
   sections: InviteSections
   mode?: 'preview' | 'public'
+  // Supplied by the public page once RSVP submission exists. When it's
+  // absent, a template must never pretend to record a response.
+  onRsvp?: (payload: RsvpPayload) => Promise<void>
 }

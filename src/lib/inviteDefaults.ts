@@ -35,7 +35,15 @@ export const TEMPLATE_DEFAULT_TOKENS: Record<InviteTemplateKey, InviteTokens> = 
     body_font: 'Lora',
     accent_font: 'Parisienne',
   },
-  celebration: { primary: '#1F3A5F', accent: '#F2994A', background: '#FFFDF7', heading_font: 'Poppins', body_font: 'Inter' },
+    celebration: {
+    primary: '#1A1033',    // deep indigo — used as a full colour block, not just text
+    accent: '#FF4D6D',     // hot coral
+    secondary: '#FFD23F',  // sunny yellow
+    background: '#FFF8EC', // warm cream
+    heading_font: 'Bricolage Grotesque',
+    body_font: 'DM Sans',
+    accent_font: 'Caveat',
+  },
 }
 
 export function buildInviteDefaults(template: InviteTemplateKey, pkg: InvitePackage) {

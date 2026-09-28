@@ -1,13 +1,12 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Smartphone, Monitor } from 'lucide-react'
-import { getTemplateComponent } from '@/features/invites/templates/registry'
 import { SAMPLE_CONTENT, STRESS_CONTENT } from '@/features/invites/templates/sampleRegistry'
 import type { Invite } from '@/types/database'
 
 const WIDTHS = { mobile: 390, desktop: 1280 } as const
 
 export function InviteLivePreview({ invite }: { invite: Invite }) {
-  const Template = getTemplateComponent(invite.template)
+  const frameRef = useRef<HTMLIFrameElement>(null)
   const [previewMode, setPreviewMode] = useState<'real' | 'sample' | 'stress'>('real')
   const [device, setDevice] = useState<keyof typeof WIDTHS>('desktop')
 
@@ -15,8 +14,31 @@ export function InviteLivePreview({ invite }: { invite: Invite }) {
   const stress = STRESS_CONTENT[invite.template]
   const active = previewMode === 'sample' && sample ? sample : previewMode === 'stress' && stress ? stress : null
 
-  const content = active?.content ?? invite.content
-  const sections = active?.sections ?? invite.sections
+  const payload = useMemo(
+    () => ({
+      template: invite.template,
+      content: active?.content ?? invite.content,
+      tokens: invite.tokens,
+      sections: active?.sections ?? invite.sections,
+    }),
+    [invite.template, invite.content, invite.tokens, invite.sections, active],
+  )
+
+  const send = useCallback(() => {
+    frameRef.current?.contentWindow?.postMessage({ type: 'evia-preview', payload }, window.location.origin)
+  }, [payload])
+
+  // Re-send whenever the invite, sample mode or template changes.
+  useEffect(() => { send() }, [send])
+
+  // The frame announces when it's ready to receive (covers first load and reloads).
+  useEffect(() => {
+    function onMessage(e: MessageEvent) {
+      if (e.origin === window.location.origin && e.data?.type === 'evia-preview-ready') send()
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [send])
 
   return (
     <div className="sticky top-6 overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
@@ -31,7 +53,12 @@ export function InviteLivePreview({ invite }: { invite: Invite }) {
               <Monitor className="size-3.5" />
             </button>
           </div>
-          <select value={previewMode} onChange={(e) => setPreviewMode(e.target.value as typeof previewMode)} className="rounded bg-white/10 px-2 py-1 text-xs" aria-label="Preview content">
+          <select
+            value={active ? previewMode : 'real'}
+            onChange={(e) => setPreviewMode(e.target.value as typeof previewMode)}
+            className="rounded bg-white/10 px-2 py-1 text-xs"
+            aria-label="Preview content"
+          >
             <option value="real">Real content</option>
             {sample && <option value="sample">Sample content</option>}
             {stress && <option value="stress">Stress test</option>}
@@ -40,13 +67,14 @@ export function InviteLivePreview({ invite }: { invite: Invite }) {
         </div>
       </div>
       <div className="flex justify-center overflow-x-auto bg-plum-950/5 py-4">
-        <div style={{ width: WIDTHS[device], maxWidth: '100%' }} className="h-[70vh] overflow-y-auto bg-white shadow-md">
-          {Template ? (
-            <Template content={content} tokens={invite.tokens} sections={sections} mode="preview" />
-          ) : (
-            <p className="p-10 text-center text-sm text-muted">This template isn't available to preview yet.</p>
-          )}
-        </div>
+        <iframe
+          ref={frameRef}
+          src="/preview-frame"
+          title="Invite preview"
+          onLoad={send}
+          className="block h-[70vh] border-0 bg-white shadow-md"
+          style={{ width: WIDTHS[device], maxWidth: '100%' }}
+        />
       </div>
     </div>
   )

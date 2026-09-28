@@ -18,11 +18,11 @@ export function RsvpSection({ content, mode }: { content: InviteContent; mode?: 
         )}
         <button
           type="button"
-          disabled={mode === 'preview'}
+          disabled
           className="mt-8 rounded-none border px-10 py-3 text-sm uppercase tracking-widest transition-opacity disabled:opacity-60"
           style={{ borderColor: 'var(--invite-primary)', color: 'var(--invite-primary)', fontFamily: 'var(--invite-body-font)' }}
         >
-          {mode === 'preview' ? 'RSVP (guest form ships later)' : 'Respond now'}
+          RSVPs open soon
         </button>
       </section>
     </Reveal>

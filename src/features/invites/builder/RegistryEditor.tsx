@@ -2,11 +2,24 @@ import { useState } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { TextInput } from '@/components/ui/Field'
-import type { InviteContent } from '@/types/database'
 
-type Registry = NonNullable<InviteContent['registries']>[number]
+type LinkItem = { name: string; url?: string }
 
-export function RegistryEditor({ items, onChange }: { items: Registry[]; onChange: (items: Registry[]) => void }) {
+export function RegistryEditor({
+  items,
+  onChange,
+  title = 'Gift registries',
+  nameLabel = 'Registry name',
+  namePlaceholder = 'Our Amazon list',
+  idPrefix = 'reg',
+}: {
+  items: LinkItem[]
+  onChange: (items: LinkItem[]) => void
+  title?: string
+  nameLabel?: string
+  namePlaceholder?: string
+  idPrefix?: string // keeps input ids unique when the editor appears twice
+}) {
   const [name, setName] = useState('')
   const [url, setUrl] = useState('')
 
@@ -22,20 +35,20 @@ export function RegistryEditor({ items, onChange }: { items: Registry[]; onChang
 
   return (
     <div className="space-y-3">
-      <p className="text-sm font-medium text-plum-900">Gift registries</p>
+      <p className="text-sm font-medium text-plum-900">{title}</p>
       {items.length > 0 && (
         <ul className="space-y-2">
           {items.map((item, i) => (
             <li key={i} className="flex items-center gap-3 rounded-lg border border-line px-3 py-2 text-sm">
-              <span className="flex-1">{item.name}{item.url ? ` — ${item.url}` : ''}</span>
+              <span className="flex-1">{item.name}{item.url ? `: ${item.url}` : ''}</span>
               <button aria-label={`Remove ${item.name}`} onClick={() => remove(i)} className="text-muted hover:text-red-700"><Trash2 className="size-4" /></button>
             </li>
           ))}
         </ul>
       )}
       <div className="flex flex-wrap items-end gap-2">
-        <TextInput id="reg-name" label="Registry name" placeholder="Our Amazon list" value={name} onChange={(e) => setName(e.target.value)} />
-        <div className="flex-1"><TextInput id="reg-url" label="Link (optional)" type="url" placeholder="https://" value={url} onChange={(e) => setUrl(e.target.value)} /></div>
+        <TextInput id={`${idPrefix}-name`} label={nameLabel} placeholder={namePlaceholder} value={name} onChange={(e) => setName(e.target.value)} />
+        <div className="flex-1"><TextInput id={`${idPrefix}-url`} label="Link" type="url" placeholder="https://" value={url} onChange={(e) => setUrl(e.target.value)} /></div>
         <Button type="button" variant="secondary" onClick={add}><Plus className="size-4" /> Add</Button>
       </div>
     </div>

@@ -49,6 +49,15 @@ export function DetailsPanel({ invite, onSaved }: { invite: Invite; onSaved: (in
       <StoryEditor items={form.story_items || []} onChange={(story_items) => set('story_items', story_items)} />
       <TextArea id="d-gift-msg" label="Gift message (optional)" value={form.gift_message || ''} onChange={(e) => set('gift_message', e.target.value)} />
       <RegistryEditor items={form.registries || []} onChange={(registries) => set('registries', registries)} />
+      <TextArea id="d-closing" label="Closing message" value={form.closing_message || ''} onChange={(e) => set('closing_message', e.target.value)} />
+      <TextInput id="d-hashtag" label="Event hashtag (without #)" value={form.hashtag || ''} onChange={(e) => set('hashtag', e.target.value)} />
+      <RegistryEditor
+      idPrefix="soc"
+      title="Social links"
+      nameLabel="Platform"
+      namePlaceholder="Instagram"
+      items={form.social_links || []}
+      onChange={(social_links) => set('social_links', social_links)}/>
       <TextArea id="d-invite-msg" label="Invitation message (leave blank for an auto-generated line)" value={form.invitation_message || ''} onChange={(e) => set('invitation_message', e.target.value)} />
       <TextInput id="d-invite-sig" label={'Signature (e.g. "The Otieno & Wanjiru families")'} value={form.invitation_signature || ''} onChange={(e) => set('invitation_signature', e.target.value)} />
       <TextInput id="d-about-title" label="Story heading" placeholder="How it began" value={form.about_title || ''} onChange={(e) => set('about_title', e.target.value)} />

@@ -8,6 +8,7 @@ export function tokenStyle(tokens: InviteTokens): CSSProperties {
   return {
     '--invite-primary': primary,
     '--invite-accent': accent,
+    '--invite-secondary': tokens.secondary || accent,
     '--invite-background': background,
     '--invite-heading-font': tokens.heading_font || 'Georgia, serif',
     '--invite-body-font': tokens.body_font || 'system-ui, sans-serif',

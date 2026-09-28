@@ -266,6 +266,19 @@ export type InviteContent = {
   venue_image_url?: string
   gift_message?: string
   registries?: { name: string; url?: string }[]
+  hero_video_url?: string
+  rsvp_deadline?: string
+  rsvp_max_party?: number
+  rsvp_questions?: {
+    id: string
+    label: string
+    type: 'text' | 'choice'
+    options?: string[]
+    required?: boolean
+  }[]
+  hashtag?: string
+  social_links?: { name: string; url?: string }[]
+
 }
 export type InviteTokens = {
   primary?: string
@@ -274,6 +287,7 @@ export type InviteTokens = {
   heading_font?: string
   body_font?: string
   accent_font?: string // decorative/script font — introduced for Romance; optional for every template
+  secondary?: string
 }
 
 export type InviteSections = {

@@ -12,6 +12,7 @@ import { BuilderTabs } from '@/features/invites/builder/BuilderTabs'
 import { DetailsPanel } from '@/features/invites/builder/DetailsPanel'
 import type { Invite } from '@/types/database'
 import { TemplateSwitcher } from '@/features/invites/builder/TemplateSwitcher'
+import { RsvpSettingsPanel } from '@/features/invites/builder/RspvSettingsPanel'
 
 export function InviteEditPage() {
   const { id } = useParams()
@@ -107,7 +108,7 @@ export function InviteEditPage() {
             {tab === 'design' && <p className="text-sm text-muted">Colours and fonts arrive Week 10.</p>}
             {tab === 'sections' && <p className="text-sm text-muted">Section on/off toggles arrive Week 10.</p>}
             {tab === 'media' && <p className="text-sm text-muted">Hero, gallery, video and logo uploads arrive Week 10.</p>}
-            {tab === 'rsvp' && <p className="text-sm text-muted">RSVP deadline, guest limits and custom questions arrive later in the build.</p>}
+            {tab === 'rsvp' && <RsvpSettingsPanel invite={invite} onSaved={setInvite} />}
           </div>
         </div>
         <InviteLivePreview invite={invite} />

@@ -26,6 +26,7 @@ import { InviteEditPage } from '@/pages/invites/InviteEditPage'
 import { PublicInvitePage } from '@/pages/public/PublicInvitePage'
 import { RsvpTrackPage } from '@/pages/public/RsvpTrackPage'
 import { SettingsPage } from '@/pages/settings/SettingsPage'
+import { PreviewFramePage } from '@/pages/public/previewFramePage'
 
 export default function App() {
   return (
@@ -58,6 +59,7 @@ export default function App() {
                 <Route path="/invite/:slug" element={<PublicInvitePage />} />
                 <Route path="/rsvp-track/:token" element={<RsvpTrackPage />} />
                 <Route path="settings" element={<SettingsPage />} />
+                <Route path="/preview-frame" element={<PreviewFramePage />} />
 
                 <Route path="*" element={<Placeholder />} />
               </Route>
