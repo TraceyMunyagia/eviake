@@ -3,9 +3,10 @@ import { Divider } from '@/features/invites/templates/romance/components/Divider
 import { SectionLabel } from '@/features/invites/templates/romance/components/SectionLabel'
 import { Reveal } from '@/features/invites/templates/romance/components/Reveal'
 import type { InviteContent } from '@/types/database'
+import { SimpleRsvpForm } from '@/features/invites/templates/shared/SimpleRsvpForm'
+import type { TemplateProps } from '@/features/invites/templates/types'
 
-export function RsvpSection({ content, mode }: { content: InviteContent; mode?: 'preview' | 'public' }) {
-  return (
+export function RsvpSection({ content, mode, onRsvp }: { content: InviteContent; mode?: 'preview' | 'public'; onRsvp?: TemplateProps['onRsvp'] }) {  return (
     <Reveal mode={mode}>
       <section className="px-6 py-16 text-center sm:py-24" style={{ backgroundColor: 'var(--invite-surface)', color: 'var(--invite-primary)' }}>
         <SectionLabel>We'd love to know</SectionLabel>
@@ -16,14 +17,9 @@ export function RsvpSection({ content, mode }: { content: InviteContent; mode?: 
             {content.description}
           </p>
         )}
-        <button
-          type="button"
-          disabled
-          className="mt-8 rounded-full px-10 py-3 text-sm shadow-sm disabled:opacity-60"
-          style={{ backgroundColor: 'var(--invite-accent)', color: 'var(--invite-primary)', fontFamily: 'var(--invite-body-font)' }}
-        >
-          RSVPs open soon
-        </button>
+        <div className="mt-8">
+          <SimpleRsvpForm content={content} mode={mode} onRsvp={onRsvp} rounded buttonLabel="Respond with love" />
+        </div>
       </section>
     </Reveal>
   )

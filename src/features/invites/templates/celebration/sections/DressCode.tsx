@@ -46,7 +46,7 @@ export function DressCode({ content, mode }: { content: InviteContent; mode?: 'p
                 key={i}
                 src={u}
                 alt=""
-                className={`h-44 w-32 rounded-2xl border-4 object-cover sm:h-56 sm:w-40 ${TILTS[(i + 1) % TILTS.length]}`}
+                className={`aspect-[4/5] w-56 rounded-2xl border-4 object-cover sm:w-72 ${TILTS[(i + 1) % TILTS.length]}`}
                 style={{ borderColor: 'var(--invite-primary)', boxShadow: '4px 4px 0 var(--invite-primary)' }}
               />
             ))}

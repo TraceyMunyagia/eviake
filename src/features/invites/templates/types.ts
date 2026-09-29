@@ -2,6 +2,7 @@ import type { InviteContent, InviteSections, InviteTokens } from '@/types/databa
 
 export type RsvpPayload = {
   name: string
+  phone: string
   attending: boolean
   party_size: number
   answers: Record<string, string>
@@ -14,5 +15,5 @@ export type TemplateProps = {
   mode?: 'preview' | 'public'
   // Supplied by the public page once RSVP submission exists. When it's
   // absent, a template must never pretend to record a response.
-  onRsvp?: (payload: RsvpPayload) => Promise<void>
+ onRsvp?: (payload: RsvpPayload ) => Promise<void>
 }

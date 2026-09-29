@@ -17,14 +17,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
+    let mounted = true
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (!mounted) return
+      if (error) console.error('Could not restore the sign-in session', error.message)
       setSession(data.session)
+      setLoading(false)
+    }).catch((error: unknown) => {
+      if (!mounted) return
+      console.error('Could not restore the sign-in session', error)
+      setSession(null)
       setLoading(false)
     })
     const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
-      setSession(next)
+      if (mounted) setSession(next)
     })
-    return () => sub.subscription.unsubscribe()
+    return () => {
+      mounted = false
+      sub.subscription.unsubscribe()
+    }
   }, [])
 
   const value = useMemo<AuthState>(

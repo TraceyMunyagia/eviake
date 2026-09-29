@@ -5,7 +5,7 @@ import { Reveal } from '@/features/invites/templates/romance/components/Reveal'
 import type { InviteContent } from '@/types/database'
 
 export function DressCode({ content, mode }: { content: InviteContent; mode?: 'preview' | 'public' }) {
-  if (!content.dress_code && !content.dress_code_note && (!content.dress_code_palette || content.dress_code_palette.length === 0)) {
+  if (!content.dress_code && !content.dress_code_note && (!content.dress_code_palette || content.dress_code_palette.length === 0) && (!content.dress_code_image_urls || content.dress_code_image_urls.length === 0)) {
     return null
   }
 
@@ -31,9 +31,9 @@ export function DressCode({ content, mode }: { content: InviteContent; mode?: 'p
         )}
 
         {content.dress_code_image_urls && content.dress_code_image_urls.length > 0 && (
-          <div className="mt-8 flex justify-center gap-3">
+          <div className="mx-auto mt-8 flex max-w-3xl flex-wrap justify-center gap-6">
             {content.dress_code_image_urls.map((u, i) => (
-              <img key={i} src={u} alt="" className="h-32 w-24 rounded-2xl object-cover" />
+              <img key={i} src={u} alt="" className="aspect-square w-40 rounded-sm border-8 border-white bg-white p-1 object-cover shadow-md sm:w-52" />
             ))}
           </div>
         )}

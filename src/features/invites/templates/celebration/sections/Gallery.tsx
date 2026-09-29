@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { celebrationType } from '@/features/invites/templates/celebration/type'
 import { Reveal } from '@/features/invites/templates/celebration/components/Reveal'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 // Static class strings so Tailwind can see them (dynamic names get purged).
 const TILTS = ['-rotate-3', 'rotate-2', '-rotate-1', 'rotate-3', '-rotate-2', 'rotate-1']
@@ -11,6 +11,10 @@ export function Gallery({ urls, captions, mode }: { urls?: string[]; captions?: 
   const reduced = usePrefersReducedMotion()
   const stripRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState<number | null>(null)
+  const closeBtnRef = useRef<HTMLButtonElement>(null)
+useEffect(() => {
+  if (open !== null) closeBtnRef.current?.focus()
+}, [open])
   const count = urls?.length ?? 0
 
   const step = useCallback(
@@ -65,8 +69,7 @@ export function Gallery({ urls, captions, mode }: { urls?: string[]; captions?: 
                 className={`relative w-56 shrink-0 snap-center p-3 pb-4 transition-transform duration-200 hover:z-10 hover:rotate-0 hover:scale-105 sm:w-72 -ml-5 first:ml-0 ${TILTS[i % TILTS.length]}`}
                 style={{ backgroundColor: 'var(--invite-background)', color: 'var(--invite-primary)', boxShadow: '6px 6px 0 var(--invite-accent)' }}
               >
-                <img src={u} alt="" className="aspect-[4/5] w-full object-cover" />
-                <p className="mt-2 min-h-9 truncate text-center text-2xl" style={{ fontFamily: 'var(--invite-accent-font)' }}>
+                <img src={u} alt="" loading="lazy" className="aspect-[4/5] w-full object-cover" />                <p className="mt-2 min-h-9 truncate text-center text-2xl" style={{ fontFamily: 'var(--invite-accent-font)' }}>
                   {captions?.[i] ?? ''}
                 </p>
               </button>
@@ -77,7 +80,7 @@ export function Gallery({ urls, captions, mode }: { urls?: string[]; captions?: 
 
       {open !== null && urls && (
         <div role="dialog" aria-modal="true" aria-label="Photo viewer" className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4" onClick={() => setOpen(null)}>
-          <button aria-label="Close" className="absolute right-4 top-4 text-white"><X className="size-7" /></button>
+          <button ref={closeBtnRef} aria-label="Close" className="absolute right-4 top-4 text-white"><X className="size-7" /></button>
           {count > 1 && (
             <>
               <button aria-label="Previous photo" onClick={(e) => { e.stopPropagation(); step(-1) }} className="absolute left-3 rounded-full bg-white/15 p-3 text-white"><ChevronLeft className="size-6" /></button>

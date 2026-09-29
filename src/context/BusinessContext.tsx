@@ -17,6 +17,7 @@ const BusinessContext = createContext<BusinessState | null>(null)
 
 export function BusinessProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth()
+  const userId = user?.id
   const [businesses, setBusinesses] = useState<Business[]>([])
   const [activeSlug, setActiveSlug] = useState<string | null>(() =>
     localStorage.getItem(STORAGE_KEY),
@@ -29,7 +30,7 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       setBusinesses([])
       setLoading(false)
       return
@@ -38,7 +39,7 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
     supabase
       .from('business_members')
       .select('businesses ( id, slug, name )')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .then(({ data, error }) => {
         if (error) console.error('Could not load businesses', error.message)
         const rows = (data ?? []) as unknown as { businesses: Business | null }[]
@@ -49,7 +50,7 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
         setBusinesses(list)
         setLoading(false)
       })
-  }, [user])
+  }, [userId])
 
   const active = useMemo(
     () => businesses.find((b) => b.slug === activeSlug) ?? businesses[0] ?? null,

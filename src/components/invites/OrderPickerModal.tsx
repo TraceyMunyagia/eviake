@@ -34,7 +34,12 @@ export function OrderPickerModal({ templates, onClose, onCreated }: {
       .eq('business_id', active.id)
       .in('payment_status', ['partial', 'paid'])
       .order('order_no', { ascending: false })
-      .then(({ data }) => {
+      .then(({ data, error: err }) => {
+        if (err) {
+          setError(err.message)
+          setLoading(false)
+          return
+        }
         setOrders(((data ?? []) as unknown as OrderRow[]).filter((o) => o.invites.length === 0))
         setLoading(false)
       })

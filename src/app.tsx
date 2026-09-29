@@ -26,7 +26,7 @@ import { InviteEditPage } from '@/pages/invites/InviteEditPage'
 import { PublicInvitePage } from '@/pages/public/PublicInvitePage'
 import { RsvpTrackPage } from '@/pages/public/RsvpTrackPage'
 import { SettingsPage } from '@/pages/settings/SettingsPage'
-import { PreviewFramePage } from '@/pages/public/previewFramePage'
+import { PreviewFramePage } from '@/pages/public/PreviewFramePage'
 
 export default function App() {
   return (
@@ -38,6 +38,8 @@ export default function App() {
             <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/q/:token" element={<PublicQuotePage />} />
+            <Route path="/invite/:slug" element={<PublicInvitePage />} />
+            <Route path="/rsvp-track/:token" element={<RsvpTrackPage />} />
             <Route element={<RequireAuth />}>
               <Route element={<AppShell />}>
                 <Route index element={<Dashboard />} />
@@ -56,8 +58,6 @@ export default function App() {
                 <Route path="settings/launch-checklist" element={<LaunchChecklistPage />} />
                 <Route path="invites" element={<InviteBuilderPage />} />
                 <Route path="invites/:id" element={<InviteEditPage />} />
-                <Route path="/invite/:slug" element={<PublicInvitePage />} />
-                <Route path="/rsvp-track/:token" element={<RsvpTrackPage />} />
                 <Route path="settings" element={<SettingsPage />} />
                 <Route path="/preview-frame" element={<PreviewFramePage />} />
 

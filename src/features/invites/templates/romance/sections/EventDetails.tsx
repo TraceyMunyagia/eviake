@@ -11,6 +11,7 @@ const FIELDS: { key: keyof InviteContent; label: string }[] = [
   { key: 'event_time', label: 'Time' },
   { key: 'venue', label: 'Venue' },
   { key: 'address', label: 'Address' },
+  { key: 'event_type', label: 'Occasion' },
 ]
 
 export function EventDetails({ content, mode }: { content: InviteContent; mode?: 'preview' | 'public' }) {

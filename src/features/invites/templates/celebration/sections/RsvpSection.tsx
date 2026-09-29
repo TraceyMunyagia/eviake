@@ -22,6 +22,7 @@ const choiceStyle = (on: boolean) => ({
 
 export function RsvpSection({ content, mode, onRsvp }: { content: InviteContent; mode?: 'preview' | 'public'; onRsvp?: TemplateProps['onRsvp'] }) {
   const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
   const [attending, setAttending] = useState<boolean | null>(null)
   const [party, setParty] = useState(1)
   const [answers, setAnswers] = useState<Record<string, string>>({})
@@ -45,6 +46,7 @@ export function RsvpSection({ content, mode, onRsvp }: { content: InviteContent;
   async function submit(e: FormEvent) {
     e.preventDefault()
     if (!name.trim()) return setError('Tell us your name!')
+    if (!phone.trim()) return setError('Please enter your phone number.')
     if (attending === null) return setError('Are you in or out?')
     const missing = questions.find((q) => q.required && !answers[q.id]?.trim())
     if (missing) return setError(`Please answer: ${missing.label}`)
@@ -53,7 +55,7 @@ export function RsvpSection({ content, mode, onRsvp }: { content: InviteContent;
     setStatus('submitting')
     try {
       if (onRsvp) {
-        await onRsvp({ name: name.trim(), attending, party_size: attending ? party : 0, answers })
+        await onRsvp({ name: name.trim(), phone: phone.trim(), attending, party_size: attending ? party : 0, answers })
       } else {
         await new Promise((r) => setTimeout(r, 600)) // preview-only demo; nothing is saved
       }
@@ -123,6 +125,11 @@ export function RsvpSection({ content, mode, onRsvp }: { content: InviteContent;
               <div>
                 <label htmlFor="rsvp-name" className={`mb-2 block ${celebrationType.caption}`} style={{ fontFamily: 'var(--invite-body-font)' }}>Your name</label>
                 <input id="rsvp-name" value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" className="cel-input w-full rounded-2xl border-4 px-4 py-3 text-lg font-semibold" style={inputStyle} />
+              </div>
+
+              <div>
+                <label htmlFor="rsvp-phone" className={`mb-2 block ${celebrationType.caption}`} style={{ fontFamily: 'var(--invite-body-font)' }}>Your phone number</label>
+                <input id="rsvp-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" className="cel-input w-full rounded-2xl border-4 px-4 py-3 text-lg font-semibold" style={inputStyle} />
               </div>
 
               <div role="group" aria-label="Will you attend?" className="grid grid-cols-2 gap-4">

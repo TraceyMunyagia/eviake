@@ -3,8 +3,6 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Copy } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useBusiness } from '@/context/BusinessContext'
-import { usePublishInvite } from '@/hooks/usePublishInvite'
-import { Button } from '@/components/ui/Button'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { InviteLivePreview } from '@/features/invites/builder/InviteLivePreview'
@@ -13,34 +11,58 @@ import { DetailsPanel } from '@/features/invites/builder/DetailsPanel'
 import type { Invite } from '@/types/database'
 import { TemplateSwitcher } from '@/features/invites/builder/TemplateSwitcher'
 import { RsvpSettingsPanel } from '@/features/invites/builder/RspvSettingsPanel'
+import { PublishButton } from '@/features/invites/builder/PublishButton'
+import { DesignPanel } from '@/features/invites/builder/DesignPanel'
+import { SectionsPanel } from '@/features/invites/builder/SectionsPanel'
+import { MediaPanel } from '@/features/invites/builder/MediaPanel'
 
 export function InviteEditPage() {
   const { id } = useParams()
-  const { active } = useBusiness()
+  const { active, loading: businessLoading } = useBusiness()
   const [invite, setInvite] = useState<Invite | null>(null)
   const [state, setState] = useState<'loading' | 'ready' | 'missing'>('loading')
   const [error, setError] = useState<string | null>(null)
   const [tab, setTab] = useState('details')
-  const { publish, busy, error: publishError } = usePublishInvite()
   const [copied, setCopied] = useState<'invite' | 'rsvp' | null>(null)
 
   const load = useCallback(async () => {
-    if (!active || !id) return
+    if (businessLoading) return
+    if (!active) {
+      setError('No active business is available for this invite.')
+      setState('missing')
+      return
+    }
+    if (!id) {
+      setError('This invite link is missing an invite ID.')
+      setState('missing')
+      return
+    }
     setState('loading')
-    const { data, error: err } = await supabase.from('invites').select('*').eq('id', id).eq('business_id', active.id).maybeSingle()
-    if (err) { setError(err.message); return }
     setError(null)
-    setInvite((data as Invite | null) ?? null)
-    setState(data ? 'ready' : 'missing')
-  }, [active, id])
+    try {
+      const { data, error: err } = await supabase
+        .from('invites')
+        .select('*')
+        .eq('id', id)
+        .eq('business_id', active.id)
+        .maybeSingle()
+      if (err) throw new Error(err.message)
+      let loadedInvite = (data as Invite | null) ?? null
+      if (loadedInvite?.status === 'published' && !loadedInvite.event_id) {
+        const { data: eventId, error: eventError } = await supabase.rpc('ensure_invite_event', { p_invite_id: loadedInvite.id })
+        if (eventError) throw new Error(eventError.message)
+        loadedInvite = { ...loadedInvite, event_id: eventId as string }
+      }
+      setInvite(loadedInvite)
+      setState(data ? 'ready' : 'missing')
+    } catch (err) {
+      setInvite(null)
+      setError(err instanceof Error ? err.message : 'Could not load this invite.')
+      setState('missing')
+    }
+  }, [active, businessLoading, id])
 
   useEffect(() => { load() }, [load])
-
-  async function onPublish() {
-    if (!invite) return
-    const updated = await publish(invite, invite.content.couple_names || invite.content.event_name || '')
-    if (updated) setInvite(updated)
-  }
 
   function copy(text: string, which: 'invite' | 'rsvp') {
     navigator.clipboard.writeText(text)
@@ -48,7 +70,8 @@ export function InviteEditPage() {
     setTimeout(() => setCopied(null), 1500)
   }
 
-  if (!active) return null
+  if (businessLoading) return <p className="text-sm text-muted">Loading business…</p>
+  if (!active) return <ErrorState message={error ?? 'No active business is available.'} onRetry={load} />
   if (error) return <ErrorState message={error} onRetry={load} />
   if (state === 'loading') return <p className="text-sm text-muted">Loading…</p>
   if (state === 'missing' || !invite) {
@@ -73,11 +96,9 @@ export function InviteEditPage() {
         </div>
         <div className="flex items-center gap-3">
           <StatusBadge tone={invite.status === 'published' ? 'live' : 'pending'}>{invite.status}</StatusBadge>
-          {invite.status === 'draft' && <Button onClick={onPublish} disabled={busy}>{busy ? 'Publishing…' : 'Finish up & publish'}</Button>}
+          {invite.status === 'draft' && <PublishButton invite={invite} onSaved={setInvite} />}
         </div>
       </div>
-      {publishError && <p role="alert" className="mb-4 text-sm text-red-700">{publishError}</p>}
-
       {invite.status === 'published' && invite.public_slug && (
         <div className="mb-6 grid gap-4 sm:grid-cols-2">
           <div className="rounded-2xl border border-line bg-white p-4 shadow-sm">
@@ -105,9 +126,9 @@ export function InviteEditPage() {
           <BuilderTabs active={tab} onChange={setTab} />
           <div className="mt-4">
             {tab === 'details' && <DetailsPanel invite={invite} onSaved={setInvite} />}
-            {tab === 'design' && <p className="text-sm text-muted">Colours and fonts arrive Week 10.</p>}
-            {tab === 'sections' && <p className="text-sm text-muted">Section on/off toggles arrive Week 10.</p>}
-            {tab === 'media' && <p className="text-sm text-muted">Hero, gallery, video and logo uploads arrive Week 10.</p>}
+            {tab === 'design' && <DesignPanel invite={invite} onSaved={setInvite} />}
+            {tab === 'sections' && <SectionsPanel invite={invite} onSaved={setInvite} />}
+            {tab === 'media' && <MediaPanel invite={invite} onSaved={setInvite} />}
             {tab === 'rsvp' && <RsvpSettingsPanel invite={invite} onSaved={setInvite} />}
           </div>
         </div>

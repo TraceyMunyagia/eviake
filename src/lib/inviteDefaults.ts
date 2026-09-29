@@ -1,7 +1,11 @@
 import type { InvitePackage, InviteSections, InviteTemplateKey, InviteTokens } from '@/types/database'
 
 // Package controls which sections are available at all — not which template.
-// All 3 templates support the full feature set; this is the single gating table.
+// Verified against the completed Editorial, Romance, and Celebration templates:
+// Essential intentionally excludes gallery, schedule, video, and guestbook;
+// those are enhancement sections rather than core identity sections.
+// guest_management is Experience-only by design and currently has no template
+// consumer; it is reserved for the future Guest Pass/Check-in flow
 export const PACKAGE_SECTIONS: Record<InvitePackage, InviteSections> = {
   essential: {
     countdown: false, schedule: false, gallery: false, video: false,

@@ -36,7 +36,7 @@ export function Programme({ items, mode }: { items?: InviteContent['schedule']; 
                       type="button"
                       aria-pressed={on}
                       onClick={() => setActive(on ? null : i)}
-                      className="cel-press flex w-full flex-wrap items-center gap-x-5 gap-y-1 rounded-2xl border-4 px-5 py-4 text-left"
+                      className="cel-press cel-input flex w-full flex-wrap items-center gap-x-5 gap-y-1 rounded-2xl border-4 px-5 py-4 text-left"
                       style={{
                         borderColor: 'var(--invite-primary)',
                         backgroundColor: on ? 'var(--invite-accent)' : 'var(--invite-surface)',

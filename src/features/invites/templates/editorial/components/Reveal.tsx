@@ -7,10 +7,9 @@ export function Reveal({ children, mode, delay = 0 }: { children: ReactNode; mod
   return (
     <div
       ref={ref}
-      className={`transition-all ease-out ${show ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
-      style={{ transitionDuration: '700ms', transitionDelay: show ? `${delay}ms` : '0ms' }}
-    >
-      {children}
-    </div>
+  data-invite-reveal
+  className={`transition-all ease-out ${show ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
+  style={{ transitionDuration: '700ms', transitionDelay: show ? `${delay}ms` : '0ms' }}
+>{children}</div>
   )
 }

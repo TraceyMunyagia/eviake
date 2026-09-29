@@ -11,7 +11,7 @@ export function Hero({ content }: { content: InviteContent }) {
     >
       {hasImage && (
         <div className="absolute inset-0">
-          <img src={content.hero_image_url} alt="" className="h-full w-full object-cover" />
+          <img src={content.hero_image_url} alt="" role="presentation" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/50" />
         </div>
       )}

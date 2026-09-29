@@ -5,7 +5,7 @@ import { Reveal } from '@/features/invites/templates/editorial/components/Reveal
 import type { InviteContent } from '@/types/database'
 
 export function DressCode({ content, mode }: { content: InviteContent; mode?: 'preview' | 'public' }) {
-  if (!content.dress_code && !content.dress_code_note && (!content.dress_code_palette || content.dress_code_palette.length === 0)) {
+  if (!content.dress_code && !content.dress_code_note && (!content.dress_code_palette || content.dress_code_palette.length === 0) && (!content.dress_code_image_urls || content.dress_code_image_urls.length === 0)) {
     return null // no dress code set at all — omit the section rather than show an empty shell
   }
 
@@ -33,9 +33,9 @@ export function DressCode({ content, mode }: { content: InviteContent; mode?: 'p
         )}
 
         {content.dress_code_image_urls && content.dress_code_image_urls.length > 0 && (
-          <div className="mt-8 flex justify-center gap-2">
+          <div className="mx-auto mt-8 max-w-3xl columns-2 gap-2 sm:columns-3 sm:gap-3 [&>*]:mb-2 sm:[&>*]:mb-3">
             {content.dress_code_image_urls.map((u, i) => (
-              <img key={i} src={u} alt="" className="h-28 w-20 rounded-sm object-cover" />
+              <img key={i} src={u} alt="" className="w-full rounded-sm object-cover" />
             ))}
           </div>
         )}

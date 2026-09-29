@@ -10,7 +10,7 @@ export function Hero({ content }: { content: InviteContent }) {
     <section className="relative flex min-h-[90vh] items-end sm:items-center" style={{ backgroundColor: 'var(--invite-background)' }}>
       {hasImage && (
         <div className="absolute inset-0">
-          <img src={content.hero_image_url} alt="" className="h-full w-full object-cover" />
+          <img src={content.hero_image_url} alt="" role="presentation" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent sm:bg-gradient-to-r sm:from-black/50 sm:via-black/10 sm:to-transparent" />
         </div>
       )}
