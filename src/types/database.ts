@@ -149,6 +149,7 @@ export type QuoteDocument = {
   monthly_kes: number
   notes: string | null
   business_name: string
+  business_slug?: BusinessSlug
   client_name: string
   client_business_name: string | null
   items: QuoteItem[]

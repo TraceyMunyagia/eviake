@@ -21,7 +21,7 @@ import { HostingTab } from '@/components/workspace/HostingTab'
 
 const TABS = [
   { key: 'overview', label: 'Overview' },
-  { key: 'quote', label: 'Quote', webOnly: true },
+  { key: 'quote', label: 'Quote' },
   { key: 'website', label: 'Website', webOnly: true },
   { key: 'payments', label: 'Payments' },
   { key: 'requirements', label: 'Requirements', webOnly: true },

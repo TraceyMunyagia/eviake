@@ -113,8 +113,8 @@ export function PricingPage() {
       <PageHeader title="Pricing" subtitle="Change a price here and every new order uses it. No code changes needed." />
       {error && <p role="alert" className="mb-4 text-sm text-red-700">Could not load pricing: {error}</p>}
       {section('package', 'Packages', 'The main options a client chooses from.')}
-      {active.slug === 'evia_web' && section('addon', 'Add-ons', 'Extras that add to a package price.')}
-      {active.slug === 'evia_web' && section('care', 'Monthly care', 'Recurring website care and hosting plans, priced per month.')}
+      {section('addon', 'Add-ons', 'Extras that add to a package price.')}
+      {section('care', 'Monthly care', 'Recurring care plans, priced per month.')}
     </div>
   )
 }

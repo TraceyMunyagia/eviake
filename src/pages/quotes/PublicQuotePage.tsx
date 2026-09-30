@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { Download } from 'lucide-react'
 import { functionsUrl, supabase } from '@/lib/supabase'
 import { formatDate, formatKES } from '@/lib/format'
-import { formatQuoteNo, lineTotal } from '@/lib/quote'
+import { formatQuoteNo, lineTotal, QUOTE_PAYMENT_METHOD, QUOTE_PAYMENT_TERMS } from '@/lib/quote'
 import type { QuoteDocument } from '@/types/database'
 
 export function PublicQuotePage() {
@@ -30,7 +30,7 @@ export function PublicQuotePage() {
         <div className="max-w-md rounded-2xl border border-line bg-white p-8 text-center">
           <h1 className="font-display text-2xl text-plum-900">Quote not available</h1>
           <p className="mt-2 text-sm text-muted">
-            This link is not valid, or the quote has not been sent yet. Please contact Evia Web for a new link.
+            This link is not valid, or the quote has not been sent yet. Please contact us for a new link.
           </p>
         </div>
       </div>
@@ -109,7 +109,7 @@ export function PublicQuotePage() {
               <div className="flex justify-between text-muted"><span>Discount</span><span>– {formatKES(doc.discount_kes)}</span></div>
             )}
             <div className="flex items-baseline justify-between border-t border-gold-500 pt-2 font-medium">
-              <span>Website setup</span>
+              <span>Project setup</span>
               <span className="font-display text-2xl text-plum-900">{formatKES(doc.total_kes)}</span>
             </div>
             {doc.monthly_kes > 0 && (
@@ -127,6 +127,12 @@ export function PublicQuotePage() {
               <p className="mt-1 whitespace-pre-wrap text-sm">{doc.notes}</p>
             </div>
           )}
+
+          <div className="rounded-xl border border-gold-200 bg-gold-50 p-4 text-sm text-plum-950">
+            <p className="font-medium">Payment terms</p>
+            <p className="mt-1">{QUOTE_PAYMENT_TERMS}</p>
+            <p className="mt-1">{QUOTE_PAYMENT_METHOD}</p>
+          </div>
 
           <a
             href={`${functionsUrl}/quote-pdf?token=${encodeURIComponent(token ?? '')}`}

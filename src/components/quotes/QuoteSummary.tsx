@@ -36,7 +36,7 @@ export function QuoteSummary({ items, subtotal, discount, total, careName, month
           <div className="flex justify-between text-muted"><span>Discount</span><span>– {formatKES(discount)}</span></div>
         )}
         <div className="flex justify-between font-medium">
-          <span>Website setup</span><span className="font-display text-xl text-plum-900">{formatKES(total)}</span>
+          <span>Project setup</span><span className="font-display text-xl text-plum-900">{formatKES(total)}</span>
         </div>
         {monthly > 0 && (
           <div className="flex justify-between text-muted">

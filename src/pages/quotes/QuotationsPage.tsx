@@ -19,7 +19,7 @@ export function QuotationsPage() {
   const [text, setText] = useState('')
 
   useEffect(() => {
-    if (!active || active.slug !== 'evia_web') return
+    if (!active) return
     setLoading(true)
     supabase
       .from('quotes')
@@ -46,14 +46,6 @@ export function QuotationsPage() {
   }, [rows, statusFilter, text])
 
   if (!active) return null
-  if (active.slug !== 'evia_web') {
-    return (
-      <div>
-        <PageHeader title="Quotations" />
-        <p className="text-sm text-muted">Quotations are part of Evia Web. Switch business to use them.</p>
-      </div>
-    )
-  }
 
   const today = new Date().toISOString().slice(0, 10)
 
@@ -61,7 +53,7 @@ export function QuotationsPage() {
     <div>
       <PageHeader
         title="Quotations"
-        subtitle="Build, send and track quotes for website orders."
+        subtitle={`Build, send and track quotes for ${active.name} orders.`}
         action={
           <Link to="/quotations/new">
             <Button><Plus className="size-4" /> New quote</Button>

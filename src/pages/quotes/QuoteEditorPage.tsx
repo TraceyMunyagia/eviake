@@ -212,9 +212,6 @@ export function QuoteEditorPage() {
   }
 
   if (!active) return null
-  if (active.slug !== 'evia_web') {
-    return <p className="text-sm text-muted">Quotations are part of Evia Web. Switch business to use them.</p>
-  }
   if (state === 'loading') return <p className="text-sm text-muted">Loading…</p>
   if (state === 'missing') {
     return (
@@ -292,7 +289,7 @@ export function QuoteEditorPage() {
             </Card>
 
             <Card title="Package">
-              <Field label="Website package" htmlFor="q-package">
+              <Field label={`${active.name} package`} htmlFor="q-package">
                 <select id="q-package" value={pkg} onChange={(e) => setPkg(e.target.value)} className={inputClass}>
                   <option value="">No package</option>
                   {packageOptions.map((p) => (

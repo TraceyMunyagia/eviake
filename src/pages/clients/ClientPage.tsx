@@ -37,14 +37,12 @@ export function ClientPage() {
     const [c, o, q] = await Promise.all([
       supabase.from('clients').select('*').eq('id', id).eq('business_id', active.id).maybeSingle(),
       supabase.from('orders').select('*').eq('client_id', id).eq('business_id', active.id).order('order_no', { ascending: false }),
-      active.slug === 'evia_web'
-        ? supabase
-            .from('quotes')
-            .select('id, quote_no, status, total_kes, monthly_kes, created_at')
-            .eq('client_id', id)
-            .eq('business_id', active.id)
-            .order('created_at', { ascending: false })
-        : Promise.resolve({ data: [] }),
+      supabase
+        .from('quotes')
+        .select('id, quote_no, status, total_kes, monthly_kes, created_at')
+        .eq('client_id', id)
+        .eq('business_id', active.id)
+        .order('created_at', { ascending: false }),
     ])
     if (c.error || o.error) {
       setLoadError((c.error ?? o.error)!.message)
@@ -116,11 +114,9 @@ export function ClientPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="secondary" onClick={() => setEditing(true)}><Pencil className="size-4" /> Edit client</Button>
-          {isWeb && (
-            <Link to={`/quotations/new?client=${client.id}`}>
-              <Button variant="secondary"><FilePlus className="size-4" /> New quote</Button>
-            </Link>
-          )}
+          <Link to={`/quotations/new?client=${client.id}`}>
+            <Button variant="secondary"><FilePlus className="size-4" /> New quote</Button>
+          </Link>
           {!isWeb && (
             <Link to={`/events?client=${client.id}`}>
               <Button variant="secondary">View events</Button>
@@ -196,7 +192,7 @@ export function ClientPage() {
         )}
       </section>
 
-      {isWeb && (
+      <>
         <section className="mb-6">
           <h2 className="mb-3 font-display text-xl text-plum-900">Quotes</h2>
           <div className="rounded-2xl border border-line bg-white p-2 shadow-sm">
@@ -219,7 +215,7 @@ export function ClientPage() {
             )}
           </div>
         </section>
-      )}
+      </>
 
       {client.notes && (
         <section className="rounded-2xl border border-line bg-white p-5 shadow-sm">

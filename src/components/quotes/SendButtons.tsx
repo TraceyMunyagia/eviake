@@ -5,15 +5,18 @@ import { formatDate, formatKES } from '@/lib/format'
 import { formatQuoteNo, mailtoLink, publicQuoteUrl, quoteMessage, whatsAppLink } from '@/lib/quote'
 import { Button } from '@/components/ui/Button'
 import type { Quote } from '@/types/database'
+import { useBusiness } from '@/context/BusinessContext'
 
 export function SendButtons({ quote, disabled, onChanged }: {
   quote: Quote
   disabled: boolean
   onChanged: () => void
 }) {
+  const { active } = useBusiness()
   const [copied, setCopied] = useState(false)
   const url = publicQuoteUrl(quote.public_token)
   const message = quoteMessage({
+    businessName: active?.name ?? 'Evia',
     clientName: quote.clients?.name ?? '',
     quoteNo: quote.quote_no,
     total: quote.total_kes,
@@ -36,7 +39,7 @@ export function SendButtons({ quote, disabled, onChanged }: {
   }
 
   function email() {
-    const subject = `Website quotation ${formatQuoteNo(quote.quote_no)} from Evia Web`
+    const subject = `Quotation ${formatQuoteNo(quote.quote_no)} from ${active?.name ?? 'Evia'}`
     window.location.href = mailtoLink(quote.clients?.email, subject, message)
     markSentIfDraft()
   }

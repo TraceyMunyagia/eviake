@@ -49,6 +49,7 @@ export const NAV: Record<BusinessSlug, NavGroup[]> = {
         { label: 'Dashboard', path: '/', icon: LayoutDashboard },
         { label: 'Orders', path: '/orders', icon: ShoppingBag },
         { label: 'Clients', path: '/clients', icon: Users },
+        { label: 'Quotations', path: '/quotations', icon: FileText },
         { label: 'Payments', path: '/payments', icon: CreditCard },
       ],
     },

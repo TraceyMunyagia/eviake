@@ -1,6 +1,9 @@
 import type { Tone } from '@/components/ui/StatusBadge'
 import type { QuoteItem, QuoteStatus } from '@/types/database'
 
+export const QUOTE_PAYMENT_TERMS = 'Pay 50% after confirming the order.'
+export const QUOTE_PAYMENT_METHOD = 'Pay via Paybill: PAYBILL - 522522 ACCOUNT NO: 1324115009'
+
 export function formatQuoteNo(n: number) {
   return `Q-${String(n).padStart(4, '0')}`
 }
@@ -44,6 +47,7 @@ export function toWhatsAppNumber(phone: string | null | undefined) {
 }
 
 export function quoteMessage(args: {
+  businessName: string
   clientName: string
   quoteNo: number
   total: number
@@ -55,11 +59,13 @@ export function quoteMessage(args: {
 }) {
   const first = args.clientName.trim().split(/\s+/)[0] || 'there'
   const lines = [
-    `Hi ${first}, here is your website quotation ${formatQuoteNo(args.quoteNo)} from Evia Web.`,
+    `Hi ${first}, here is your quotation ${formatQuoteNo(args.quoteNo)} from ${args.businessName}.`,
     '',
-    `Website setup: ${args.formatKES(args.total)}`,
+    `Project setup: ${args.formatKES(args.total)}`,
   ]
-  if (args.monthly > 0) lines.push(`Website care & hosting: ${args.formatKES(args.monthly)}/month`)
+  if (args.monthly > 0) lines.push(`Monthly care: ${args.formatKES(args.monthly)}/month`)
+  lines.push('', `Payment terms: ${QUOTE_PAYMENT_TERMS}`)
+  lines.push(QUOTE_PAYMENT_METHOD)
   lines.push('', `View and download it here: ${args.url}`)
   if (args.validUntil) lines.push('', `This quote is valid until ${args.formatDate(args.validUntil)}.`)
   return lines.join('\n')

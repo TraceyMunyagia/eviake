@@ -14,6 +14,7 @@ export type QuoteDoc = {
   monthly_kes: number
   notes: string | null
   business_name: string
+  business_slug?: string
   client_name: string
   client_business_name: string | null
   items: { kind: string; name: string; description: string | null; quantity: number; unit_price_kes: number }[]
@@ -24,6 +25,8 @@ const GOLD = rgb(0.788, 0.643, 0.416)
 const INK = rgb(0.165, 0.102, 0.18)
 const MUTED = rgb(0.478, 0.42, 0.49)
 const LINE = rgb(0.91, 0.878, 0.827)
+const PAYMENT_TERMS = 'Pay 50% after confirming the order.'
+const PAYMENT_METHOD = 'Pay via Paybill: PAYBILL - 522522 ACCOUNT NO: 1324115009'
 
 const W = 595.28
 const H = 841.89
@@ -185,7 +188,7 @@ export async function buildQuotePdf(q: QuoteDoc): Promise<Uint8Array> {
   if (Number(q.discount_kes) > 0) row('Discount', '- ' + money(q.discount_kes))
   y -= 8
   page.drawLine({ start: { x: totalsLabelX, y }, end: { x: colAmt, y }, thickness: 1, color: GOLD })
-  row('Website setup', money(q.total_kes), true)
+  row('Project setup', money(q.total_kes), true)
 
   if (Number(q.monthly_kes) > 0) {
     y -= 8
@@ -207,6 +210,15 @@ export async function buildQuotePdf(q: QuoteDoc): Promise<Uint8Array> {
       text(line, M, 9.5)
     }
   }
+
+  // Payment terms
+  ensure(70)
+  y -= 30
+  text('PAYMENT TERMS', M, 8, bold, MUTED)
+  y -= 14
+  text(PAYMENT_TERMS, M, 9.5)
+  y -= 13
+  text(PAYMENT_METHOD, M, 9.5)
 
   // Footer on every page
   const pages = pdf.getPages()

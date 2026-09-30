@@ -4,13 +4,11 @@ import { Plus } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { formatDate, formatKES } from '@/lib/format'
 import { QUOTE_LABEL, QUOTE_TONE, formatQuoteNo } from '@/lib/quote'
-import { useBusiness } from '@/context/BusinessContext'
 import { Button } from '@/components/ui/Button'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import type { Order, Quote } from '@/types/database'
 
 export function OrderQuotes({ order }: { order: Order }) {
-  const { active } = useBusiness()
   const [rows, setRows] = useState<Quote[]>([])
 
   useEffect(() => {
@@ -21,8 +19,6 @@ export function OrderQuotes({ order }: { order: Order }) {
       .order('created_at', { ascending: false })
       .then(({ data }) => setRows((data ?? []) as Quote[]))
   }, [order.id, order.status])
-
-  if (active?.slug !== 'evia_web') return null
 
   return (
     <section className="mt-6 rounded-2xl border border-line bg-white p-5 shadow-sm">
