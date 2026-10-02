@@ -188,7 +188,7 @@ export async function buildQuotePdf(q: QuoteDoc): Promise<Uint8Array> {
   if (Number(q.discount_kes) > 0) row('Discount', '- ' + money(q.discount_kes))
   y -= 8
   page.drawLine({ start: { x: totalsLabelX, y }, end: { x: colAmt, y }, thickness: 1, color: GOLD })
-  row('Project setup', money(q.total_kes), true)
+  row(q.business_slug === 'evia_invites' ? 'Invitation package' : 'Project setup', money(q.total_kes), true)
 
   if (Number(q.monthly_kes) > 0) {
     y -= 8
@@ -212,8 +212,17 @@ export async function buildQuotePdf(q: QuoteDoc): Promise<Uint8Array> {
   }
 
   // Payment terms
-  ensure(70)
-  y -= 30
+  ensure(90)
+  y -= 26
+  page.drawRectangle({
+    x: M - 8,
+    y: y - 48,
+    width: W - 2 * M + 16,
+    height: 64,
+    color: rgb(0.98, 0.96, 0.91),
+    borderColor: GOLD,
+    borderWidth: 0.8,
+  })
   text('PAYMENT TERMS', M, 8, bold, MUTED)
   y -= 14
   text(PAYMENT_TERMS, M, 9.5)

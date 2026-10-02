@@ -17,6 +17,7 @@ export function SendButtons({ quote, disabled, onChanged }: {
   const url = publicQuoteUrl(quote.public_token)
   const message = quoteMessage({
     businessName: active?.name ?? 'Evia',
+    businessSlug: active?.slug,
     clientName: quote.clients?.name ?? '',
     quoteNo: quote.quote_no,
     total: quote.total_kes,

@@ -1,5 +1,5 @@
 import type { Tone } from '@/components/ui/StatusBadge'
-import type { QuoteItem, QuoteStatus } from '@/types/database'
+import type { BusinessSlug, QuoteItem, QuoteStatus } from '@/types/database'
 
 export const QUOTE_PAYMENT_TERMS = 'Pay 50% after confirming the order.'
 export const QUOTE_PAYMENT_METHOD = 'Pay via Paybill: PAYBILL - 522522 ACCOUNT NO: 1324115009'
@@ -48,6 +48,7 @@ export function toWhatsAppNumber(phone: string | null | undefined) {
 
 export function quoteMessage(args: {
   businessName: string
+  businessSlug?: BusinessSlug
   clientName: string
   quoteNo: number
   total: number
@@ -61,7 +62,7 @@ export function quoteMessage(args: {
   const lines = [
     `Hi ${first}, here is your quotation ${formatQuoteNo(args.quoteNo)} from ${args.businessName}.`,
     '',
-    `Project setup: ${args.formatKES(args.total)}`,
+    `${args.businessSlug === 'evia_invites' ? 'Invitation package' : 'Project setup'}: ${args.formatKES(args.total)}`,
   ]
   if (args.monthly > 0) lines.push(`Monthly care: ${args.formatKES(args.monthly)}/month`)
   lines.push('', `Payment terms: ${QUOTE_PAYMENT_TERMS}`)

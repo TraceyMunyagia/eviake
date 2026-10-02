@@ -63,6 +63,32 @@ function VideoPicker({ value, onPick, onRemove }: { value?: string; onPick: (fil
   )
 }
 
+function AudioPicker({ value, onPick, onRemove }: { value?: string; onPick: (files: File[]) => void; onRemove: () => void }) {
+  return (
+    <div>
+      <label htmlFor="media-music" className="block text-sm font-medium">Invitation music</label>
+      <p className="mt-1 text-xs text-muted">Upload an MP3, WAV, OGG, or other audio file (maximum 10 MB).</p>
+      <input
+        id="media-music"
+        type="file"
+        accept="audio/*"
+        onChange={(event) => {
+          const files = Array.from(event.target.files ?? [])
+          if (files.length) onPick(files)
+          event.currentTarget.value = ''
+        }}
+        className="mt-2 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink file:mr-3 file:rounded-md file:border-0 file:bg-gold-100 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-ink"
+      />
+      {value && (
+        <div className="mt-3 flex items-center gap-3">
+          <audio src={value} controls className="min-w-0 flex-1" />
+          <Button type="button" variant="ghost" onClick={onRemove}>Remove</Button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function MediaPanel({ invite, onSaved }: { invite: Invite; onSaved: (invite: Invite) => void }) {
   const [content, setContent] = useState<InviteContent>(invite.content)
   const [message, setMessage] = useState<string | null>(null)
@@ -74,7 +100,7 @@ export function MediaPanel({ invite, onSaved }: { invite: Invite; onSaved: (invi
     setContent((previous) => ({ ...previous, [key]: value }))
   }
 
-  async function upload(file: File, kind: 'image' | 'video' = 'image') {
+  async function upload(file: File, kind: 'image' | 'video' | 'audio' = 'image') {
     if (!file.type.startsWith(`${kind}/`)) throw new Error(`${file.name} is not a ${kind}.`)
     const maxSize = kind === 'video' ? 50 : 10
     if (file.size > maxSize * 1024 * 1024) throw new Error(`${file.name} is larger than ${maxSize} MB.`)
@@ -117,6 +143,13 @@ export function MediaPanel({ invite, onSaved }: { invite: Invite; onSaved: (invi
     finally { setBusy(false) }
   }
 
+  async function pickMusic(files: File[]) {
+    setBusy(true); setMessage(null)
+    try { set('music_url', await upload(files[0], 'audio')) }
+    catch (error) { setMessage(error instanceof Error ? error.message : 'Could not upload music.') }
+    finally { setBusy(false) }
+  }
+
   async function save() {
     setBusy(true); setMessage(null)
     const { data, error } = await supabase.from('invites').update({ content }).eq('id', invite.id).select('*').single()
@@ -136,6 +169,9 @@ export function MediaPanel({ invite, onSaved }: { invite: Invite; onSaved: (invi
         <p className="text-sm font-medium">Story media</p>
         <ImagePicker id="media-about" label="Story image" value={content.about_image_url} onPick={(files) => pickSingle('about_image_url', files)} onRemove={() => set('about_image_url', '')} />
         <VideoPicker value={content.video_url} onPick={pickVideo} onRemove={() => set('video_url', '')} />
+      </div>
+      <div className="rounded-xl border border-line p-4">
+        <AudioPicker value={content.music_url} onPick={pickMusic} onRemove={() => set('music_url', '')} />
       </div>
       <ImagePicker id="media-gallery" label="Gallery images" multiple onPick={pickGallery} />
       {gallery.length > 0 && (

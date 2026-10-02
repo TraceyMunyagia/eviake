@@ -1,14 +1,15 @@
 import { formatKES } from '@/lib/format'
 import { lineTotal } from '@/lib/quote'
-import type { QuoteItem } from '@/types/database'
+import type { BusinessSlug, QuoteItem } from '@/types/database'
 
-export function QuoteSummary({ items, subtotal, discount, total, careName, monthly }: {
+export function QuoteSummary({ items, subtotal, discount, total, careName, monthly, businessSlug = 'evia_web' }: {
   items: QuoteItem[]
   subtotal: number
   discount: number
   total: number
   careName: string | null
   monthly: number
+  businessSlug?: BusinessSlug
 }) {
   return (
     <div className="rounded-2xl border border-line bg-white p-5 shadow-sm">
@@ -36,7 +37,7 @@ export function QuoteSummary({ items, subtotal, discount, total, careName, month
           <div className="flex justify-between text-muted"><span>Discount</span><span>– {formatKES(discount)}</span></div>
         )}
         <div className="flex justify-between font-medium">
-          <span>Project setup</span><span className="font-display text-xl text-plum-900">{formatKES(total)}</span>
+          <span>{businessSlug === 'evia_invites' ? 'Invitation package' : 'Project setup'}</span><span className="font-display text-xl text-plum-900">{formatKES(total)}</span>
         </div>
         {monthly > 0 && (
           <div className="flex justify-between text-muted">

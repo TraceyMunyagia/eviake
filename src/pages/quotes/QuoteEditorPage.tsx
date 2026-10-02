@@ -162,23 +162,27 @@ export function QuoteEditorPage() {
   const addonOptions = optionsFor('addon')
   const careOptions = catalog.filter((c) => c.kind === 'care' && c.active)
 
+  const isInviteBusiness = active?.slug === 'evia_invites'
+
   const items = useMemo<QuoteItem[]>(() => {
     const list: QuoteItem[] = []
     if (pkg) list.push({ kind: 'package', name: pkg, description: descOf('package', pkg), quantity: 1, unit_price_kes: priceOf('package', pkg) })
-    addonOptions
-      .filter((a) => addons[a.name])
-      .forEach((a) => list.push({ kind: 'addon', name: a.name, description: a.description, quantity: addons[a.name], unit_price_kes: a.price }))
-    customs
-      .filter((c) => c.name.trim())
-      .forEach((c) =>
-        list.push({ kind: 'custom', name: c.name.trim(), description: null, quantity: Math.max(1, Number(c.qty) || 1), unit_price_kes: Number(c.price) || 0 }),
-      )
+    if (!isInviteBusiness) {
+      addonOptions
+        .filter((a) => addons[a.name])
+        .forEach((a) => list.push({ kind: 'addon', name: a.name, description: a.description, quantity: addons[a.name], unit_price_kes: a.price }))
+      customs
+        .filter((c) => c.name.trim())
+        .forEach((c) =>
+          list.push({ kind: 'custom', name: c.name.trim(), description: null, quantity: Math.max(1, Number(c.qty) || 1), unit_price_kes: Number(c.price) || 0 }),
+        )
+    }
     return list
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pkg, addons, customs, catalog, savedItems])
+  }, [pkg, addons, customs, catalog, savedItems, isInviteBusiness])
 
   const totals = computeTotals(items, Number(discount) || 0)
-  const monthlyNum = Number(monthly) || 0
+  const monthlyNum = isInviteBusiness ? 0 : Number(monthly) || 0
   const editable = !quote || quote.status === 'draft'
 
   function chooseCare(name: string) {
@@ -190,7 +194,7 @@ export function QuoteEditorPage() {
   async function save() {
     if (!active) return
     if (!clientId) return setError('Choose a client.')
-    if (items.length === 0) return setError('Add a package, an add-on or a custom line.')
+    if (items.length === 0) return setError(isInviteBusiness ? 'Choose a package.' : 'Add a package, an add-on or a custom line.')
     setBusy(true)
     setError(null)
     const { data, error: err } = await supabase.rpc('save_quote', {
@@ -199,7 +203,7 @@ export function QuoteEditorPage() {
       p_client_id: clientId,
       p_order_id: orderId || null,
       p_discount: Number(discount) || 0,
-      p_care_name: careName || null,
+      p_care_name: isInviteBusiness ? null : careName || null,
       p_monthly: monthlyNum,
       p_valid_until: validUntil || null,
       p_notes: notes.trim() || null,
@@ -254,12 +258,13 @@ export function QuoteEditorPage() {
             <p className="mt-4 text-sm text-muted">Sent quotes are locked. Use Back to draft if you need to change one.</p>
           </section>
           <QuoteSummary
-            items={savedItems}
+            items={isInviteBusiness ? savedItems.filter((item) => item.kind === 'package') : savedItems}
             subtotal={quote.subtotal_kes}
             discount={quote.discount_kes}
             total={quote.total_kes}
-            careName={quote.care_name}
-            monthly={quote.monthly_kes}
+            careName={isInviteBusiness ? null : quote.care_name}
+            monthly={isInviteBusiness ? 0 : quote.monthly_kes}
+            businessSlug={active.slug}
           />
         </div>
       ) : (
@@ -300,7 +305,7 @@ export function QuoteEditorPage() {
               {pkg && descOf('package', pkg) && <p className="mt-2 text-sm text-muted">{descOf('package', pkg)}</p>}
             </Card>
 
-            <Card title="Add-ons">
+            {!isInviteBusiness && <Card title="Add-ons">
               {addonOptions.length === 0 ? (
                 <p className="text-sm text-muted">No active add-ons. Set prices on the Pricing page to make them available.</p>
               ) : (
@@ -341,9 +346,9 @@ export function QuoteEditorPage() {
                   })}
                 </ul>
               )}
-            </Card>
+            </Card>}
 
-            <Card title="Custom lines">
+            {!isInviteBusiness && <Card title="Custom lines">
               {customs.map((c) => (
                 <div key={c.key} className="mb-3 grid gap-3 sm:grid-cols-[1fr_5rem_8rem_auto] sm:items-end">
                   <TextInput id={`cl-n-${c.key}`} label="Description" value={c.name} onChange={(e) => setCustoms((p) => p.map((x) => (x.key === c.key ? { ...x, name: e.target.value } : x)))} />
@@ -360,9 +365,9 @@ export function QuoteEditorPage() {
               >
                 <Plus className="size-4" /> Add custom line
               </Button>
-            </Card>
+            </Card>}
 
-            <Card title="Monthly care and hosting">
+            {!isInviteBusiness && <Card title="Monthly care and hosting">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Care plan" htmlFor="q-care">
                   <select id="q-care" value={careName} onChange={(e) => chooseCare(e.target.value)} className={inputClass}>
@@ -373,7 +378,7 @@ export function QuoteEditorPage() {
                 </Field>
                 <TextInput id="q-monthly" label="Monthly fee (KSh)" type="number" min={0} value={monthly} onChange={(e) => setMonthly(e.target.value)} />
               </div>
-            </Card>
+            </Card>}
 
             <Card title="Discount and notes">
               <div className="space-y-4">
@@ -391,6 +396,7 @@ export function QuoteEditorPage() {
               total={totals.total}
               careName={careName || null}
               monthly={monthlyNum}
+              businessSlug={active.slug}
             />
             {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
             <Button onClick={save} disabled={busy} className="w-full">

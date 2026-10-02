@@ -247,6 +247,7 @@ export type InviteContent = {
   logo_url?: string
   gallery_urls?: string[]
   video_url?: string
+  music_url?: string
   closing_message?: string
   invitation_message?: string
   invitation_signature?: string

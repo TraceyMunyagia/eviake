@@ -12,6 +12,7 @@ import { InvitationMessage } from './sections/InvitationMessage'
 import { AboutStory } from './sections/AboutStory'
 import { DressCode } from './sections/DressCode'
 import { Location } from './sections/Location'
+import { MusicPlayer } from '../shared/MusicPlayer'
 
 // Section order follows the Editorial spec: Hero, [Invitation Message —
 // Week 11], Event Details, Countdown, [About/Story — Week 11], Schedule,
@@ -31,6 +32,7 @@ export function EditorialTemplate({ content, tokens, sections, mode, onRsvp }: T
       }}
       className="min-h-full"
     >
+      <MusicPlayer content={content} />
       <main>
         <Hero content={content} />
         <InvitationMessage content={content} mode={mode} />

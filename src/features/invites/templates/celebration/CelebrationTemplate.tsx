@@ -11,6 +11,7 @@ import { DressCode } from './sections/DressCode'
 import { Location } from './sections/Location'
 import { RsvpSection } from './sections/RsvpSection'
 import { Closing } from './sections/Closing'
+import { MusicPlayer } from '../shared/MusicPlayer'
 
 // Spec order. Not built yet: Guest Pass, Check-in, Event Stats (they wait on
 // the guest-linking backend) and Guestbook. `sections.guestbook` and
@@ -28,6 +29,7 @@ export function CelebrationTemplate({ content, tokens, sections, mode, onRsvp }:
       }}
       className="min-h-full"
     >
+      <MusicPlayer content={content} />
       <main>
         <Hero content={content} />
         <EventIntro content={content} mode={mode} />

@@ -109,7 +109,7 @@ export function PublicQuotePage() {
               <div className="flex justify-between text-muted"><span>Discount</span><span>– {formatKES(doc.discount_kes)}</span></div>
             )}
             <div className="flex items-baseline justify-between border-t border-gold-500 pt-2 font-medium">
-              <span>Project setup</span>
+              <span>{doc.business_slug === 'evia_invites' ? 'Invitation package' : 'Project setup'}</span>
               <span className="font-display text-2xl text-plum-900">{formatKES(doc.total_kes)}</span>
             </div>
             {doc.monthly_kes > 0 && (
