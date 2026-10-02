@@ -22,7 +22,7 @@ export function CelebrationTemplate({ content, tokens, sections, mode, onRsvp }:
       style={{
         ...tokenStyle(tokens),
         backgroundColor: 'var(--invite-background)',
-        backgroundImage: content.hero_image_url ? `linear-gradient(color-mix(in srgb, var(--invite-background) 78%, transparent), color-mix(in srgb, var(--invite-background) 78%, transparent)), url(${content.hero_image_url})` : undefined,
+        backgroundImage: content.hero_image_url ? `linear-gradient(color-mix(in srgb, var(--invite-background) 24%, transparent), color-mix(in srgb, var(--invite-background) 24%, transparent)), url(${content.hero_image_url})` : undefined,
         backgroundAttachment: 'fixed',
         backgroundPosition: 'center',
         backgroundSize: 'cover',
