@@ -34,7 +34,12 @@ export function EntryGate({ content, onOpen }: { content: InviteContent; onOpen:
       className="relative flex min-h-screen w-full touch-manipulation items-center justify-center overflow-hidden transition-all duration-700 ease-in"
       style={{
         backgroundColor: 'var(--invite-background)',
-        backgroundImage: 'radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--invite-accent) 12%, transparent), transparent 48%)',
+        backgroundImage: [
+          'radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--invite-accent) 12%, transparent), transparent 48%)',
+          content.hero_image_url
+            ? `linear-gradient(color-mix(in srgb, var(--invite-background) 24%, transparent), color-mix(in srgb, var(--invite-background) 24%, transparent)), url(${content.hero_image_url})`
+            : '',
+        ].filter(Boolean).join(', '),
         backgroundPosition: 'center',
         backgroundSize: 'cover',
         opacity: closing ? 0 : 1,
