@@ -34,7 +34,7 @@ export function RomanceTemplate({ content, tokens, sections, mode, onRsvp, guest
         backgroundPosition: 'center',
         backgroundSize: 'cover',
       }}
-      className="min-h-full"
+      className="invite-template-background min-h-full"
     >
       <MusicPlayer content={content} />
       {!opened && <EntryGate content={content} onOpen={() => setOpened(true)} />}

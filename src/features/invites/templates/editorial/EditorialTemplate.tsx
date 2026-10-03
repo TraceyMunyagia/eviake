@@ -30,7 +30,7 @@ export function EditorialTemplate({ content, tokens, sections, mode, onRsvp, che
         backgroundPosition: 'center',
         backgroundSize: 'cover',
       }}
-      className="min-h-full"
+      className="invite-template-background min-h-full"
     >
       <MusicPlayer content={content} />
       <main>

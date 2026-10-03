@@ -39,4 +39,70 @@
     transform: none !important;
   }
 }
+
+/* Fixed cover backgrounds are unreliable on mobile Safari/Chrome. Keep the
+   image proportional to the phone width so the invitation background scales
+   naturally instead of being viewport-cropped. */
+@media (max-width: 767px) {
+  .invite-template-background {
+    background-attachment: scroll !important;
+    background-position: center top !important;
+    background-size: 100% auto !important;
+    background-repeat: no-repeat !important;
+  }
+}
+
+.tap-seal {
+  position: relative;
+  display: flex;
+  width: 9rem;
+  height: 9rem;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 1.2rem 1.5rem rgb(42 26 46 / 18%));
+}
+
+.tap-seal::before,
+.tap-seal::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  border: 1px solid var(--invite-accent);
+  border-radius: 999px;
+  opacity: 0.45;
+}
+
+.tap-seal::after {
+  inset: 0.7rem;
+  opacity: 0.3;
+}
+
+.tap-seal__inner {
+  position: relative;
+  display: flex;
+  width: 9rem;
+  height: 9rem;
+  align-items: center;
+  justify-content: center;
+  border: 0.35rem double;
+  border-radius: 999px;
+  box-shadow: 0 0.25rem 0.5rem rgb(42 26 46 / 22%), inset 0 0 0 0.25rem rgb(255 255 255 / 22%);
+  transition: transform 400ms ease, opacity 300ms ease;
+}
+
+.tap-seal__inner span {
+  font-size: 1.55rem;
+  letter-spacing: 0.08em;
+}
+
+.tap-seal--opening .tap-seal__inner {
+  opacity: 0;
+  transform: scale(0.72);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tap-seal__inner {
+    transition-duration: 1ms;
+  }
+}
 }

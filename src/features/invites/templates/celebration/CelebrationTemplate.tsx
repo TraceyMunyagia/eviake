@@ -26,7 +26,7 @@ export function CelebrationTemplate({ content, tokens, sections, mode, onRsvp, c
         backgroundPosition: 'center',
         backgroundSize: 'cover',
       }}
-      className="min-h-full"
+      className="invite-template-background min-h-full"
     >
       <MusicPlayer content={content} />
       <main>
