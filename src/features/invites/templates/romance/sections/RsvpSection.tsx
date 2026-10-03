@@ -6,7 +6,13 @@ import type { InviteContent } from '@/types/database'
 import { SimpleRsvpForm } from '@/features/invites/templates/shared/SimpleRsvpForm'
 import type { TemplateProps } from '@/features/invites/templates/types'
 
-export function RsvpSection({ content, mode, onRsvp }: { content: InviteContent; mode?: 'preview' | 'public'; onRsvp?: TemplateProps['onRsvp'] }) {  return (
+export function RsvpSection({ content, mode, onRsvp, advanced, guestManagement }: {
+  content: InviteContent
+  mode?: 'preview' | 'public'
+  onRsvp?: TemplateProps['onRsvp']
+  advanced?: boolean
+  guestManagement?: boolean
+}) {  return (
     <Reveal mode={mode}>
       <section className="px-6 py-16 text-center sm:py-24" style={{ backgroundColor: 'var(--invite-surface)', color: 'var(--invite-primary)' }}>
         <SectionLabel>We'd love to know</SectionLabel>
@@ -18,7 +24,7 @@ export function RsvpSection({ content, mode, onRsvp }: { content: InviteContent;
           </p>
         )}
         <div className="mt-8">
-          <SimpleRsvpForm content={content} mode={mode} onRsvp={onRsvp} rounded buttonLabel="Respond with love" />
+          <SimpleRsvpForm content={content} mode={mode} onRsvp={onRsvp} rounded buttonLabel="Respond with love" advanced={advanced} />
         </div>
       </section>
     </Reveal>

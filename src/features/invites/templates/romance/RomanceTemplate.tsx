@@ -16,13 +16,13 @@ import { GiftRegistry } from './sections/GiftRegistry'
 import { Guestbook } from './sections/Guestbook'
 import { Closing } from './sections/Closing'
 import { MusicPlayer } from '../shared/MusicPlayer'
+import { CheckInSection } from '../shared/CheckInSection'
 
 // Full Romance section set, per the spec's order, now preceded by a tap-to-open
 // cover (EntryGate) — the "envelope" moment before the invite reveals.
 // Skipped automatically in the builder preview so editing isn't interrupted
 // by a tap on every re-render; always shown to a real guest on the public page.
-export function RomanceTemplate({ content, tokens, sections, mode, onRsvp }: TemplateProps) {
-  const [opened, setOpened] = useState(mode === 'preview')
+export function RomanceTemplate({ content, tokens, sections, mode, onRsvp, guestbookMessages, onGuestbookSubmit, guestbookAvailable, checkInToken, checkInAvailable }: TemplateProps) {  const [opened, setOpened] = useState(mode === 'preview')
 
   return (
     <div
@@ -50,10 +50,11 @@ export function RomanceTemplate({ content, tokens, sections, mode, onRsvp }: Tem
           {sections.schedule && <Programme items={content.schedule} mode={mode} />}
           <DressCode content={content} mode={mode} />
           <Location content={content} mode={mode} />
-          {sections.rsvp && <RsvpSection content={content} mode={mode} onRsvp={onRsvp} />}
+          {sections.rsvp && <RsvpSection content={content} mode={mode} onRsvp={onRsvp} advanced={sections.rsvp_advanced || sections.guest_management} guestManagement={sections.guest_management} />}
           <GiftRegistry content={content} mode={mode} />
-          {sections.guestbook && <Guestbook mode={mode} />}
+          {sections.guestbook && <Guestbook messages={guestbookMessages} mode={mode} onSubmit={onGuestbookSubmit} available={guestbookAvailable} />}
           <Closing content={content} mode={mode} />
+          {sections.guest_management && <CheckInSection mode={mode} token={checkInToken} available={checkInAvailable} />}
         </main>
       )}
     </div>

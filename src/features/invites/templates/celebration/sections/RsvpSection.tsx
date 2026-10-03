@@ -20,7 +20,13 @@ const choiceStyle = (on: boolean) => ({
   fontFamily: 'var(--invite-heading-font)',
 })
 
-export function RsvpSection({ content, mode, onRsvp }: { content: InviteContent; mode?: 'preview' | 'public'; onRsvp?: TemplateProps['onRsvp'] }) {
+export function RsvpSection({ content, mode, onRsvp, advanced, guestManagement }: {
+  content: InviteContent
+  mode?: 'preview' | 'public'
+  onRsvp?: TemplateProps['onRsvp']
+  advanced?: boolean
+  guestManagement?: boolean
+}) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [attending, setAttending] = useState<boolean | null>(null)
@@ -55,7 +61,13 @@ export function RsvpSection({ content, mode, onRsvp }: { content: InviteContent;
     setStatus('submitting')
     try {
       if (onRsvp) {
-        await onRsvp({ name: name.trim(), phone: phone.trim(), attending, party_size: attending ? party : 0, answers })
+        await onRsvp({
+          name: name.trim(),
+          phone: phone.trim(),
+          attending,
+          party_size: advanced && attending ? party : attending ? 1 : 0,
+          answers: advanced ? answers : {},
+        })
       } else {
         await new Promise((r) => setTimeout(r, 600)) // preview-only demo; nothing is saved
       }
@@ -141,7 +153,7 @@ export function RsvpSection({ content, mode, onRsvp }: { content: InviteContent;
                 </button>
               </div>
 
-              {attending && (
+              {attending && advanced && (
                 <div>
                   <p className={`mb-2 ${celebrationType.caption}`} style={{ fontFamily: 'var(--invite-body-font)' }}>How many of you? (including you)</p>
                   <div className="flex items-center gap-4">

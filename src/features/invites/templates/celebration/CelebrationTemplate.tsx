@@ -12,11 +12,10 @@ import { Location } from './sections/Location'
 import { RsvpSection } from './sections/RsvpSection'
 import { Closing } from './sections/Closing'
 import { MusicPlayer } from '../shared/MusicPlayer'
+import { CheckInSection } from '../shared/CheckInSection'
 
-// Spec order. Not built yet: Guest Pass, Check-in, Event Stats (they wait on
-// the guest-linking backend) and Guestbook. `sections.guestbook` and
-// `sections.guest_management` have no effect on Celebration until then.
-export function CelebrationTemplate({ content, tokens, sections, mode, onRsvp }: TemplateProps) {
+// Spec order. Not built yet: Check-in, Event Stats, and Guestbook.
+export function CelebrationTemplate({ content, tokens, sections, mode, onRsvp, checkInToken, checkInAvailable }: TemplateProps) {
   return (
     <div
       style={{
@@ -38,9 +37,11 @@ export function CelebrationTemplate({ content, tokens, sections, mode, onRsvp }:
         {sections.gallery && <Gallery urls={content.gallery_urls} captions={content.gallery_captions} mode={mode} />}
         {sections.schedule && <Programme items={content.schedule} mode={mode} />}
         <DressCode content={content} mode={mode} />
+        {sections.dress_code && <DressCode content={content} mode={mode} />}
         <Location content={content} mode={mode} />
-        {sections.rsvp && <RsvpSection content={content} mode={mode} onRsvp={onRsvp} />}
+        {sections.rsvp && <RsvpSection content={content} mode={mode} onRsvp={onRsvp} advanced={sections.rsvp_advanced || sections.guest_management} guestManagement={sections.guest_management} />}
         <Closing content={content} mode={mode} />
+        {sections.guest_management && <CheckInSection mode={mode} token={checkInToken} available={checkInAvailable} />}
       </main>
     </div>
   )

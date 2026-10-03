@@ -300,6 +300,9 @@ export type InviteSections = {
   rsvp?: boolean
   guestbook?: boolean
   guest_management?: boolean
+  story?: boolean          // About/Story, Our Story — now Signature+
+  dress_code?: boolean     // now Signature+
+  rsvp_advanced?: boolean
 }
 
 export type Invite = {
@@ -333,4 +336,19 @@ export type Membership = {
   user_id: string
   role: MembershipRole
   profiles?: { email: string; full_name: string | null } | null
+}
+export type GuestbookMessage = {
+  guest_name: string
+  message: string
+  created_at: string
+}
+export type GuestPass = {
+  guest_name: string
+  party_size: number
+  checked_in_at: string | null
+  event_name: string | null
+  event_date: string | null
+  venue: string | null
+  template: InviteTemplateKey
+  tokens: InviteTokens
 }

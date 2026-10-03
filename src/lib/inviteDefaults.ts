@@ -10,14 +10,17 @@ export const PACKAGE_SECTIONS: Record<InvitePackage, InviteSections> = {
   essential: {
     countdown: false, schedule: false, gallery: false, video: false,
     rsvp: true, guestbook: false, guest_management: false,
+    story: false, dress_code: false, rsvp_advanced: false,
   },
   signature: {
     countdown: true, schedule: true, gallery: true, video: false,
-    rsvp: true, guestbook: false, guest_management: false,
+    rsvp: true, guestbook: true, guest_management: false,
+    story: true, dress_code: true, rsvp_advanced: true,
   },
   experience: {
     countdown: true, schedule: true, gallery: true, video: true,
     rsvp: true, guestbook: true, guest_management: true,
+    story: true, dress_code: true, rsvp_advanced: true,
   },
 }
 

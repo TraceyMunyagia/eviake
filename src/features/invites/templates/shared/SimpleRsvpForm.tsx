@@ -1,21 +1,17 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import type { InviteContent } from '@/types/database'
-import type { RsvpPayload } from '@/features/invites/templates/types'
+import type { RsvpPayload, TemplateProps } from '@/features/invites/templates/types'
 
 export function SimpleRsvpForm({
-  content,
-  mode,
-  onRsvp,
-  rounded,
-  buttonLabel = 'Send RSVP',
-  fontFamily = 'var(--invite-body-font)',
+  content, mode, onRsvp, rounded, buttonLabel = 'Send RSVP', fontFamily = 'var(--invite-body-font)', advanced,
 }: {
   content: InviteContent
   mode?: 'preview' | 'public'
-  onRsvp?: (payload: RsvpPayload) => Promise<void>
+  onRsvp?: TemplateProps['onRsvp']
   rounded?: boolean
   buttonLabel?: string
   fontFamily?: string
+  advanced?: boolean
 }) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
@@ -34,11 +30,19 @@ export function SimpleRsvpForm({
     if (!name.trim()) return setError('Please tell us your name.')
     if (!phone.trim()) return setError('Please enter your phone number.')
     if (attending === null) return setError('Please let us know if you can attend.')
+    const missing = questions.find((q) => q.required && !answers[q.id]?.trim())
+    if (missing) return setError(`Please answer: ${missing.label}`)
     setError(null)
     setStatus('submitting')
     try {
       if (onRsvp) {
-        await onRsvp({ name: name.trim(), phone: phone.trim(), attending, party_size: attending ? 1 : 0, answers })
+        await onRsvp({
+          name: name.trim(),
+          phone: phone.trim(),
+          attending,
+          party_size: attending ? 1 : 0,
+          answers,
+        })
       } else {
         await new Promise((r) => setTimeout(r, 500))
       }
@@ -57,9 +61,11 @@ export function SimpleRsvpForm({
 
   if (status === 'done') {
     return (
-      <p className="text-sm font-medium" style={{ fontFamily }}>
-        {attending ? `Thank you, ${name.trim()} — we can't wait to see you!` : `Thank you for letting us know, ${name.trim()}.`}
-      </p>
+      <div>
+        <p className="text-sm font-medium" style={{ fontFamily }}>
+          {attending ? `Thank you, ${name.trim()} — we can't wait to see you!` : `Thank you for letting us know, ${name.trim()}.`}
+        </p>
+      </div>
     )
   }
 
@@ -104,15 +110,34 @@ export function SimpleRsvpForm({
         ))}
       </div>
       {questions.map((q) => (
-        <input
-          key={q.id}
-          value={answers[q.id] ?? ''}
-          onChange={(e) => setAnswers((a) => ({ ...a, [q.id]: e.target.value }))}
-          placeholder={q.label}
-          aria-label={q.label}
-          className={`w-full border px-3 py-2 text-sm ${radius}`}
-          style={{ borderColor: 'var(--invite-hairline)', fontFamily }}
-        />
+        <div key={q.id}>
+          <label htmlFor={`rsvp-question-${q.id}`} className="mb-1 block text-xs" style={{ color: 'var(--invite-muted)', fontFamily }}>
+            {q.label}{q.required ? ' *' : ''}
+          </label>
+          {q.type === 'choice' ? (
+            <select
+              id={`rsvp-question-${q.id}`}
+              value={answers[q.id] ?? ''}
+              onChange={(e) => setAnswers((a) => ({ ...a, [q.id]: e.target.value }))}
+              aria-label={q.label}
+              className={`w-full border px-3 py-2 text-sm ${radius}`}
+              style={{ borderColor: 'var(--invite-hairline)', fontFamily }}
+            >
+              <option value="">Select an option</option>
+              {q.options?.map((option) => <option key={option} value={option}>{option}</option>)}
+            </select>
+          ) : (
+            <input
+              id={`rsvp-question-${q.id}`}
+              value={answers[q.id] ?? ''}
+              onChange={(e) => setAnswers((a) => ({ ...a, [q.id]: e.target.value }))}
+              placeholder="Your answer"
+              aria-label={q.label}
+              className={`w-full border px-3 py-2 text-sm ${radius}`}
+              style={{ borderColor: 'var(--invite-hairline)', fontFamily }}
+            />
+          )}
+        </div>
       ))}
       {error && <p role="alert" className="text-xs text-red-700">{error}</p>}
       <button

@@ -1,4 +1,4 @@
-const TABS = [
+const BASE_TABS = [
   { key: 'details', label: 'Details' },
   { key: 'design', label: 'Design' },
   { key: 'sections', label: 'Sections' },
@@ -6,10 +6,15 @@ const TABS = [
   { key: 'rsvp', label: 'RSVP' },
 ]
 
-export function BuilderTabs({ active, onChange }: { active: string; onChange: (key: string) => void }) {
+export function BuilderTabs({ active, onChange, extra = [] }: {
+  active: string
+  onChange: (key: string) => void
+  extra?: { key: string; label: string }[]
+}) {
+  const tabs = [...BASE_TABS, ...extra]
   return (
     <div role="tablist" className="flex gap-1 overflow-x-auto border-b border-line">
-      {TABS.map((t) => (
+      {tabs.map((t) => (
         <button
           key={t.key}
           role="tab"

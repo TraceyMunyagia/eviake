@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react'
 import { getTemplateComponent } from '@/features/invites/templates/registry'
-import type { InviteContent, InviteSections, InviteTemplateKey, InviteTokens } from '@/types/database'
+import type { GuestbookMessage, InviteContent, InviteSections, InviteTemplateKey, InviteTokens } from '@/types/database'
+
+
+
 
 type Payload = {
   template: InviteTemplateKey
   content: InviteContent
   tokens: InviteTokens
   sections: InviteSections
+  guestbookMessages?: GuestbookMessage[]
 }
 
 // Rendered inside the builder's <iframe>. Because the iframe has its own
@@ -32,5 +36,5 @@ export function PreviewFramePage() {
   const Template = getTemplateComponent(payload.template)
   if (!Template) return <p className="p-10 text-center text-sm text-muted">This template isn't available to preview yet.</p>
 
-  return <Template content={payload.content} tokens={payload.tokens} sections={payload.sections} mode="preview" />
+  return <Template content={payload.content} tokens={payload.tokens} sections={payload.sections} mode="preview" guestbookMessages={payload.guestbookMessages} />
 }

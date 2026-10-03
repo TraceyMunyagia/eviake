@@ -1,4 +1,4 @@
-import type { InviteContent, InviteSections } from '@/types/database'
+import type { GuestbookMessage, InviteContent, InviteSections } from '@/types/database'
 
 export const ROMANCE_SAMPLE_CONTENT: InviteContent = {
   couple_names: 'Wanjiku & Kevin',
@@ -65,3 +65,7 @@ export const ROMANCE_STRESS_SECTIONS: InviteSections = {
   guestbook: false,
   guest_management: false,
 }
+export const ROMANCE_SAMPLE_GUESTBOOK: GuestbookMessage[] = [
+  { guest_name: 'Amina K.', message: 'So happy for you two! Wishing you a lifetime of love.', created_at: new Date().toISOString() },
+  { guest_name: 'Brian & Faith', message: "Can't wait to celebrate with you both — see you on the day!", created_at: new Date().toISOString() },
+]

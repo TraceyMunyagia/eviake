@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Smartphone, Monitor } from 'lucide-react'
 import { SAMPLE_CONTENT, STRESS_CONTENT } from '@/features/invites/templates/sampleRegistry'
+import { ROMANCE_SAMPLE_GUESTBOOK } from '@/features/invites/templates/romance/sampleContent'
 import type { Invite } from '@/types/database'
 
 const WIDTHS = { mobile: 390, desktop: 1280 } as const
@@ -13,16 +14,19 @@ export function InviteLivePreview({ invite }: { invite: Invite }) {
   const sample = SAMPLE_CONTENT[invite.template]
   const stress = STRESS_CONTENT[invite.template]
   const active = previewMode === 'sample' && sample ? sample : previewMode === 'stress' && stress ? stress : null
+  const guestbookMessages = previewMode === 'sample' && invite.template === 'romance' ? ROMANCE_SAMPLE_GUESTBOOK : []
+
 
   const payload = useMemo(
-    () => ({
-      template: invite.template,
-      content: active?.content ?? invite.content,
-      tokens: invite.tokens,
-      sections: active?.sections ?? invite.sections,
-    }),
-    [invite.template, invite.content, invite.tokens, invite.sections, active],
-  )
+  () => ({
+    template: invite.template,
+    content: active?.content ?? invite.content,
+    tokens: invite.tokens,
+    sections: active?.sections ?? invite.sections,
+    guestbookMessages,
+  }),
+  [invite.template, invite.content, invite.tokens, invite.sections, active, guestbookMessages],
+)
 
   const send = useCallback(() => {
     frameRef.current?.contentWindow?.postMessage({ type: 'evia-preview', payload }, window.location.origin)

@@ -10,7 +10,7 @@ const LABELS: { key: keyof InviteSections; label: string; description: string }[
   { key: 'video', label: 'Video', description: 'Show an event video.' },
   { key: 'rsvp', label: 'RSVP', description: 'Collect guest responses.' },
   { key: 'guestbook', label: 'Guestbook', description: 'Reserve space for guest messages.' },
-  { key: 'guest_management', label: 'Guest management', description: 'Enable guest pass and check-in features.' },
+  { key: 'guest_management', label: 'Check-in', description: 'Show the guest check-in pass on the day of the event.' },
 ]
 
 export function SectionsPanel({ invite, onSaved }: { invite: Invite; onSaved: (invite: Invite) => void }) {

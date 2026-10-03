@@ -15,6 +15,7 @@ import { PublishButton } from '@/features/invites/builder/PublishButton'
 import { DesignPanel } from '@/features/invites/builder/DesignPanel'
 import { SectionsPanel } from '@/features/invites/builder/SectionsPanel'
 import { MediaPanel } from '@/features/invites/builder/MediaPanel'
+import { GuestbookPanel } from '@/features/invites/builder/GuestbookPanel'
 
 export function InviteEditPage() {
   const { id } = useParams()
@@ -119,17 +120,28 @@ export function InviteEditPage() {
           </div>
         </div>
       )}
+      {invite.status === 'published' && invite.package === 'experience' && invite.event_id && (
+        <div className="mb-6 flex flex-wrap gap-4 rounded-2xl border border-line bg-white p-4 shadow-sm">
+          <Link to={`/events/${invite.event_id}/check-in`} className="text-sm text-plum-900 underline">Open check-in scanner</Link>
+          <Link to={`/events/${invite.event_id}/stats`} className="text-sm text-plum-900 underline">View live stats</Link>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         <div>
           <div className="mb-4"><TemplateSwitcher invite={invite} onSaved={setInvite} /></div>
-          <BuilderTabs active={tab} onChange={setTab} />
+          <BuilderTabs
+            active={tab}
+            onChange={setTab}
+            extra={invite.template === 'romance' ? [{ key: 'guestbook', label: 'Guestbook' }] : []}
+          />
           <div className="mt-4">
             {tab === 'details' && <DetailsPanel invite={invite} onSaved={setInvite} />}
             {tab === 'design' && <DesignPanel invite={invite} onSaved={setInvite} />}
             {tab === 'sections' && <SectionsPanel invite={invite} onSaved={setInvite} />}
             {tab === 'media' && <MediaPanel invite={invite} onSaved={setInvite} />}
             {tab === 'rsvp' && <RsvpSettingsPanel invite={invite} onSaved={setInvite} />}
+            {tab === 'guestbook' && invite.template === 'romance' && <GuestbookPanel invite={invite} />}
           </div>
         </div>
         <InviteLivePreview invite={invite} />

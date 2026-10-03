@@ -11,6 +11,7 @@ import { EventForm } from '@/pages/events/EventForm'
 import type { EventRecord } from '@/types/database'
 import { GuestsTab } from '@/components/workspace/GuestsTab'
 import { RsvpsTab } from '@/components/workspace/RsvpsTab'
+import { QrCode, BarChart3 } from 'lucide-react'
 
 const TABS = [
   { key: 'overview', label: 'Overview' },
@@ -59,9 +60,12 @@ export function EventDetailPage() {
 
   return (
     <div>
-      <Link to="/events" className="mb-4 inline-flex items-center gap-1 text-sm text-muted hover:text-ink">
-        <ArrowLeft className="size-4" /> Events
-      </Link>
+     <Link to={`/events/${event.id}/check-in`}>
+  <Button variant="secondary"><QrCode className="size-4" /> Check-in</Button>
+</Link>
+<Link to={`/events/${event.id}/stats`}>
+  <Button variant="secondary"><BarChart3 className="size-4" /> Stats</Button>
+</Link>
 
       <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
         <div>
