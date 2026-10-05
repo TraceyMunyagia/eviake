@@ -29,10 +29,6 @@ export function RomanceTemplate({ content, tokens, sections, mode, onRsvp, guest
       style={{
         ...tokenStyle(tokens),
         backgroundColor: 'var(--invite-background)',
-        backgroundImage: content.hero_image_url ? `linear-gradient(color-mix(in srgb, var(--invite-background) 24%, transparent), color-mix(in srgb, var(--invite-background) 24%, transparent)), url(${content.hero_image_url})` : undefined,
-        backgroundAttachment: 'fixed',
-        backgroundPosition: 'center',
-        backgroundSize: 'cover',
       }}
       className="invite-template-background min-h-full"
     >

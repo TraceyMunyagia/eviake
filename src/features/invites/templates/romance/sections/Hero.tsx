@@ -6,9 +6,16 @@ export function Hero({ content }: { content: InviteContent }) {
 
   return (
     <section
-      className="invite-hero-section relative flex min-h-[90vh] flex-col items-center justify-center overflow-hidden px-6 py-20 text-center"
+      className="invite-hero-section relative flex min-h-[90vh] min-h-[90svh] flex-col items-center justify-center overflow-hidden px-6 py-20 text-center"
       style={{ color: 'var(--invite-primary)' }}
     >
+      {hasImage && (
+        <div className="absolute inset-0" aria-hidden="true">
+          <img src={content.hero_image_url} alt="" className="invite-hero-media" />
+          <div className="invite-hero-overlay" />
+        </div>
+      )}
+
       {/* Optional decorative floral overlay — renders nothing until you
           supply an illustrated asset via Canva/AI generation, per the plan. */}
       {content.floral_accent_url && (
