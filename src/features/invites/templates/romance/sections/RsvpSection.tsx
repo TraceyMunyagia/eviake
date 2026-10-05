@@ -14,17 +14,22 @@ export function RsvpSection({ content, mode, onRsvp, advanced, guestManagement }
   guestManagement?: boolean
 }) {  return (
     <Reveal mode={mode}>
-      <section className="px-6 py-16 text-center sm:py-24" style={{ backgroundColor: 'var(--invite-surface)', color: 'var(--invite-primary)' }}>
-        <SectionLabel>We'd love to know</SectionLabel>
-        <h2 className={`mt-3 ${romanceType.h2}`} style={{ fontFamily: 'var(--invite-heading-font)' }}>RSVP</h2>
-        <Divider className="my-6" />
-        {content.description && (
-          <p className={`mx-auto max-w-md ${romanceType.body}`} style={{ color: 'var(--invite-muted)', fontFamily: 'var(--invite-body-font)' }}>
-            {content.description}
-          </p>
-        )}
-        <div className="mt-8">
-          <SimpleRsvpForm content={content} mode={mode} onRsvp={onRsvp} rounded buttonLabel="Respond with love" advanced={advanced} />
+      <section className="px-6 py-16 text-center sm:py-24" style={{ color: 'var(--invite-primary)' }}>
+        <div
+          className="mx-auto max-w-sm rounded-[2rem] border px-8 py-8"
+          style={{ borderColor: 'var(--invite-hairline)', backgroundColor: 'var(--invite-surface)' }}
+        >
+          <SectionLabel>We'd love to know</SectionLabel>
+          <h2 className={`mt-3 ${romanceType.h2}`} style={{ fontFamily: 'var(--invite-heading-font)' }}>RSVP</h2>
+          <Divider className="my-6" />
+          {content.description && (
+            <p className={`mx-auto max-w-md ${romanceType.body}`} style={{ color: 'var(--invite-muted)', fontFamily: 'var(--invite-body-font)' }}>
+              {content.description}
+            </p>
+          )}
+          <div className="mt-8">
+            <SimpleRsvpForm content={content} mode={mode} onRsvp={onRsvp} rounded buttonLabel="Respond with love" advanced={advanced} />
+          </div>
         </div>
       </section>
     </Reveal>

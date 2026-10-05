@@ -7,7 +7,7 @@ export function Hero({ content }: { content: InviteContent }) {
   const hasImage = Boolean(content.hero_image_url)
 
   return (
-    <section className="relative flex min-h-[90vh] items-end sm:items-center" style={{ backgroundColor: 'var(--invite-background)' }}>
+    <section className="invite-hero-section relative flex min-h-[90vh] items-end sm:items-center" style={{ backgroundColor: 'var(--invite-background)' }}>
       {hasImage && (
         <div className="absolute inset-0">
           <img src={content.hero_image_url} alt="" role="presentation" className="h-full w-full object-cover" />

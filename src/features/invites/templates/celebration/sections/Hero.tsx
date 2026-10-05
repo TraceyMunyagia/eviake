@@ -15,7 +15,7 @@ export function Hero({ content }: { content: InviteContent }) {
   const chips = [date, time, content.venue].filter(Boolean) as string[]
 
   return (
-    <section className="relative overflow-hidden" style={{ backgroundColor: 'var(--invite-primary)', color: 'var(--invite-background)' }}>
+    <section className="invite-hero-section relative overflow-hidden" style={{ backgroundColor: 'var(--invite-primary)', color: 'var(--invite-background)' }}>
       <div className="relative z-10 mx-auto grid max-w-6xl gap-12 px-5 pb-16 pt-16 sm:px-10 sm:pt-24 lg:grid-cols-[1.25fr_1fr] lg:items-center">
         <div>
           <h1 aria-label={title} className={celebrationType.display} style={{ fontFamily: 'var(--invite-heading-font)' }}>

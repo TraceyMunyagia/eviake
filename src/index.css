@@ -40,14 +40,34 @@
   }
 }
 
-/* Fixed cover backgrounds are unreliable on mobile Safari/Chrome. Keep the
-   image proportional to the phone width so the invitation background scales
-   naturally instead of being viewport-cropped. */
+/* The section content is sometimes intentionally constrained with max-width.
+   Keep the veil on a full viewport-width layer so it never shrinks to the
+   content column. */
+.invite-template-background main section:not(.invite-hero-section) {
+  position: relative;
+  isolation: isolate;
+  background-color: transparent !important;
+}
+
+.invite-template-background main section:not(.invite-hero-section)::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0 auto 0 50%;
+  width: 100vw;
+  content: '';
+  background-color: color-mix(in srgb, var(--invite-background) 24%, transparent);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* Keep the hero image behind the complete invitation on small screens too.
+   A cover-sized fixed background is shared by every section as the guest
+   scrolls, instead of ending after the first viewport-height image slice. */
 @media (max-width: 767px) {
   .invite-template-background {
-    background-attachment: scroll !important;
-    background-position: center top !important;
-    background-size: 100% auto !important;
+    background-attachment: fixed !important;
+    background-position: center center !important;
+    background-size: cover !important;
     background-repeat: no-repeat !important;
   }
 }
