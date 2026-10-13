@@ -5,8 +5,10 @@ import { SectionLabel } from '@/features/invites/templates/romance/components/Se
 import { Reveal } from '@/features/invites/templates/romance/components/Reveal'
 
 function timeParts(target: Date) {
-  const diff = Math.max(target.getTime() - Date.now(), 0)
+  const raw = target.getTime() - Date.now()
+  const diff = Math.max(raw, 0)
   return {
+    over: raw <= 0,
     days: Math.floor(diff / 86_400_000),
     hours: Math.floor((diff / 3_600_000) % 24),
     minutes: Math.floor((diff / 60_000) % 60),
@@ -14,7 +16,13 @@ function timeParts(target: Date) {
   }
 }
 
-export function Countdown({ eventDate, eventTime, mode }: { eventDate?: string; eventTime?: string; mode?: 'preview' | 'public' }) {
+export function Countdown({ eventDate, eventTime, mode, showSeconds = true, doneMessage = 'Today is the day!' }: {
+  eventDate?: string
+  eventTime?: string
+  mode?: 'preview' | 'public'
+  showSeconds?: boolean
+  doneMessage?: string
+}) {
   const target = eventDate ? new Date(`${eventDate}T${eventTime || '00:00'}:00`) : null
   const [parts, setParts] = useState(target ? timeParts(target) : null)
 
@@ -33,9 +41,11 @@ export function Countdown({ eventDate, eventTime, mode }: { eventDate?: string; 
           <p className={romanceType.body} style={{ color: 'var(--invite-muted)', fontFamily: 'var(--invite-body-font)' }}>
             Our countdown begins once a date is set.
           </p>
+        ) : parts.over ? (
+          <p className="text-2xl sm:text-3xl" style={{ fontFamily: 'var(--invite-heading-font)' }}>{doneMessage}</p>
         ) : (
           <div className="mx-auto flex max-w-sm flex-wrap justify-center gap-4 sm:gap-6">
-            {([['Days', parts.days], ['Hours', parts.hours], ['Min', parts.minutes], ['Sec', parts.seconds]] as [string, number][]).map(([label, value]) => (
+            {([['Days', parts.days], ['Hours', parts.hours], ['Min', parts.minutes], ...(showSeconds ? [['Sec', parts.seconds]] : [])] as [string, number][]).map(([label, value]) => (
               <div key={label} className="flex size-20 flex-col items-center justify-center rounded-full border sm:size-24" style={{ borderColor: 'var(--invite-hairline)', backgroundColor: 'var(--invite-surface)' }}>
                 <p className="text-xl sm:text-2xl" style={{ fontFamily: 'var(--invite-heading-font)' }}>{String(value).padStart(2, '0')}</p>
                 <p className={`${romanceType.caption} uppercase tracking-widest`} style={{ color: 'var(--invite-muted)', fontFamily: 'var(--invite-body-font)' }}>{label}</p>

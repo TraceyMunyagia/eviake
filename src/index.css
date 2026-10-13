@@ -150,3 +150,13 @@
   }
 }
 }
+
+/* Builder preview: briefly outline the section being edited */
+@keyframes evia-flash {
+  0% { outline: 3px solid rgba(201, 169, 110, 0.9); outline-offset: -3px; }
+  100% { outline: 3px solid rgba(201, 169, 110, 0); outline-offset: -3px; }
+}
+.evia-section-flash { animation: evia-flash 1.4s ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .evia-section-flash { animation: none; outline: 3px solid rgba(201, 169, 110, 0.6); outline-offset: -3px; }
+}

@@ -21,7 +21,13 @@ const TILES = [
   { bg: 'var(--invite-background)', fg: 'var(--invite-primary)', rot: 2 },
 ]
 
-export function Countdown({ eventDate, eventTime, mode }: { eventDate?: string; eventTime?: string; mode?: 'preview' | 'public' }) {
+export function Countdown({ eventDate, eventTime, mode, showSeconds = true, doneMessage = "It's celebration time!" }: {
+  eventDate?: string
+  eventTime?: string
+  mode?: 'preview' | 'public'
+  showSeconds?: boolean
+  doneMessage?: string
+}) {
   const [parts, setParts] = useState<ReturnType<typeof timeParts> | null>(null)
 
   useEffect(() => {
@@ -36,7 +42,7 @@ export function Countdown({ eventDate, eventTime, mode }: { eventDate?: string; 
   }, [eventDate, eventTime])
 
   const values = parts
-    ? [['Days', parts.days], ['Hours', parts.hours], ['Mins', parts.minutes], ['Secs', parts.seconds]] as [string, number][]
+    ? [['Days', parts.days], ['Hours', parts.hours], ['Mins', parts.minutes], ...(showSeconds ? [['Secs', parts.seconds]] : [])] as [string, number][]
     : []
 
   return (
@@ -50,10 +56,10 @@ export function Countdown({ eventDate, eventTime, mode }: { eventDate?: string; 
           </p>
         ) : parts.over ? (
           <p className={`mt-8 ${celebrationType.statement}`} style={{ fontFamily: 'var(--invite-heading-font)' }}>
-            It's celebration time!
+            {doneMessage}
           </p>
         ) : (
-          <div className="mt-8 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
+          <div className={`mt-8 grid gap-4 sm:gap-6 ${showSeconds ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-3'}`}>
             {values.map(([label, value], i) => (
               <div
                 key={label}

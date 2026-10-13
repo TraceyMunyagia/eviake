@@ -4,12 +4,19 @@ import { Button } from '@/components/ui/Button'
 import type { Invite } from '@/types/database'
 import { useState } from 'react'
 
-export function PublishButton({ invite, onSaved }: { invite: Invite; onSaved: (invite: Invite) => void }) {
+export function PublishButton({ invite, onSaved, disabled, beforePublish }: {
+  invite: Invite
+  onSaved: (invite: Invite) => void
+  disabled?: boolean
+  /** e.g. save pending builder edits first; return false to stop */
+  beforePublish?: () => Promise<boolean>
+}) {
   const { publish, busy, error } = usePublishInvite()
   const [linkError, setLinkError] = useState<string | null>(null)
 
   async function handlePublish() {
     setLinkError(null)
+    if (beforePublish && !(await beforePublish())) return
     // Guest-linking has to exist before the RSVP form can accept a real
     // response, so this runs first and publish only proceeds if it succeeds.
     const { error: linkError } = await supabase.rpc('ensure_invite_event', { p_invite_id: invite.id })
@@ -23,7 +30,7 @@ export function PublishButton({ invite, onSaved }: { invite: Invite; onSaved: (i
 
   return (
     <div>
-      <Button onClick={handlePublish} disabled={busy}>{busy ? 'Publishing…' : 'Finish up & publish'}</Button>
+      <Button onClick={handlePublish} disabled={busy || disabled}>{busy ? 'Publishing…' : 'Finish up & publish'}</Button>
       {linkError && <p role="alert" className="mt-2 text-sm text-red-700">{linkError}</p>}
       {error && <p role="alert" className="mt-2 text-sm text-red-700">{error}</p>}
     </div>

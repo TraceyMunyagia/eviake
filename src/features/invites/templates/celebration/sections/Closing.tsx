@@ -71,7 +71,7 @@ export function Closing({ content, mode }: { content: InviteContent; mode?: 'pre
       </div>
 
       <Marquee
-        items={[tag ? `#${tag}` : '', name ?? '', date]}
+        items={content.marquee_text?.trim() ? [content.marquee_text.trim()] : [tag ? `#${tag}` : '', name ?? '', date]}
         className="py-3 text-lg font-extrabold uppercase tracking-tight sm:text-2xl"
         style={{ backgroundColor: 'var(--invite-accent)', color: 'var(--invite-primary)', fontFamily: 'var(--invite-heading-font)' }}
       />

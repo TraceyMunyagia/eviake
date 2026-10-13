@@ -34,10 +34,10 @@ export function CelebrationTemplate({ content, tokens, sections, mode, onRsvp, c
   const visible = (k: string) => flagOn(k) && hasContent(k)
   const toneFor = useMemo(
     () => makeToneFor(ORDER.filter(visible)),
-    [sections, content], // eslint-disable-line react-hooks/exhaustive-deps
+    [sections, content],
   )
   const block = (key: string, node: ReactNode) =>
-    visible(key) && <div data-block={key} style={blockStyle(toneFor(key), tokens)}>{node}</div>
+    visible(key) && <div data-section={key} style={blockStyle(toneFor(key), tokens)}>{node}</div>
 
   return (
     <div
@@ -56,10 +56,10 @@ export function CelebrationTemplate({ content, tokens, sections, mode, onRsvp, c
       )}
       <MusicPlayer content={content} />
       <main>
-        <Hero content={content} />
+        <div data-section="hero"><Hero content={content} /></div>
         {block('message', <EventIntro content={content} mode={mode} />)}
         {block('details', <EventDetails content={content} mode={mode} />)}
-        {block('countdown', <Countdown eventDate={content.event_date} eventTime={content.event_time} mode={mode} />)}
+        {block('countdown', <Countdown eventDate={content.event_date} eventTime={content.event_time} mode={mode} showSeconds={content.countdown_show_seconds !== false} doneMessage={content.countdown_finished_message || undefined} />)}
         {block('gallery', <Gallery urls={content.gallery_urls} captions={content.gallery_captions} mode={mode} />)}
         {block('schedule', <Programme items={content.schedule} mode={mode} />)}
         {block('dress_code', <DressCode content={content} mode={mode} />)}

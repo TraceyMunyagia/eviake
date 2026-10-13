@@ -3,6 +3,7 @@ import { Smartphone, Monitor } from 'lucide-react'
 import { SAMPLE_CONTENT, STRESS_CONTENT } from '@/features/invites/templates/sampleRegistry'
 import { ROMANCE_SAMPLE_GUESTBOOK } from '@/features/invites/templates/romance/sampleContent'
 import type { Invite, InviteSections } from '@/types/database'
+import { onPreviewScroll } from './previewBridge'
 
 const WIDTHS = { mobile: 390, desktop: 1280 } as const
 
@@ -35,6 +36,15 @@ export function InviteLivePreview({ invite, sections }: { invite: Invite; sectio
 
   // Re-send whenever the invite, sample mode or template changes.
   useEffect(() => { send() }, [send])
+
+  // Opening a section in the builder scrolls the frame to it
+  useEffect(
+    () =>
+      onPreviewScroll((section) => {
+        frameRef.current?.contentWindow?.postMessage({ type: 'evia:scroll-to', section }, window.location.origin)
+      }),
+    [],
+  )
 
   // The frame announces when it's ready to receive (covers first load and reloads).
   useEffect(() => {

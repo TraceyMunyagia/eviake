@@ -58,7 +58,7 @@ export function Hero({ content }: { content: InviteContent }) {
                   controls={reduced}
                 />
               ) : content.hero_image_url ? (
-                <img src={content.hero_image_url} alt="" className="h-full w-full object-cover" />
+                <img src={content.hero_image_url} alt={content.hero_image_alt ?? ''} className="h-full w-full object-cover" />
               ) : (
                 <div className="flex h-full w-full items-center justify-center">
                   <Sparkles className="size-20" style={{ color: 'var(--invite-background)' }} />

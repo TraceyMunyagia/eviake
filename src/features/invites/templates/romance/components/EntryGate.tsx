@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
-import type { InviteContent } from '@/types/database'
 
-export function EntryGate({ content, onOpen }: { content: InviteContent; onOpen: () => void }) {
+// initials: "T|S"; line and hint are the cover text set in the builder
+export function EntryGate({ initials, line, hint, onOpen }: { initials: string; line: string; hint: string; onOpen: () => void }) {
   const reduced = usePrefersReducedMotion()
   const [closing, setClosing] = useState(false)
 
@@ -16,21 +16,11 @@ export function EntryGate({ content, onOpen }: { content: InviteContent; onOpen:
     setTimeout(onOpen, 700) // matches the CSS transition duration below
   }
 
-  // Initials from the couple's names — "Maria & Sam" -> "M & S".
-  // Falls back to the first letter of the event name if no couple names exist.
-  const initials = (() => {
-    if (content.couple_names) {
-      const parts = content.couple_names.split(/&| and /i).map((p) => p.trim()[0]).filter(Boolean)
-      if (parts.length >= 2) return `${parts[0]} ${parts[1]}`
-    }
-    return content.event_name?.[0] ?? ''
-  })()
-
   return (
     <button
       type="button"
       onClick={handleTap}
-      aria-label="Tap to open your invitation"
+      aria-label={`${line}. ${hint}`}
       className="relative flex min-h-screen w-full touch-manipulation items-center justify-center overflow-hidden transition-all duration-700 ease-in"
       style={{
         backgroundColor: 'var(--invite-background)',
@@ -51,10 +41,17 @@ export function EntryGate({ content, onOpen }: { content: InviteContent; onOpen:
             className="tap-seal__inner"
             style={{ backgroundColor: 'var(--invite-accent)', borderColor: 'var(--invite-accent)', color: 'var(--invite-primary)' }}
           >
-            <span style={{ fontFamily: 'var(--invite-heading-font)', fontStyle: 'italic' }}>{initials.trim().split(/\s+/).join(' | ')}</span>
+            <span style={{ fontFamily: 'var(--invite-heading-font)', fontStyle: 'italic' }}>{initials.split('|').map((x) => x.trim()).filter(Boolean).join(' | ')}</span>
           </div>
         </div>
       </div>
+
+      <div className="absolute inset-x-0 top-[22%] z-10 px-6 text-center" style={{ color: 'var(--invite-primary)' }}>
+        <p className="text-3xl sm:text-4xl" style={{ fontFamily: 'var(--invite-accent-font)' }}>{line}</p>
+      </div>
+      <p className="absolute inset-x-0 bottom-[12%] z-10 text-center text-xs uppercase tracking-[0.3em]" style={{ color: 'var(--invite-muted)', fontFamily: 'var(--invite-body-font)' }}>
+        {hint}
+      </p>
     </button>
   )
 }

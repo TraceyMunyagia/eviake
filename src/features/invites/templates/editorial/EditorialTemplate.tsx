@@ -41,17 +41,17 @@ export function EditorialTemplate({ content, tokens, sections, mode, onRsvp, che
       )}
       <MusicPlayer content={content} />
       <main>
-        <Hero content={content} />
-        {isOn(sections, 'message') && <InvitationMessage content={content} mode={mode} />}
-        <EventDetails content={content} mode={mode} />
-        {sections.countdown && <Countdown eventDate={content.event_date} eventTime={content.event_time} mode={mode} />}
-        {isOn(sections, 'story') && <AboutStory content={content} mode={mode} />}
-        {sections.schedule && <Schedule items={content.schedule} mode={mode} />}
-        {sections.gallery && <Gallery urls={content.gallery_urls} mode={mode} />}
-        {isOn(sections, 'dress_code') && <DressCode content={content} mode={mode} />}
-        {isOn(sections, 'location') && <Location content={content} mode={mode} />}
-        {sections.rsvp && <RsvpSection content={content} mode={mode} onRsvp={onRsvp} advanced={sections.rsvp_advanced || sections.guest_management} guestManagement={sections.guest_management} />}
-        {isOn(sections, 'closing') && <Closing content={content} mode={mode} />}
+        <div data-section="hero"><Hero content={content} /></div>
+        {isOn(sections, 'message') && <div data-section="message"><InvitationMessage content={content} mode={mode} /></div>}
+        <div data-section="details"><EventDetails content={content} mode={mode} /></div>
+        {sections.countdown && <div data-section="countdown"><Countdown eventDate={content.event_date} eventTime={content.event_time} mode={mode} showSeconds={content.countdown_show_seconds !== false} doneMessage={content.countdown_finished_message || undefined} /></div>}
+        {isOn(sections, 'story') && <div data-section="story"><AboutStory content={content} mode={mode} /></div>}
+        {sections.schedule && <div data-section="schedule"><Schedule items={content.schedule} mode={mode} /></div>}
+        {sections.gallery && <div data-section="gallery"><Gallery urls={content.gallery_urls} mode={mode} /></div>}
+        {isOn(sections, 'dress_code') && <div data-section="dress_code"><DressCode content={content} mode={mode} /></div>}
+        {isOn(sections, 'location') && <div data-section="location"><Location content={content} mode={mode} /></div>}
+        {sections.rsvp && <div data-section="rsvp"><RsvpSection content={content} mode={mode} onRsvp={onRsvp} advanced={sections.rsvp_advanced || sections.guest_management} guestManagement={sections.guest_management} /></div>}
+        {isOn(sections, 'closing') && <div data-section="closing"><Closing content={content} mode={mode} /></div>}
         {sections.guest_management && <CheckInSection mode={mode} token={checkInToken} available={checkInAvailable} />}
       </main>
     </div>

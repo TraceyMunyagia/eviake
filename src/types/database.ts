@@ -280,6 +280,16 @@ export type InviteContent = {
   }[]
   hashtag?: string
   social_links?: { name: string; url?: string }[]
+  // Builder section options (Week 23)
+  hero_image_alt?: string
+  countdown_show_seconds?: boolean
+  countdown_finished_message?: string
+  maps_url?: string
+  marquee_text?: string
+  cover_enabled?: boolean
+  cover_initials?: string
+  cover_line?: string
+  cover_hint?: string
 
 }
 export type InviteTokens = {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { uploadInviteMedia } from './uploadInviteMedia'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/Button'
 import type { Invite, InviteContent } from '@/types/database'
@@ -100,20 +101,7 @@ export function MediaPanel({ invite, onSaved }: { invite: Invite; onSaved: (invi
     setContent((previous) => ({ ...previous, [key]: value }))
   }
 
-  async function upload(file: File, kind: 'image' | 'video' | 'audio' = 'image') {
-    if (!file.type.startsWith(`${kind}/`)) throw new Error(`${file.name} is not a ${kind}.`)
-    const maxSize = kind === 'video' ? 50 : 10
-    if (file.size > maxSize * 1024 * 1024) throw new Error(`${file.name} is larger than ${maxSize} MB.`)
-    const safeName = file.name.replace(/[^a-z0-9._-]/gi, '-').toLowerCase()
-    const path = `${invite.business_id}/${invite.id}/${crypto.randomUUID()}-${safeName}`
-    const { error } = await supabase.storage.from('invite-media').upload(path, file, {
-      contentType: file.type,
-      cacheControl: '3600',
-      upsert: false,
-    })
-    if (error) throw new Error(error.message)
-    return supabase.storage.from('invite-media').getPublicUrl(path).data.publicUrl
-  }
+  const upload = (file: File, kind: 'image' | 'video' | 'audio' = 'image') => uploadInviteMedia(invite, file, kind)
 
   async function pickSingle(key: ImageKey, files: File[]) {
     setBusy(true); setMessage(null)

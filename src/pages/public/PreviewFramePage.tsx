@@ -31,6 +31,23 @@ export function PreviewFramePage() {
     return () => window.removeEventListener('message', onMessage)
   }, [])
 
+  // The builder asks to show the section being edited; flash it so it's easy to spot
+  useEffect(() => {
+    function onScrollTo(e: MessageEvent) {
+      if (e.origin !== window.location.origin || e.data?.type !== 'evia:scroll-to') return
+      const el = document.querySelector<HTMLElement>(`[data-section="${CSS.escape(String(e.data.section))}"]`)
+      if (!el) return
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+      el.classList.remove('evia-section-flash')
+      void el.offsetWidth // restart the animation
+      el.classList.add('evia-section-flash')
+      window.setTimeout(() => el.classList.remove('evia-section-flash'), 1400)
+    }
+    window.addEventListener('message', onScrollTo)
+    return () => window.removeEventListener('message', onScrollTo)
+  }, [])
+
   if (!payload) return <p className="p-10 text-center text-sm text-muted">Loading preview…</p>
 
   const Template = getTemplateComponent(payload.template)

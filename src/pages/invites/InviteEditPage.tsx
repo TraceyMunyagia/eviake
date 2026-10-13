@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { publicInviteUrl, rsvpTrackUrl } from '@/lib/inviteLinks'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Copy } from 'lucide-react'
@@ -9,18 +9,21 @@ import { ErrorState } from '@/components/ui/ErrorState'
 import { InviteLivePreview } from '@/features/invites/builder/InviteLivePreview'
 import { BuilderTabs } from '@/features/invites/builder/BuilderTabs'
 import { BuilderSteps, StepNav, type StepId } from '@/features/invites/builder/BuilderSteps'
+import { useBuilderStep } from '@/features/invites/builder/useBuilderStep'
+import { DetailsStep } from '@/features/invites/builder/DetailsStep'
+import { PublishStep } from '@/features/invites/builder/PublishStep'
+import { runPublishChecks } from '@/features/invites/builder/publishChecks'
+import { previewScrollTo } from '@/features/invites/builder/previewBridge'
+import { uploadInviteMedia } from '@/features/invites/builder/uploadInviteMedia'
+import type { InvitePatch } from '@/features/invites/builder/content/PanelContext'
 import { StepTemplate } from '@/features/invites/builder/StepTemplate'
 import { StepSections } from '@/features/invites/builder/StepSections'
 import { carryFlags, resolveSections, type SectionFlags } from '@/features/invites/sections/sectionModel'
-import type { PackageKey, TemplateKey } from '@/features/invites/sections/catalog'
+import type { PackageKey, SectionKey, TemplateKey } from '@/features/invites/sections/catalog'
 import { buildInviteDefaults } from '@/lib/inviteDefaults'
-import { DetailsPanel } from '@/features/invites/builder/DetailsPanel'
 import type { Invite } from '@/types/database'
-import { RsvpSettingsPanel } from '@/features/invites/builder/RspvSettingsPanel'
-import { PublishButton } from '@/features/invites/builder/PublishButton'
 import { DesignPanel } from '@/features/invites/builder/DesignPanel'
 import { MediaPanel } from '@/features/invites/builder/MediaPanel'
-import { GuestbookPanel } from '@/features/invites/builder/GuestbookPanel'
 
 export function InviteEditPage() {
   const { id } = useParams()
@@ -28,9 +31,8 @@ export function InviteEditPage() {
   const [invite, setInvite] = useState<Invite | null>(null)
   const [state, setState] = useState<'loading' | 'ready' | 'missing'>('loading')
   const [error, setError] = useState<string | null>(null)
-  const [step, setStep] = useState<StepId | null>(null)
-  const [detailsTab, setDetailsTab] = useState('details')
   const [designTab, setDesignTab] = useState('design')
+  const [activeSection, setActiveSection] = useState<SectionKey | null>('hero')
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [copied, setCopied] = useState<'invite' | 'rsvp' | null>(null)
@@ -63,15 +65,10 @@ export function InviteEditPage() {
         if (eventError) throw new Error(eventError.message)
         loadedInvite = { ...loadedInvite, event_id: eventId as string }
       }
-      setInvite(loadedInvite)
-      // A brand-new draft (never saved since it was created) opens on Template; everything else on Details
-      if (loadedInvite) {
-        const fresh = loadedInvite.status === 'draft' && loadedInvite.created_at === loadedInvite.updated_at
-        setStep((current) => current ?? (fresh ? 'template' : 'details'))
-      }
+      replaceInvite(loadedInvite)
       setState(data ? 'ready' : 'missing')
     } catch (err) {
-      setInvite(null)
+      replaceInvite(null)
       setError(err instanceof Error ? err.message : 'Could not load this invite.')
       setState('missing')
     }
@@ -79,39 +76,98 @@ export function InviteEditPage() {
 
   useEffect(() => { load() }, [load])
 
+  // A brand-new draft (never saved since it was created) opens on Template; everything else on Details.
+  // The step lives in the URL, so a refresh stays put.
+  const fresh = !!invite && invite.status === 'draft' && invite.created_at === invite.updated_at
+  const [urlStep, setUrlStep] = useBuilderStep(fresh ? 'template' : 'details')
+
   // Always work from resolved flags, never the raw column (older invites lack the newer keys)
   const flags = useMemo(
     () => (invite ? resolveSections(invite.sections, invite.template as TemplateKey, invite.package as PackageKey) : {}),
     [invite],
   )
 
-  // Optimistic, so the preview updates straight away; rolled back if the save fails
-  async function patchInvite(patch: Partial<Invite>) {
-    if (!invite) return
-    const previous = invite
-    setInvite({ ...invite, ...patch })
+  // ---- Autosave -------------------------------------------------------------------------------
+  // Edits apply locally at once (so the preview updates as you type) and are written after a short pause.
+  // Only the changed columns are sent, using their latest local values, so quick edits never overwrite each other.
+  const inviteRef = useRef<Invite | null>(null)
+  const pending = useRef(new Set<keyof Invite>())
+  const timer = useRef<number | undefined>(undefined)
+
+  function replaceInvite(next: Invite | null) {
+    inviteRef.current = next
+    setInvite(next)
+  }
+
+  const flush = useCallback(async (): Promise<boolean> => {
+    window.clearTimeout(timer.current)
+    const current = inviteRef.current
+    const keys = [...pending.current]
+    if (!current || keys.length === 0) return true
+    pending.current.clear()
     setSaving(true)
-    setSaveError(null)
-    const { data, error: err } = await supabase.from('invites').update(patch).eq('id', invite.id).select('*').single()
+    const patch = Object.fromEntries(keys.map((k) => [k, current[k]]))
+    const { error: err } = await supabase.from('invites').update(patch).eq('id', current.id)
     setSaving(false)
     if (err) {
-      setInvite(previous)
-      return setSaveError(err.message)
+      keys.forEach((k) => pending.current.add(k)) // retried with the next change or step switch
+      setSaveError(`Changes not saved: ${err.message}`)
+      return false
     }
-    setInvite(data as Invite)
+    setSaveError(null)
+    return true
+  }, [])
+
+  function updateInvite(patch: InvitePatch) {
+    const current = inviteRef.current
+    if (!current) return
+    const p = typeof patch === 'function' ? patch(current) : patch
+    ;(Object.keys(p) as (keyof Invite)[]).forEach((k) => pending.current.add(k))
+    replaceInvite({ ...current, ...p })
+    window.clearTimeout(timer.current)
+    timer.current = window.setTimeout(flush, 700)
+  }
+
+  // Save anything pending when leaving the page, and warn if the tab closes mid-save
+  useEffect(() => {
+    const warn = (e: BeforeUnloadEvent) => { if (pending.current.size) e.preventDefault() }
+    window.addEventListener('beforeunload', warn)
+    return () => { window.removeEventListener('beforeunload', warn); flush() }
+  }, [flush])
+
+  const upload = (file: File, kind: 'image' | 'video' | 'audio' = 'image') =>
+    inviteRef.current ? uploadInviteMedia(inviteRef.current, file, kind) : Promise.reject(new Error('The invite has not loaded.'))
+
+  const step = urlStep
+  function setStep(s: StepId) {
+    flush()
+    setUrlStep(s)
   }
 
   function changeTemplate(t: TemplateKey) {
     if (!invite || t === invite.template) return
     // The old palette was chosen for the previous look, so colours and fonts reset to the new template's defaults
-    patchInvite({
+    updateInvite({
       template: t,
       tokens: buildInviteDefaults(t, invite.package).tokens,
       sections: carryFlags(flags, t, invite.package as PackageKey),
     })
   }
 
-  const changeSections = (next: SectionFlags) => patchInvite({ sections: next })
+  const changeSections = (next: SectionFlags) => updateInvite({ sections: next })
+
+  const checks = useMemo(
+    () => (invite ? runPublishChecks(invite.template as TemplateKey, flags, invite.content) : []),
+    [invite, flags],
+  )
+
+  function fix(s: StepId, section?: SectionKey) {
+    setStep(s)
+    if (section) {
+      setActiveSection(section)
+      setTimeout(() => previewScrollTo(section), 150)
+    }
+  }
 
   function copy(text: string, which: 'invite' | 'rsvp') {
     navigator.clipboard.writeText(text)
@@ -175,10 +231,14 @@ export function InviteEditPage() {
       )}
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <BuilderSteps step={step ?? 'details'} onStep={setStep} />
-        {saving && <span className="text-xs text-muted">Saving…</span>}
+        <BuilderSteps step={step} onStep={setStep} />
+        <span className="text-xs text-muted" aria-live="polite">{saving ? 'Saving…' : saveError ? '' : 'All changes saved'}</span>
       </div>
-      {saveError && <p role="alert" className="mb-4 text-sm text-red-700">{saveError}</p>}
+      {saveError && (
+        <p role="alert" className="mb-4 text-sm text-red-700">
+          {saveError} <button type="button" className="underline" onClick={() => flush()}>Try again</button>
+        </p>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         <div>
@@ -195,47 +255,33 @@ export function InviteEditPage() {
               onChange={changeSections}
             />
           )}
-          {(step ?? 'details') === 'details' && (
-            <>
-              <BuilderTabs
-                tabs={[
-                  { key: 'details', label: 'Details' },
-                  { key: 'rsvp', label: 'RSVP' },
-                  ...(invite.template === 'romance' ? [{ key: 'guestbook', label: 'Guestbook' }] : []),
-                ]}
-                active={detailsTab}
-                onChange={setDetailsTab}
-              />
-              <div className="mt-4">
-                {detailsTab === 'details' && <DetailsPanel invite={invite} onSaved={setInvite} />}
-                {detailsTab === 'rsvp' && <RsvpSettingsPanel invite={invite} onSaved={setInvite} />}
-                {detailsTab === 'guestbook' && invite.template === 'romance' && <GuestbookPanel invite={invite} />}
-              </div>
-            </>
+          {step === 'details' && (
+            <DetailsStep
+              invite={invite}
+              template={invite.template as TemplateKey}
+              pkg={invite.package as PackageKey}
+              flags={flags}
+              updateInvite={updateInvite}
+              replaceInvite={replaceInvite}
+              upload={upload}
+              active={activeSection}
+              onActive={setActiveSection}
+              onGoSections={() => setStep('sections')}
+            />
           )}
           {step === 'design' && (
             <>
               <BuilderTabs tabs={[{ key: 'design', label: 'Design' }, { key: 'media', label: 'Media' }]} active={designTab} onChange={setDesignTab} />
               <div className="mt-4">
-                {designTab === 'design' && <DesignPanel invite={invite} onSaved={setInvite} />}
-                {designTab === 'media' && <MediaPanel invite={invite} onSaved={setInvite} />}
+                {designTab === 'design' && <DesignPanel invite={invite} onSaved={replaceInvite} />}
+                {designTab === 'media' && <MediaPanel invite={invite} onSaved={replaceInvite} />}
               </div>
             </>
           )}
           {step === 'publish' && (
-            <div className="space-y-3 rounded-2xl border border-line bg-white p-5 shadow-sm">
-              <h2 className="font-display text-lg text-plum-900">Publish</h2>
-              {invite.status === 'draft' ? (
-                <>
-                  <p className="text-sm text-muted">Publishing creates the guest link and the client's RSVP-tracking link. Check the preview first.</p>
-                  <PublishButton invite={invite} onSaved={setInvite} />
-                </>
-              ) : (
-                <p className="text-sm text-muted">This invite is live. Its guest and RSVP-tracking links are at the top of this page.</p>
-              )}
-            </div>
+            <PublishStep invite={invite} checks={checks} onFix={fix} onPublished={replaceInvite} beforePublish={flush} />
           )}
-          <StepNav step={step ?? 'details'} onStep={setStep} />
+          <StepNav step={step} onStep={setStep} />
         </div>
         <InviteLivePreview invite={invite} sections={flags} />
       </div>
