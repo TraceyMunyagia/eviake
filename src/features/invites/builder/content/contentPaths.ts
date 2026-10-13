@@ -48,6 +48,7 @@ export const P = {
   logo: 'logo_url',
   heroVideo: 'hero_video_url',
   music: 'music_url',
+  rsvpBy: 'rsvp_deadline',
 
   coverEnabled: 'cover_enabled',
   coverInitials: 'cover_initials',

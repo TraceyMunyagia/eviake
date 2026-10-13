@@ -21,6 +21,7 @@ export function sectionWarning(key: SectionKey, content: Content | null | undefi
         ? null : 'No dress code added yet.'
     case 'location': return getIn(c, P.venueName) || getIn(c, P.venueAddress) ? null : 'No venue or address yet.'
     case 'countdown': return getIn(c, P.date) ? null : 'No event date set.'
+    case 'rsvp': return getIn(c, P.rsvpBy) ? null : 'No RSVP-by date yet.'
     default: return null
   }
 }

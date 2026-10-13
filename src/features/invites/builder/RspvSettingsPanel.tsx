@@ -39,9 +39,25 @@ export function RsvpSettingsPanel({ content, advanced, onChange }: {
 
   return (
     <div className="space-y-5 rounded-2xl border border-line bg-white p-5 shadow-sm">
+      <div>
+        <TextInput
+          id="rs-deadline" label="RSVP by" type="date" value={content.rsvp_deadline ?? ''}
+          max={content.event_date || undefined}
+          onChange={(e) => onChange({ rsvp_deadline: e.target.value || undefined })}
+        />
+        <p className="mt-1 text-xs text-muted">
+          {content.rsvp_deadline
+            ? "Guests see a countdown to this date, and the RSVP form closes after it (replies stay open all day on the date itself)."
+            : 'Optional. Set one and guests see a countdown on the RSVP section.'}
+        </p>
+        {content.rsvp_deadline && content.event_date && content.rsvp_deadline > content.event_date && (
+          <p role="alert" className="mt-1 text-xs text-amber-800">⚠ This is after the event date ({content.event_date}).</p>
+        )}
+      </div>
+
       {!advanced ? (
         <p className="rounded-lg bg-gold-100 px-3 py-2 text-xs text-plum-900">
-          Reply-by deadlines, guest limits and custom questions are a Signature and Experience feature.
+          Guest limits and custom questions are a Signature and Experience feature.
           This invite's Essential package shows a simple name + attending RSVP only.
         </p>
       ) : (
@@ -51,7 +67,6 @@ export function RsvpSettingsPanel({ content, advanced, onChange }: {
       {advanced && (
         <>
           <div className="grid gap-4 sm:grid-cols-2">
-            <TextInput id="rs-deadline" label="Reply-by date" type="date" value={content.rsvp_deadline ?? ''} onChange={(e) => onChange({ rsvp_deadline: e.target.value || undefined })} />
             <TextInput
               id="rs-max" label="Max guests per reply (including them)" type="number" min={1} max={50} value={maxParty}
               onChange={(e) => {

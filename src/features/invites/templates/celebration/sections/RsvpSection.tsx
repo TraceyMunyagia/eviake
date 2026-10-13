@@ -1,10 +1,10 @@
+import { RsvpCountdown, useRsvpDeadline } from '@/features/invites/templates/shared/RsvpDeadline'
 import { useState, type FormEvent } from 'react'
 import { Minus, Plus, Sparkles } from 'lucide-react'
 import { celebrationType } from '@/features/invites/templates/celebration/type'
 import { ActionButton } from '@/features/invites/templates/celebration/components/ActionButton'
 import { Confetti } from '@/features/invites/templates/celebration/components/Confetti'
 import { Reveal } from '@/features/invites/templates/celebration/components/Reveal'
-import { formatEventDate, parseEventDate } from '@/lib/eventFormat'
 import type { TemplateProps } from '@/features/invites/templates/types'
 import type { InviteContent } from '@/types/database'
 
@@ -39,8 +39,7 @@ export function RsvpSection({ content, mode, onRsvp, advanced, guestManagement }
   const inPreview = mode === 'preview'
   const maxParty = Math.max(1, content.rsvp_max_party ?? 10)
   const questions = content.rsvp_questions ?? []
-  const deadline = parseEventDate(content.rsvp_deadline)
-  const closed = deadline ? Date.now() >= deadline.getTime() + 86_400_000 : false // open through the deadline day
+  const { closed } = useRsvpDeadline(content.rsvp_deadline) // open through the deadline day
   // Without a submit handler the form is only ever a preview demo. A published
   // invite must not pretend to record a response it can't save.
   const canSubmit = Boolean(onRsvp) || inPreview
@@ -92,11 +91,12 @@ export function RsvpSection({ content, mode, onRsvp, advanced, guestManagement }
           Are you in?
         </span>
         <h2 className={`mt-5 ${celebrationType.h2}`} style={{ fontFamily: 'var(--invite-heading-font)' }}>RSVP</h2>
-        {deadline && !closed && (
-          <p className={`mt-3 ${celebrationType.body} font-semibold`} style={{ fontFamily: 'var(--invite-body-font)' }}>
-            Reply by {formatEventDate(content.rsvp_deadline)}
-          </p>
-        )}
+        <RsvpCountdown
+          deadline={content.rsvp_deadline}
+          className="mt-4"
+          tileClass="rounded-2xl border-2 font-extrabold"
+          tileStyle={{ borderColor: 'var(--invite-primary)', backgroundColor: 'var(--invite-background)', color: 'var(--invite-primary)' }}
+        />
 
         <div className="mt-8">
           {closed ? (

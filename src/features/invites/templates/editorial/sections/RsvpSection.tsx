@@ -1,3 +1,4 @@
+import { RsvpClosed, RsvpCountdown, useRsvpDeadline } from '@/features/invites/templates/shared/RsvpDeadline'
 import { editorialType } from '@/features/invites/templates/editorial/type'
 import { Divider } from '@/features/invites/templates/editorial/components/Divider'
 import { SectionLabel } from '@/features/invites/templates/editorial/components/SectionLabel'
@@ -12,7 +13,9 @@ export function RsvpSection({ content, mode, onRsvp, advanced, guestManagement }
   onRsvp?: TemplateProps['onRsvp']
   advanced?: boolean
   guestManagement?: boolean
-}) {  return (
+}) {
+  const { closed } = useRsvpDeadline(content.rsvp_deadline)
+  return (
     <Reveal mode={mode}>
       <section className="px-6 py-16 text-center sm:py-24" style={{ color: 'var(--invite-primary)' }}>
         <div
@@ -27,8 +30,9 @@ export function RsvpSection({ content, mode, onRsvp, advanced, guestManagement }
               {content.description}
             </p>
           )}
+          <RsvpCountdown deadline={content.rsvp_deadline} className="mt-6" tileClass="border" tileStyle={{ borderColor: 'var(--invite-hairline)' }} />
           <div className="mt-8">
-            <SimpleRsvpForm content={content} mode={mode} onRsvp={onRsvp} buttonLabel="Respond" advanced={advanced} />
+            {closed ? <RsvpClosed /> : <SimpleRsvpForm content={content} mode={mode} onRsvp={onRsvp} buttonLabel="Respond" advanced={advanced} />}
           </div>
         </div>
       </section>
