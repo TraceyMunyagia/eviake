@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { resolveSections } from '@/features/invites/sections/sectionModel'
+import { useInviteFonts } from '@/features/invites/design/useInviteFonts'
 import { useParams } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { getTemplateComponent } from '@/features/invites/templates/registry'
@@ -10,6 +11,7 @@ type PublicInviteData = Pick<Invite, 'template' | 'package' | 'content' | 'token
 export function PublicInvitePage() {
   const { slug } = useParams()
   const [data, setData] = useState<PublicInviteData | null>(null)
+  useInviteFonts(data?.tokens)
   const [state, setState] = useState<'loading' | 'ready' | 'missing'>('loading')
   const [guestbookMessages, setGuestbookMessages] = useState<GuestbookMessage[]>([])
   const [checkInToken, setCheckInToken] = useState<string | null>(null)

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getTemplateComponent } from '@/features/invites/templates/registry'
+import { useInviteFonts } from '@/features/invites/design/useInviteFonts'
 import type { GuestbookMessage, InviteContent, InviteSections, InviteTemplateKey, InviteTokens } from '@/types/database'
 
 
@@ -18,6 +19,7 @@ type Payload = {
 // which is what a real phone does. Only same-origin messages are accepted.
 export function PreviewFramePage() {
   const [payload, setPayload] = useState<Payload | null>(null)
+  useInviteFonts(payload?.tokens)
 
   useEffect(() => {
     function onMessage(e: MessageEvent) {

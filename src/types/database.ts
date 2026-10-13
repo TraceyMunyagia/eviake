@@ -263,6 +263,7 @@ export type InviteContent = {
   floral_accent_url?: string
   closing_image_url?: string
   gallery_captions?: string[] // index-aligned with gallery_urls
+  gallery_alts?: string[] // index-aligned with gallery_urls
   [key: string]: unknown
   story_items?: { date?: string; title?: string; text?: string; image_url?: string }[]
   venue_image_url?: string
@@ -290,6 +291,11 @@ export type InviteContent = {
   cover_initials?: string
   cover_line?: string
   cover_hint?: string
+  // Music: an uploaded file (music_url) or a Spotify track, played from music_start for music_duration seconds, looping
+  music_source?: 'file' | 'spotify'
+  music_spotify_url?: string
+  music_start?: number
+  music_duration?: number
 
 }
 export type InviteTokens = {

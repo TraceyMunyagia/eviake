@@ -25,9 +25,11 @@ export const P = {
   dressTitle: 'dress_code',
   dressBody: 'dress_code_note',
   dressColours: 'dress_code_palette',
+  dressImages: 'dress_code_image_urls',
 
   gallery: 'gallery_urls',
   galleryCaptions: 'gallery_captions', // index-aligned with gallery_urls
+  galleryAlts: 'gallery_alts', // index-aligned with gallery_urls
   schedule: 'schedule',
   story: 'story_items', // Romance timeline
   aboutTitle: 'about_title', // Editorial About / Story
@@ -42,6 +44,10 @@ export const P = {
   hashtag: 'hashtag',
   marquee: 'marquee_text',
   socialLinks: 'social_links',
+
+  logo: 'logo_url',
+  heroVideo: 'hero_video_url',
+  music: 'music_url',
 
   coverEnabled: 'cover_enabled',
   coverInitials: 'cover_initials',

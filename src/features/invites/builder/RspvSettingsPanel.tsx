@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/Button'
 import { Field, TextInput, inputClass } from '@/components/ui/Field'
-import type { Invite, InviteContent } from '@/types/database'
+import type { InviteContent } from '@/types/database'
 
 type Question = NonNullable<InviteContent['rsvp_questions']>[number]
+type RsvpFields = Pick<InviteContent, 'rsvp_deadline' | 'rsvp_max_party' | 'rsvp_questions'>
 
-export function RsvpSettingsPanel({ invite, onSaved }: { invite: Invite; onSaved: (invite: Invite) => void }) {
-  const [deadline, setDeadline] = useState(invite.content.rsvp_deadline || '')
-  const [maxParty, setMaxParty] = useState(String(invite.content.rsvp_max_party ?? 10))
-  const [questions, setQuestions] = useState<Question[]>(invite.content.rsvp_questions || [])
+// Every change goes through the builder's autosave (onChange), so there is no separate Save button to forget
+export function RsvpSettingsPanel({ content, advanced, onChange }: {
+  content: InviteContent
+  advanced: boolean
+  onChange: (patch: RsvpFields) => void
+}) {
+  const questions = content.rsvp_questions ?? []
+  const [maxParty, setMaxParty] = useState(String(content.rsvp_max_party ?? 10))
+  useEffect(() => setMaxParty(String(content.rsvp_max_party ?? 10)), [content.rsvp_max_party])
 
   const [label, setLabel] = useState('')
   const [type, setType] = useState<Question['type']>('text')
@@ -18,45 +23,18 @@ export function RsvpSettingsPanel({ invite, onSaved }: { invite: Invite; onSaved
   const [required, setRequired] = useState(false)
   const [draftError, setDraftError] = useState<string | null>(null)
 
-  const [busy, setBusy] = useState(false)
-  const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null)
-  const advanced = invite.package === 'experience' || invite.sections.rsvp_advanced
-
-  useEffect(() => {
-    setDeadline(invite.content.rsvp_deadline || '')
-    setMaxParty(String(invite.content.rsvp_max_party ?? 10))
-    setQuestions(invite.content.rsvp_questions || [])
-  }, [invite.id, invite.content])
-
-  async function addQuestion() {
+  function addQuestion() {
     if (!label.trim()) return setDraftError('Give the question some text.')
     const opts = options.split(',').map((o) => o.trim()).filter(Boolean)
     if (type === 'choice' && opts.length < 2) return setDraftError('Add at least two options, separated by commas.')
     setDraftError(null)
-    const nextQuestions = [
-      ...questions,
-      { id: `q_${Date.now().toString(36)}`, label: label.trim(), type, options: type === 'choice' ? opts : undefined, required },
-    ]
-    setQuestions(nextQuestions)
-    await save(nextQuestions)
-    if (message?.ok === false) return
+    onChange({
+      rsvp_questions: [
+        ...questions,
+        { id: `q_${Date.now().toString(36)}`, label: label.trim(), type, options: type === 'choice' ? opts : undefined, required },
+      ],
+    })
     setLabel(''); setOptions(''); setRequired(false); setType('text')
-  }
-
-  async function save(nextQuestions = questions) {
-    setBusy(true)
-    setMessage(null)
-    const content: InviteContent = {
-      ...invite.content,
-      rsvp_deadline: deadline || undefined,
-      rsvp_max_party: Math.min(50, Math.max(1, Math.floor(Number(maxParty) || 1))),
-      rsvp_questions: nextQuestions,
-    }
-    const { data, error } = await supabase.from('invites').update({ content }).eq('id', invite.id).select('*').single()
-    setBusy(false)
-    if (error) return setMessage({ ok: false, text: error.message })
-    onSaved(data as Invite)
-    setMessage({ ok: true, text: 'Saved.' })
   }
 
   return (
@@ -73,8 +51,16 @@ export function RsvpSettingsPanel({ invite, onSaved }: { invite: Invite; onSaved
       {advanced && (
         <>
           <div className="grid gap-4 sm:grid-cols-2">
-            <TextInput id="rs-deadline" label="Reply-by date" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
-            <TextInput id="rs-max" label="Max guests per reply (including them)" type="number" min={1} max={50} value={maxParty} onChange={(e) => setMaxParty(e.target.value)} />
+            <TextInput id="rs-deadline" label="Reply-by date" type="date" value={content.rsvp_deadline ?? ''} onChange={(e) => onChange({ rsvp_deadline: e.target.value || undefined })} />
+            <TextInput
+              id="rs-max" label="Max guests per reply (including them)" type="number" min={1} max={50} value={maxParty}
+              onChange={(e) => {
+                setMaxParty(e.target.value)
+                const n = Math.floor(Number(e.target.value))
+                if (n >= 1) onChange({ rsvp_max_party: Math.min(50, n) })
+              }}
+              onBlur={() => setMaxParty(String(content.rsvp_max_party ?? 10))}
+            />
           </div>
 
           <div className="space-y-3">
@@ -87,7 +73,7 @@ export function RsvpSettingsPanel({ invite, onSaved }: { invite: Invite; onSaved
                       <p className="font-medium">{q.label}{q.required ? ' *' : ''}</p>
                       <p className="text-xs text-muted">{q.type === 'choice' ? `Choose one: ${q.options?.join(', ')}` : 'Short answer'}</p>
                     </div>
-                    <button aria-label={`Remove ${q.label}`} onClick={() => setQuestions((prev) => prev.filter((x) => x.id !== q.id))} className="text-muted hover:text-red-700">
+                    <button aria-label={`Remove ${q.label}`} onClick={() => onChange({ rsvp_questions: questions.filter((x) => x.id !== q.id) })} className="text-muted hover:text-red-700">
                       <Trash2 className="size-4" />
                     </button>
                   </li>
@@ -96,7 +82,11 @@ export function RsvpSettingsPanel({ invite, onSaved }: { invite: Invite; onSaved
             )}
 
             <div className="space-y-3 rounded-lg border border-dashed border-line p-3">
-              <TextInput id="rs-q" label="Question" placeholder="Any dietary requirements?" value={label} onChange={(e) => setLabel(e.target.value)} />
+              <TextInput
+                id="rs-q" label="Question" placeholder="Any dietary requirements?" value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addQuestion() } }}
+              />
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="Answer type" htmlFor="rs-type">
                   <select id="rs-type" value={type} onChange={(e) => setType(e.target.value as Question['type'])} className={inputClass}>
@@ -113,14 +103,13 @@ export function RsvpSettingsPanel({ invite, onSaved }: { invite: Invite; onSaved
                 Guests must answer this
               </label>
               {draftError && <p role="alert" className="text-sm text-red-700">{draftError}</p>}
-              <Button type="button" variant="secondary" onClick={addQuestion}><Plus className="size-4" /> Add question</Button>
+              {label.trim() && !draftError && <p className="text-xs text-amber-800">Not added yet. Click Add question (or press Enter) to put it on the invite.</p>}
+              <Button type="button" variant={label.trim() ? 'primary' : 'secondary'} onClick={addQuestion}><Plus className="size-4" /> Add question</Button>
             </div>
           </div>
       </>
       )}
 
-      {message && <p role={message.ok ? 'status' : 'alert'} className={message.ok ? 'text-sm text-green-800' : 'text-sm text-red-700'}>{message.text}</p>}
-      <Button onClick={() => save()} disabled={busy}>{busy ? 'Saving…' : 'Save RSVP settings'}</Button>
     </div>
   )
 }

@@ -17,24 +17,21 @@ interface PanelCtx {
   updateInvite: UpdateInvite
   /** Replace the local invite with a row a panel already saved itself. */
   replaceInvite: (invite: Invite) => void
-  /** Upload a file to the invite's media folder and return its public URL. */
-  upload: (file: File, kind?: 'image' | 'video' | 'audio') => Promise<string>
 }
 
 const Ctx = createContext<PanelCtx | null>(null)
 
-export function PanelProvider({ invite, template, pkg, updateInvite, replaceInvite, upload, children }: {
+export function PanelProvider({ invite, template, pkg, updateInvite, replaceInvite, children }: {
   invite: Invite
   template: TemplateKey
   pkg: PackageKey
   updateInvite: UpdateInvite
   replaceInvite: (invite: Invite) => void
-  upload: PanelCtx['upload']
   children: ReactNode
 }) {
   const content: Content = invite.content ?? {}
   const value: PanelCtx = {
-    invite, template, pkg, content, updateInvite, replaceInvite, upload,
+    invite, template, pkg, content, updateInvite, replaceInvite,
     get: (path) => getIn(content, path),
     setPath: (path, v) => updateInvite((current) => ({ content: setIn(current.content, path, v) })),
   }

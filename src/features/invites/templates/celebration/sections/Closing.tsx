@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { Sparkles } from 'lucide-react'
 import { celebrationType } from '@/features/invites/templates/celebration/type'
 import { ActionButton } from '@/features/invites/templates/celebration/components/ActionButton'
 import { Confetti } from '@/features/invites/templates/celebration/components/Confetti'
@@ -13,7 +12,7 @@ export function Closing({ content, mode }: { content: InviteContent; mode?: 'pre
   const { ref, visible } = useScrollReveal<HTMLElement>()
   const [burst, setBurst] = useState(0)
 
-  // One burst the first time the closing scrolls into view; the button fires more.
+  // One burst the first time the closing scrolls into view.
   useEffect(() => {
     if (visible) setBurst((b) => b + 1)
   }, [visible])
@@ -61,12 +60,6 @@ export function Closing({ content, mode }: { content: InviteContent; mode?: 'pre
               ))}
             </div>
           )}
-
-          <div className="mt-8">
-            <ActionButton tone="accent" icon={<Sparkles className="size-4" />} onClick={() => setBurst((b) => b + 1)}>
-              Throw more confetti
-            </ActionButton>
-          </div>
         </Reveal>
       </div>
 

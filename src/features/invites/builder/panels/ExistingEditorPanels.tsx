@@ -38,10 +38,18 @@ export function GiftPanel() {
   )
 }
 
-// RSVP settings and the guestbook save themselves, so they take the saved row straight back
+// The guestbook moderates messages in its own table, so it only needs the invite
 export function RsvpPanel() {
-  const { invite, replaceInvite } = usePanel()
-  return <RsvpSettingsPanel invite={invite} onSaved={replaceInvite} />
+  const { invite, updateInvite } = usePanel()
+  // Same rule as the templates: questions, deadline and party size are Signature/Experience features
+  const advanced = invite.package === 'experience' || !!invite.sections.rsvp_advanced
+  return (
+    <RsvpSettingsPanel
+      content={invite.content}
+      advanced={advanced}
+      onChange={(patch) => updateInvite((current) => ({ content: { ...current.content, ...patch } }))}
+    />
+  )
 }
 
 export function GuestbookSectionPanel() {

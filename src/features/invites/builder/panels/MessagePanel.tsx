@@ -9,7 +9,7 @@ export function MessagePanel() {
       <TextAreaField
         path={P.message}
         label={template === 'celebration' ? 'Event description' : 'Invitation message'}
-        hint={template === 'celebration' ? undefined : 'Leave blank for an automatic line using the names and event type.'}
+        hint={`Press Enter twice to start a new paragraph.${template === 'celebration' ? '' : ' Leave blank for an automatic line using the names and event type.'}`}
         rows={5}
       />
       {template === 'romance' && <TextField path={P.quote} label="Quote (optional)" hint="Shown above the message." />}

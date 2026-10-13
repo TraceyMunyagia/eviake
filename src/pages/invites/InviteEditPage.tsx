@@ -7,23 +7,21 @@ import { useBusiness } from '@/context/BusinessContext'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { InviteLivePreview } from '@/features/invites/builder/InviteLivePreview'
-import { BuilderTabs } from '@/features/invites/builder/BuilderTabs'
+import { DesignStep } from '@/features/invites/design/DesignStep'
+import { carryTokens } from '@/features/invites/design/tokenModel'
+import { useInviteFonts } from '@/features/invites/design/useInviteFonts'
 import { BuilderSteps, StepNav, type StepId } from '@/features/invites/builder/BuilderSteps'
 import { useBuilderStep } from '@/features/invites/builder/useBuilderStep'
 import { DetailsStep } from '@/features/invites/builder/DetailsStep'
 import { PublishStep } from '@/features/invites/builder/PublishStep'
 import { runPublishChecks } from '@/features/invites/builder/publishChecks'
 import { previewScrollTo } from '@/features/invites/builder/previewBridge'
-import { uploadInviteMedia } from '@/features/invites/builder/uploadInviteMedia'
 import type { InvitePatch } from '@/features/invites/builder/content/PanelContext'
 import { StepTemplate } from '@/features/invites/builder/StepTemplate'
 import { StepSections } from '@/features/invites/builder/StepSections'
 import { carryFlags, resolveSections, type SectionFlags } from '@/features/invites/sections/sectionModel'
 import type { PackageKey, SectionKey, TemplateKey } from '@/features/invites/sections/catalog'
-import { buildInviteDefaults } from '@/lib/inviteDefaults'
 import type { Invite } from '@/types/database'
-import { DesignPanel } from '@/features/invites/builder/DesignPanel'
-import { MediaPanel } from '@/features/invites/builder/MediaPanel'
 
 export function InviteEditPage() {
   const { id } = useParams()
@@ -31,7 +29,6 @@ export function InviteEditPage() {
   const [invite, setInvite] = useState<Invite | null>(null)
   const [state, setState] = useState<'loading' | 'ready' | 'missing'>('loading')
   const [error, setError] = useState<string | null>(null)
-  const [designTab, setDesignTab] = useState('design')
   const [activeSection, setActiveSection] = useState<SectionKey | null>('hero')
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -80,6 +77,9 @@ export function InviteEditPage() {
   // The step lives in the URL, so a refresh stays put.
   const fresh = !!invite && invite.status === 'draft' && invite.created_at === invite.updated_at
   const [urlStep, setUrlStep] = useBuilderStep(fresh ? 'template' : 'details')
+
+  // The builder page shows font samples, so it loads this invite's fonts too
+  useInviteFonts(invite?.tokens)
 
   // Always work from resolved flags, never the raw column (older invites lack the newer keys)
   const flags = useMemo(
@@ -135,9 +135,6 @@ export function InviteEditPage() {
     return () => { window.removeEventListener('beforeunload', warn); flush() }
   }, [flush])
 
-  const upload = (file: File, kind: 'image' | 'video' | 'audio' = 'image') =>
-    inviteRef.current ? uploadInviteMedia(inviteRef.current, file, kind) : Promise.reject(new Error('The invite has not loaded.'))
-
   const step = urlStep
   function setStep(s: StepId) {
     flush()
@@ -146,10 +143,10 @@ export function InviteEditPage() {
 
   function changeTemplate(t: TemplateKey) {
     if (!invite || t === invite.template) return
-    // The old palette was chosen for the previous look, so colours and fonts reset to the new template's defaults
+    // Colours and fonts still at the old template's defaults move to the new ones; customised values stay
     updateInvite({
       template: t,
-      tokens: buildInviteDefaults(t, invite.package).tokens,
+      tokens: carryTokens(invite.tokens, invite.template as TemplateKey, t),
       sections: carryFlags(flags, t, invite.package as PackageKey),
     })
   }
@@ -241,7 +238,8 @@ export function InviteEditPage() {
       )}
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
-        <div>
+        {/* min-w-0: wide content (like the music strip) scrolls inside the column instead of stretching it */}
+        <div className="min-w-0">
           {step === 'template' && (
             <StepTemplate template={invite.template as TemplateKey} locked={invite.status === 'published'} busy={saving} onSelect={changeTemplate} />
           )}
@@ -263,20 +261,20 @@ export function InviteEditPage() {
               flags={flags}
               updateInvite={updateInvite}
               replaceInvite={replaceInvite}
-              upload={upload}
               active={activeSection}
               onActive={setActiveSection}
               onGoSections={() => setStep('sections')}
             />
           )}
           {step === 'design' && (
-            <>
-              <BuilderTabs tabs={[{ key: 'design', label: 'Design' }, { key: 'media', label: 'Media' }]} active={designTab} onChange={setDesignTab} />
-              <div className="mt-4">
-                {designTab === 'design' && <DesignPanel invite={invite} onSaved={replaceInvite} />}
-                {designTab === 'media' && <MediaPanel invite={invite} onSaved={replaceInvite} />}
-              </div>
-            </>
+            <DesignStep
+              invite={invite}
+              template={invite.template as TemplateKey}
+              pkg={invite.package as PackageKey}
+              flags={flags}
+              updateInvite={updateInvite}
+              replaceInvite={replaceInvite}
+            />
           )}
           {step === 'publish' && (
             <PublishStep invite={invite} checks={checks} onFix={fix} onPublished={replaceInvite} beforePublish={flush} />

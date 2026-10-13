@@ -33,6 +33,7 @@ export function RomanceTemplate({ content, tokens, sections, mode, onRsvp, guest
 
   return (
     <div
+      data-invite-root
       style={{
         ...tokenStyle(tokens),
         backgroundColor: 'var(--invite-background)',
@@ -63,7 +64,7 @@ export function RomanceTemplate({ content, tokens, sections, mode, onRsvp, guest
           <div data-section="details"><EventDetails content={content} mode={mode} /></div>
           {isOn(sections, 'story') && <div data-section="story"><OurStory items={content.story_items} mode={mode} /></div>}
           {sections.countdown && <div data-section="countdown"><Countdown eventDate={content.event_date} eventTime={content.event_time} mode={mode} showSeconds={content.countdown_show_seconds !== false} doneMessage={content.countdown_finished_message || undefined} /></div>}
-          {sections.gallery && <div data-section="gallery"><Gallery urls={content.gallery_urls} captions={content.gallery_captions} mode={mode} /></div>}
+          {sections.gallery && <div data-section="gallery"><Gallery urls={content.gallery_urls} captions={content.gallery_captions} alts={content.gallery_alts} mode={mode} /></div>}
           {sections.schedule && <div data-section="schedule"><Programme items={content.schedule} mode={mode} /></div>}
           {isOn(sections, 'dress_code') && <div data-section="dress_code"><DressCode content={content} mode={mode} /></div>}
           {isOn(sections, 'location') && <div data-section="location"><Location content={content} mode={mode} /></div>}

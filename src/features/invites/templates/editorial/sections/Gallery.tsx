@@ -5,8 +5,8 @@ import { Divider } from '@/features/invites/templates/editorial/components/Divid
 import { SectionLabel } from '@/features/invites/templates/editorial/components/SectionLabel'
 import { Reveal } from '@/features/invites/templates/editorial/components/Reveal'
 
-export function Gallery({ urls, mode }: { urls?: string[]; mode?: 'preview' | 'public' }) {
-  const [open, setOpen] = useState<string | null>(null)
+export function Gallery({ urls, captions, alts, mode }: { urls?: string[]; captions?: string[]; alts?: string[]; mode?: 'preview' | 'public' }) {
+  const [open, setOpen] = useState<number | null>(null)
 
   return (
     <Reveal mode={mode}>
@@ -24,17 +24,22 @@ export function Gallery({ urls, mode }: { urls?: string[]; mode?: 'preview' | 'p
         ) : (
           <div className="mx-auto max-w-3xl columns-2 gap-2 sm:columns-3 sm:gap-3 [&>*]:mb-2 sm:[&>*]:mb-3">
             {urls.map((u, i) => (
-              <button key={i} onClick={() => setOpen(u)} className="block w-full overflow-hidden rounded-sm">
-                <img src={u} alt="" className="w-full object-cover" />
-              </button>
+              <figure key={i} className="break-inside-avoid">
+                <button onClick={() => setOpen(i)} aria-label={alts?.[i] ? `Open photo: ${alts[i]}` : `Open photo ${i + 1}`} className="block w-full overflow-hidden rounded-sm">
+                  <img src={u} alt={alts?.[i] ?? ''} className="w-full object-cover" />
+                </button>
+                {captions?.[i] && (
+                  <figcaption className={`mt-1 text-center ${editorialType.caption}`} style={{ color: 'var(--invite-muted)', fontFamily: 'var(--invite-body-font)' }}>{captions[i]}</figcaption>
+                )}
+              </figure>
             ))}
           </div>
         )}
 
-        {open && (
+        {open !== null && urls?.[open] && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4" onClick={() => setOpen(null)}>
             <button aria-label="Close" className="absolute right-4 top-4 text-white"><X className="size-6" /></button>
-            <img src={open} alt="" className="max-h-full max-w-full object-contain" />
+            <img src={urls[open]} alt={alts?.[open] ?? ''} className="max-h-full max-w-full object-contain" />
           </div>
         )}
       </section>

@@ -1,3 +1,4 @@
+import { Paragraphs } from '@/features/invites/templates/shared/Paragraphs'
 import { editorialType } from '@/features/invites/templates/editorial/type'
 import { Divider } from '@/features/invites/templates/editorial/components/Divider'
 import { Reveal } from '@/features/invites/templates/editorial/components/Reveal'
@@ -13,12 +14,9 @@ export function InvitationMessage({ content, mode }: { content: InviteContent; m
   return (
     <Reveal mode={mode}>
       <section className="mx-auto max-w-md px-6 py-16 text-center sm:py-24" style={{ color: 'var(--invite-primary)' }}>
-        <p
-          className={`${editorialType.h3} italic`}
-          style={{ fontFamily: 'var(--invite-heading-font)', lineHeight: 1.6 }}
-        >
-          {message}
-        </p>
+        <div className="space-y-5">
+          <Paragraphs text={message} className={`${editorialType.h3} italic`} style={{ fontFamily: 'var(--invite-heading-font)', lineHeight: 1.6 }} />
+        </div>
         {content.invitation_signature && (
           <>
             <Divider className="my-6" />

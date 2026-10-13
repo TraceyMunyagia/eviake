@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 // Static class strings so Tailwind can see them (dynamic names get purged).
 const TILTS = ['-rotate-3', 'rotate-2', '-rotate-1', 'rotate-3', '-rotate-2', 'rotate-1']
 
-export function Gallery({ urls, captions, mode }: { urls?: string[]; captions?: string[]; mode?: 'preview' | 'public' }) {
+export function Gallery({ urls, captions, alts, mode }: { urls?: string[]; captions?: string[]; alts?: string[]; mode?: 'preview' | 'public' }) {
   const reduced = usePrefersReducedMotion()
   const stripRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState<number | null>(null)
@@ -69,7 +69,7 @@ useEffect(() => {
                 className={`relative w-56 shrink-0 snap-center p-3 pb-4 transition-transform duration-200 hover:z-10 hover:rotate-0 hover:scale-105 sm:w-72 -ml-5 first:ml-0 ${TILTS[i % TILTS.length]}`}
                 style={{ backgroundColor: 'var(--invite-background)', color: 'var(--invite-primary)', boxShadow: '6px 6px 0 var(--invite-accent)' }}
               >
-                <img src={u} alt="" loading="lazy" className="aspect-[4/5] w-full object-cover" />                <p className="mt-2 min-h-9 truncate text-center text-2xl" style={{ fontFamily: 'var(--invite-accent-font)' }}>
+                <img src={u} alt={alts?.[i] ?? ''} loading="lazy" className="aspect-[4/5] w-full object-cover" />                <p className="mt-2 min-h-9 truncate text-center text-2xl" style={{ fontFamily: 'var(--invite-accent-font)' }}>
                   {captions?.[i] ?? ''}
                 </p>
               </button>
@@ -88,7 +88,7 @@ useEffect(() => {
             </>
           )}
           <div className="flex max-h-full flex-col items-center gap-3" onClick={(e) => e.stopPropagation()}>
-            <img src={urls[open]} alt="" className="max-h-[80vh] max-w-full object-contain" />
+            <img src={urls[open]} alt={alts?.[open] ?? ''} className="max-h-[80vh] max-w-full object-contain" />
             {captions?.[open] && <p className="text-3xl text-white" style={{ fontFamily: 'var(--invite-accent-font)' }}>{captions[open]}</p>}
           </div>
         </div>

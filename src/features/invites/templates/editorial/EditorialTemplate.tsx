@@ -26,6 +26,7 @@ import { isOn } from '../../sections/sectionGate'
 export function EditorialTemplate({ content, tokens, sections, mode, onRsvp, checkInToken, checkInAvailable }: TemplateProps) {
   return (
     <div
+      data-invite-root
       style={{
         ...tokenStyle(tokens),
         backgroundColor: 'var(--invite-background)',
@@ -47,7 +48,7 @@ export function EditorialTemplate({ content, tokens, sections, mode, onRsvp, che
         {sections.countdown && <div data-section="countdown"><Countdown eventDate={content.event_date} eventTime={content.event_time} mode={mode} showSeconds={content.countdown_show_seconds !== false} doneMessage={content.countdown_finished_message || undefined} /></div>}
         {isOn(sections, 'story') && <div data-section="story"><AboutStory content={content} mode={mode} /></div>}
         {sections.schedule && <div data-section="schedule"><Schedule items={content.schedule} mode={mode} /></div>}
-        {sections.gallery && <div data-section="gallery"><Gallery urls={content.gallery_urls} mode={mode} /></div>}
+        {sections.gallery && <div data-section="gallery"><Gallery urls={content.gallery_urls} captions={content.gallery_captions} alts={content.gallery_alts} mode={mode} /></div>}
         {isOn(sections, 'dress_code') && <div data-section="dress_code"><DressCode content={content} mode={mode} /></div>}
         {isOn(sections, 'location') && <div data-section="location"><Location content={content} mode={mode} /></div>}
         {sections.rsvp && <div data-section="rsvp"><RsvpSection content={content} mode={mode} onRsvp={onRsvp} advanced={sections.rsvp_advanced || sections.guest_management} guestManagement={sections.guest_management} /></div>}

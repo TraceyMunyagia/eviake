@@ -1,4 +1,5 @@
 import type { InvitePackage, InviteSections, InviteTemplateKey, InviteTokens } from '@/types/database'
+import { TEMPLATE_FONT_DEFAULTS } from '@/features/invites/design/fontRegistry'
 
 // Package controls which sections are available at all — not which template.
 // Verified against the completed Editorial, Romance, and Celebration templates:
@@ -24,32 +25,26 @@ export const PACKAGE_SECTIONS: Record<InvitePackage, InviteSections> = {
   },
 }
 
-// Placeholder palettes until the Figma templates land, so a freshly created
-// invite looks intentional rather than blank. Swap these once real tokens exist.
+// Starting palette and fonts for new invites. Existing invites keep their saved tokens.
 export const TEMPLATE_DEFAULT_TOKENS: Record<InviteTemplateKey, InviteTokens> = {
   editorial: {
     primary: '#231F1D',        // near-black charcoal ink, not pure black — softer on ivory
     accent: '#B99457',         // muted champagne gold, used sparingly per spec
     background: '#F7F3EC',     // ivory
-    heading_font: 'Cormorant Garamond',
-    body_font: 'Inter',
+    ...TEMPLATE_FONT_DEFAULTS.editorial,
   },
   romance: {
     primary: '#6B3F45',        // dusty rose ink — soft but still readable
     accent: '#E8B4BC',         // blush pink
     background: '#FFF6F3',     // soft ivory-blush
-    heading_font: 'Playfair Display',
-    body_font: 'Lora',
-    accent_font: 'Parisienne',
+    ...TEMPLATE_FONT_DEFAULTS.romance,
   },
     celebration: {
     primary: '#1A1033',    // deep indigo — used as a full colour block, not just text
     accent: '#FF4D6D',     // hot coral
     secondary: '#FFD23F',  // sunny yellow
     background: '#FFF8EC', // warm cream
-    heading_font: 'Bricolage Grotesque',
-    body_font: 'DM Sans',
-    accent_font: 'Caveat',
+    ...TEMPLATE_FONT_DEFAULTS.celebration,
   },
 }
 

@@ -3,12 +3,14 @@ import { useParams } from 'react-router-dom'
 import QRCode from 'qrcode'
 import { supabase } from '@/lib/supabase'
 import { tokenStyle } from '@/features/invites/templates/tokenStyle'
+import { useInviteFonts } from '@/features/invites/design/useInviteFonts'
 import { formatEventDate } from '@/lib/eventFormat'
 import type { GuestPass } from '@/types/database'
 
 export function GuestPassPage() {
   const { token } = useParams()
   const [pass, setPass] = useState<GuestPass | null>(null)
+  useInviteFonts(pass?.tokens)
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null)
   const [state, setState] = useState<'loading' | 'ready' | 'missing'>('loading')
 

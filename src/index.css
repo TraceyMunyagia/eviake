@@ -160,3 +160,10 @@
 @media (prefers-reduced-motion: reduce) {
   .evia-section-flash { animation: none; outline: 3px solid rgba(201, 169, 110, 0.6); outline-offset: -3px; }
 }
+
+/* Per-font size tweaks (fontRegistry scale). Applied by the font an element actually uses, which the templates
+   set inline as var(--invite-…-font). zoom scales text and its spacing together. Only the outermost element of
+   a run is scaled, so nested text never compounds. */
+[data-invite-root] [style*="var(--invite-heading-font)"]:not([style*="var(--invite-heading-font)"] *, [style*="var(--invite-body-font)"] *, [style*="var(--invite-accent-font)"] *) { zoom: var(--invite-heading-scale, 1); }
+[data-invite-root] [style*="var(--invite-body-font)"]:not([style*="var(--invite-heading-font)"] *, [style*="var(--invite-body-font)"] *, [style*="var(--invite-accent-font)"] *) { zoom: var(--invite-body-scale, 1); }
+[data-invite-root] [style*="var(--invite-accent-font)"]:not([style*="var(--invite-heading-font)"] *, [style*="var(--invite-body-font)"] *, [style*="var(--invite-accent-font)"] *) { zoom: var(--invite-accent-scale, 1); }

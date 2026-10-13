@@ -7,7 +7,7 @@ import { Reveal } from '@/features/invites/templates/romance/components/Reveal'
 
 const ROTATIONS = ['-rotate-2', 'rotate-1', '-rotate-1', 'rotate-2', 'rotate-0', '-rotate-3']
 
-export function Gallery({ urls, captions, mode }: { urls?: string[]; captions?: string[]; mode?: 'preview' | 'public' }) {
+export function Gallery({ urls, captions, alts, mode }: { urls?: string[]; captions?: string[]; alts?: string[]; mode?: 'preview' | 'public' }) {
   const [open, setOpen] = useState<number | null>(null)
 
   return (
@@ -31,7 +31,7 @@ export function Gallery({ urls, captions, mode }: { urls?: string[]; captions?: 
                 onClick={() => setOpen(i)}
                 className={`w-40 rounded-sm border-8 border-white bg-white p-1 shadow-md transition-transform hover:scale-105 sm:w-52 ${ROTATIONS[i % ROTATIONS.length]}`}
               >
-                <img src={u} alt="" className="aspect-square w-full object-cover" />
+                <img src={u} alt={alts?.[i] ?? ''} className="aspect-square w-full object-cover" />
                 {captions?.[i] && <p className="mt-1 truncate text-center text-xs" style={{ fontFamily: 'var(--invite-accent-font)', color: 'var(--invite-primary)' }}>{captions[i]}</p>}
               </button>
             ))}
@@ -41,7 +41,7 @@ export function Gallery({ urls, captions, mode }: { urls?: string[]; captions?: 
         {open !== null && urls && (
           <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-black/90 p-4" onClick={() => setOpen(null)}>
             <button aria-label="Close" className="absolute right-4 top-4 text-white"><X className="size-6" /></button>
-            <img src={urls[open]} alt="" className="max-h-[80vh] max-w-full object-contain" />
+            <img src={urls[open]} alt={alts?.[open] ?? ''} className="max-h-[80vh] max-w-full object-contain" />
             {captions?.[open] && <p className="text-white" style={{ fontFamily: 'var(--invite-accent-font)' }}>{captions[open]}</p>}
           </div>
         )}

@@ -41,6 +41,7 @@ export function CelebrationTemplate({ content, tokens, sections, mode, onRsvp, c
 
   return (
     <div
+      data-invite-root
       style={{
         ...tokenStyle(tokens),
         backgroundColor: 'var(--invite-background)',
@@ -56,11 +57,11 @@ export function CelebrationTemplate({ content, tokens, sections, mode, onRsvp, c
       )}
       <MusicPlayer content={content} />
       <main>
-        <div data-section="hero"><Hero content={content} /></div>
+        <div data-section="hero"><Hero content={content} showVideo={!!sections.video} /></div>
         {block('message', <EventIntro content={content} mode={mode} />)}
         {block('details', <EventDetails content={content} mode={mode} />)}
         {block('countdown', <Countdown eventDate={content.event_date} eventTime={content.event_time} mode={mode} showSeconds={content.countdown_show_seconds !== false} doneMessage={content.countdown_finished_message || undefined} />)}
-        {block('gallery', <Gallery urls={content.gallery_urls} captions={content.gallery_captions} mode={mode} />)}
+        {block('gallery', <Gallery urls={content.gallery_urls} captions={content.gallery_captions} alts={content.gallery_alts} mode={mode} />)}
         {block('schedule', <Programme items={content.schedule} mode={mode} />)}
         {block('dress_code', <DressCode content={content} mode={mode} />)}
         {block('location', <Location content={content} mode={mode} />)}

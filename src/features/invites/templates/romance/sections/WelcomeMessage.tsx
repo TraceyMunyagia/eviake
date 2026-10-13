@@ -1,3 +1,4 @@
+import { Paragraphs } from '@/features/invites/templates/shared/Paragraphs'
 import { romanceType } from '@/features/invites/templates/romance/type'
 import { Divider } from '@/features/invites/templates/romance/components/Divider'
 import { Reveal } from '@/features/invites/templates/romance/components/Reveal'
@@ -18,9 +19,9 @@ export function WelcomeMessage({ content, mode }: { content: InviteContent; mode
             "{content.welcome_quote}"
           </p>
         )}
-        <p className={`mt-4 ${romanceType.body}`} style={{ fontFamily: 'var(--invite-body-font)', lineHeight: 1.7 }}>
-          {message}
-        </p>
+        <div className="mt-4 space-y-4">
+          <Paragraphs text={message} className={romanceType.body} style={{ fontFamily: 'var(--invite-body-font)', lineHeight: 1.7 }} />
+        </div>
         {content.invitation_signature && (
           <>
             <Divider className="my-6" />

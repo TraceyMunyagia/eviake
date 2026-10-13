@@ -7,14 +7,13 @@ import { PanelProvider, type UpdateInvite } from './content/PanelContext'
 import { PANELS } from './panels/panelRegistry'
 import { previewScrollTo } from './previewBridge'
 
-export function DetailsStep({ invite, template, pkg, flags, updateInvite, replaceInvite, upload, active, onActive, onGoSections }: {
+export function DetailsStep({ invite, template, pkg, flags, updateInvite, replaceInvite, active, onActive, onGoSections }: {
   invite: Invite
   template: TemplateKey
   pkg: PackageKey
   flags: SectionFlags
   updateInvite: UpdateInvite
   replaceInvite: (invite: Invite) => void
-  upload: (file: File, kind?: 'image' | 'video' | 'audio') => Promise<string>
   active: SectionKey | null
   onActive: (k: SectionKey | null) => void
   onGoSections: () => void
@@ -24,7 +23,7 @@ export function DetailsStep({ invite, template, pkg, flags, updateInvite, replac
   const openKey = active && keys.includes(active) ? active : null
 
   return (
-    <PanelProvider invite={invite} template={template} pkg={pkg} updateInvite={updateInvite} replaceInvite={replaceInvite} upload={upload}>
+    <PanelProvider invite={invite} template={template} pkg={pkg} updateInvite={updateInvite} replaceInvite={replaceInvite}>
       <div className="space-y-3">
         <div>
           <h2 className="font-display text-lg text-plum-900">Add your details</h2>

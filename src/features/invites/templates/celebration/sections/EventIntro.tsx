@@ -1,3 +1,4 @@
+import { Paragraphs } from '@/features/invites/templates/shared/Paragraphs'
 import { celebrationType } from '@/features/invites/templates/celebration/type'
 import { Reveal } from '@/features/invites/templates/celebration/components/Reveal'
 import type { InviteContent } from '@/types/database'
@@ -17,9 +18,9 @@ export function EventIntro({ content, mode }: { content: InviteContent; mode?: '
         >
           The lowdown
         </span>
-        <p className={`mt-6 ${celebrationType.statement}`} style={{ fontFamily: 'var(--invite-heading-font)' }}>
-          {message}
-        </p>
+        <div className="mt-6 space-y-4">
+          <Paragraphs text={message} className={celebrationType.statement} style={{ fontFamily: 'var(--invite-heading-font)' }} />
+        </div>
         {content.invitation_signature && (
           <p className="mt-8 text-3xl sm:text-4xl" style={{ fontFamily: 'var(--invite-accent-font)' }}>
             {content.invitation_signature}

@@ -19,7 +19,7 @@ export function StepTemplate({ template, locked, busy, onSelect }: {
         <p className="text-sm text-muted">
           {locked
             ? 'This invite is published, so its template is locked to avoid changing the look of something already shared.'
-            : "Switching keeps everything you've typed and resets the colours and fonts to the new template's defaults. Sections that don't exist in the new template are kept aside and come back if you switch back."}
+            : "Switching keeps everything you've typed. Colours and fonts you changed stay; the rest move to the new template's defaults. Sections that don't exist in the new template are kept aside and come back if you switch back."}
         </p>
       </div>
       <div className="grid gap-3 sm:grid-cols-3">
