@@ -10,7 +10,7 @@ export function DressCode({ content, mode }: { content: InviteContent; mode?: 'p
   if (!content.dress_code && !content.dress_code_note && palette.length === 0 && images.length === 0) return null
 
   return (
-    <section className="px-5 py-16 sm:px-10 sm:py-24" style={{ backgroundColor: 'var(--invite-secondary)', color: 'var(--invite-primary)' }}>
+    <section className="px-5 py-16 sm:px-10 sm:py-24">
       <Reveal mode={mode} className="mx-auto max-w-4xl">
         <span
           className={`inline-block -rotate-2 rounded-full border-2 px-4 py-1.5 ${celebrationType.kicker}`}

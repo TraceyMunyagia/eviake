@@ -1,17 +1,9 @@
-const BASE_TABS = [
-  { key: 'details', label: 'Details' },
-  { key: 'design', label: 'Design' },
-  { key: 'sections', label: 'Sections' },
-  { key: 'media', label: 'Media' },
-  { key: 'rsvp', label: 'RSVP' },
-]
-
-export function BuilderTabs({ active, onChange, extra = [] }: {
+// Sub-tabs inside a builder step (e.g. Details → RSVP, Design & media → Media)
+export function BuilderTabs({ tabs, active, onChange }: {
+  tabs: { key: string; label: string }[]
   active: string
   onChange: (key: string) => void
-  extra?: { key: string; label: string }[]
 }) {
-  const tabs = [...BASE_TABS, ...extra]
   return (
     <div role="tablist" className="flex gap-1 overflow-x-auto border-b border-line">
       {tabs.map((t) => (

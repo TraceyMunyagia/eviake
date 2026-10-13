@@ -13,7 +13,7 @@ export function Location({ content, mode }: { content: InviteContent; mode?: 'pr
   if (!content.venue && !content.address) return null
 
   return (
-    <section className="px-5 py-16 sm:px-10 sm:py-24" style={{ color: 'var(--invite-primary)' }}>
+    <section className="px-5 py-16 sm:px-10 sm:py-24">
       <Reveal mode={mode} className="mx-auto max-w-5xl">
         <h2 className={celebrationType.h2} style={{ fontFamily: 'var(--invite-heading-font)' }}>Find the party</h2>
 

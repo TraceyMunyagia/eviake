@@ -9,7 +9,7 @@ export function Programme({ items, mode }: { items?: InviteContent['schedule']; 
   const [active, setActive] = useState<number | null>(null)
 
   return (
-    <section className="px-5 py-16 sm:px-10 sm:py-24" style={{ color: 'var(--invite-primary)' }}>
+    <section className="px-5 py-16 sm:px-10 sm:py-24">
       <Reveal mode={mode} className="mx-auto max-w-3xl">
         <h2 className={celebrationType.h2} style={{ fontFamily: 'var(--invite-heading-font)' }}>The plan</h2>
 

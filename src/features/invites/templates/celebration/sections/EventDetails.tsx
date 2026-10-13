@@ -33,7 +33,7 @@ export function EventDetails({ content, mode }: { content: InviteContent; mode?:
   }
 
   return (
-    <section className="px-5 py-16 sm:px-10 sm:py-24" style={{ color: 'var(--invite-primary)' }}>
+    <section id="details" className="scroll-mt-4 px-5 py-16 sm:px-10 sm:py-24">
       <Reveal mode={mode} className="mx-auto max-w-5xl">
         <h2 className={celebrationType.h2} style={{ fontFamily: 'var(--invite-heading-font)' }}>Save the date</h2>
 

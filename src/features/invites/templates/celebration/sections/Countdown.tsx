@@ -40,7 +40,7 @@ export function Countdown({ eventDate, eventTime, mode }: { eventDate?: string; 
     : []
 
   return (
-    <section className="px-5 py-16 sm:px-10 sm:py-24" style={{ backgroundColor: 'var(--invite-accent)', color: 'var(--invite-primary)' }}>
+    <section className="px-5 py-16 sm:px-10 sm:py-24">
       <Reveal mode={mode} className="mx-auto max-w-5xl">
         <h2 className={celebrationType.h2} style={{ fontFamily: 'var(--invite-heading-font)' }}>The countdown is on</h2>
 

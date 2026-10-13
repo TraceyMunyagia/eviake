@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { resolveSections } from '@/features/invites/sections/sectionModel'
 import { useParams } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { getTemplateComponent } from '@/features/invites/templates/registry'
@@ -90,7 +91,7 @@ export function PublicInvitePage() {
     <Template
       content={data.content}
       tokens={data.tokens}
-      sections={data.sections}
+      sections={resolveSections(data.sections, data.template, data.package)}
       mode="public"
       onRsvp={onRsvp}
       guestbookMessages={guestbookMessages}

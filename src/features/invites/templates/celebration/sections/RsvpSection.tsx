@@ -82,7 +82,7 @@ export function RsvpSection({ content, mode, onRsvp, advanced, guestManagement }
   const stepBtn = 'cel-press flex size-12 items-center justify-center rounded-full border-4 disabled:opacity-40'
 
   return (
-    <section className="relative overflow-hidden px-5 py-16 sm:px-10 sm:py-24" style={{ backgroundColor: 'var(--invite-accent)', color: 'var(--invite-primary)' }}>
+    <section className="relative overflow-hidden px-5 py-16 sm:px-10 sm:py-24">
       <Confetti burst={burst} />
       <Reveal mode={mode} className="relative mx-auto max-w-2xl">
         <span

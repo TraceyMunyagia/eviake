@@ -46,10 +46,20 @@ export function Hero({ content }: { content: InviteContent }) {
         )}
       </div>
 
-      <div className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-1 sm:flex" style={{ color: hasImage ? '#fff' : 'var(--invite-muted)' }}>
+      {/* Points at #details, which every template always renders (the message section can be switched off).
+          Scrolls in code so the builder preview doesn't change the dashboard URL hash. */}
+      <a
+        href="#details"
+        onClick={(e) => {
+          e.preventDefault()
+          document.getElementById('details')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }}
+        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-1 sm:flex"
+        style={{ color: hasImage ? '#fff' : 'var(--invite-muted)' }}
+      >
         <span className="text-[10px] uppercase tracking-[0.3em]" style={{ fontFamily: 'var(--invite-body-font)' }}>Scroll</span>
         <ChevronDown className="size-4 animate-bounce" />
-      </div>
+      </a>
     </section>
   )
 }

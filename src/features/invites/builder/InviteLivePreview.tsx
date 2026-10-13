@@ -2,11 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Smartphone, Monitor } from 'lucide-react'
 import { SAMPLE_CONTENT, STRESS_CONTENT } from '@/features/invites/templates/sampleRegistry'
 import { ROMANCE_SAMPLE_GUESTBOOK } from '@/features/invites/templates/romance/sampleContent'
-import type { Invite } from '@/types/database'
+import type { Invite, InviteSections } from '@/types/database'
 
 const WIDTHS = { mobile: 390, desktop: 1280 } as const
 
-export function InviteLivePreview({ invite }: { invite: Invite }) {
+// sections: the resolved flags from the builder, so legacy invites preview with the newer keys filled in
+export function InviteLivePreview({ invite, sections }: { invite: Invite; sections: InviteSections }) {
   const frameRef = useRef<HTMLIFrameElement>(null)
   const [previewMode, setPreviewMode] = useState<'real' | 'sample' | 'stress'>('real')
   const [device, setDevice] = useState<keyof typeof WIDTHS>('desktop')
@@ -22,10 +23,10 @@ export function InviteLivePreview({ invite }: { invite: Invite }) {
     template: invite.template,
     content: active?.content ?? invite.content,
     tokens: invite.tokens,
-    sections: active?.sections ?? invite.sections,
+    sections: active?.sections ?? sections,
     guestbookMessages,
   }),
-  [invite.template, invite.content, invite.tokens, invite.sections, active, guestbookMessages],
+  [invite.template, invite.content, invite.tokens, sections, active, guestbookMessages],
 )
 
   const send = useCallback(() => {

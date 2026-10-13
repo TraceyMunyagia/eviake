@@ -19,7 +19,7 @@ export function EventDetails({ content, mode }: { content: InviteContent; mode?:
 
   return (
     <Reveal mode={mode}>
-      <section className="mx-auto max-w-lg px-6 py-16 text-center sm:py-24" style={{ color: 'var(--invite-primary)' }}>
+      <section id="details" className="scroll-mt-4 mx-auto max-w-lg px-6 py-16 text-center sm:py-24" style={{ color: 'var(--invite-primary)' }}>
         <div
           className="border px-6 py-10 sm:px-10 sm:py-12"
           style={{ borderColor: 'var(--invite-hairline)', backgroundColor: 'var(--invite-surface)' }}

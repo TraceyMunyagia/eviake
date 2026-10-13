@@ -9,10 +9,7 @@ export function EventIntro({ content, mode }: { content: InviteContent; mode?: '
     `Get ready! ${name || 'The party'} is happening and you're on the guest list. Come ready to celebrate.`
 
   return (
-    <section
-      className="px-5 py-16 sm:px-10 sm:py-24"
-      style={{ backgroundColor: 'var(--invite-secondary)', color: 'var(--invite-primary)' }}
-    >
+    <section className="px-5 py-16 sm:px-10 sm:py-24">
       <Reveal mode={mode} className="mx-auto max-w-4xl">
         <span
           className={`inline-block rotate-2 rounded-full border-2 px-4 py-1.5 ${celebrationType.kicker}`}

@@ -319,6 +319,8 @@ export type Invite = {
   public_slug: string | null
   rsvp_track_token: string | null
   published_at: string | null
+  created_at: string
+  updated_at: string
 }
 export type MembershipInvite = {
   id: string

@@ -24,7 +24,7 @@ export function Closing({ content, mode }: { content: InviteContent; mode?: 'pre
   const links = (content.social_links ?? []).filter((l) => l.url)
 
   return (
-    <section ref={ref} className="relative overflow-hidden" style={{ backgroundColor: 'var(--invite-primary)', color: 'var(--invite-background)' }}>
+    <section ref={ref} className="relative overflow-hidden">
       <Confetti burst={burst} />
 
       <div className="relative z-10 mx-auto max-w-4xl px-5 py-20 text-center sm:px-10 sm:py-28">
@@ -57,13 +57,13 @@ export function Closing({ content, mode }: { content: InviteContent; mode?: 'pre
           {links.length > 0 && (
             <div className="mt-6 flex flex-wrap justify-center gap-4">
               {links.map((l, i) => (
-                <ActionButton key={i} onDark tone="light" href={l.url}>{l.name}</ActionButton>
+                <ActionButton key={i} tone="light" href={l.url}>{l.name}</ActionButton>
               ))}
             </div>
           )}
 
           <div className="mt-8">
-            <ActionButton onDark tone="accent" icon={<Sparkles className="size-4" />} onClick={() => setBurst((b) => b + 1)}>
+            <ActionButton tone="accent" icon={<Sparkles className="size-4" />} onClick={() => setBurst((b) => b + 1)}>
               Throw more confetti
             </ActionButton>
           </div>

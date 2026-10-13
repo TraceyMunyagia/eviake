@@ -17,12 +17,15 @@ import { Guestbook } from './sections/Guestbook'
 import { Closing } from './sections/Closing'
 import { MusicPlayer } from '../shared/MusicPlayer'
 import { CheckInSection } from '../shared/CheckInSection'
+import { isOn } from '../../sections/sectionGate'
+
 
 // Full Romance section set, per the spec's order, now preceded by a tap-to-open
 // cover (EntryGate) — the "envelope" moment before the invite reveals.
 // Skipped automatically in the builder preview so editing isn't interrupted
 // by a tap on every re-render; always shown to a real guest on the public page.
-export function RomanceTemplate({ content, tokens, sections, mode, onRsvp, guestbookMessages, onGuestbookSubmit, guestbookAvailable, checkInToken, checkInAvailable }: TemplateProps) {  const [opened, setOpened] = useState(mode === 'preview')
+export function RomanceTemplate({ content, tokens, sections, mode, onRsvp, guestbookMessages, onGuestbookSubmit, guestbookAvailable, checkInToken, checkInAvailable }: TemplateProps) {
+  const [opened, setOpened] = useState(mode === 'preview')
 
   return (
     <div
@@ -45,18 +48,18 @@ export function RomanceTemplate({ content, tokens, sections, mode, onRsvp, guest
       {opened && (
         <main>
           <Hero content={content} />
-          <WelcomeMessage content={content} mode={mode} />
+          {isOn(sections, 'message') && <WelcomeMessage content={content} mode={mode} />}
           <EventDetails content={content} mode={mode} />
-          <OurStory items={content.story_items} mode={mode} />
+          {isOn(sections, 'story') && <OurStory items={content.story_items} mode={mode} />}
           {sections.countdown && <Countdown eventDate={content.event_date} eventTime={content.event_time} mode={mode} />}
           {sections.gallery && <Gallery urls={content.gallery_urls} captions={content.gallery_captions} mode={mode} />}
           {sections.schedule && <Programme items={content.schedule} mode={mode} />}
-          <DressCode content={content} mode={mode} />
-          <Location content={content} mode={mode} />
+          {isOn(sections, 'dress_code') && <DressCode content={content} mode={mode} />}
+          {isOn(sections, 'location') && <Location content={content} mode={mode} />}
           {sections.rsvp && <RsvpSection content={content} mode={mode} onRsvp={onRsvp} advanced={sections.rsvp_advanced || sections.guest_management} guestManagement={sections.guest_management} />}
-          <GiftRegistry content={content} mode={mode} />
+          {isOn(sections, 'gift') && <GiftRegistry content={content} mode={mode} />}
           {sections.guestbook && <Guestbook messages={guestbookMessages} mode={mode} onSubmit={onGuestbookSubmit} available={guestbookAvailable} />}
-          <Closing content={content} mode={mode} />
+          {isOn(sections, 'closing') && <Closing content={content} mode={mode} />}
           {sections.guest_management && <CheckInSection mode={mode} token={checkInToken} available={checkInAvailable} />}
         </main>
       )}

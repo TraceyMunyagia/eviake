@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { useBusiness } from '@/context/BusinessContext'
 import { formatKES, formatOrderNo } from '@/lib/format'
 import { buildInviteDefaults } from '@/lib/inviteDefaults'
+import { defaultFlags } from '@/features/invites/sections/sectionModel'
 import { Button } from '@/components/ui/Button'
 import { Field, inputClass } from '@/components/ui/Field'
 import { PaymentBadge } from '@/pages/orders/Badges'
@@ -47,14 +48,14 @@ export function OrderPickerModal({ templates, onClose, onCreated }: {
 
   const selected = orders.find((o) => o.id === orderId)
 
-  // Start from what was captured on the order (template, package, event details)
+  // Start from the template and package captured on the order (template lives in invitation_details)
   function chooseOrder(id: string) {
     setOrderId(id)
     const o = orders.find((x) => x.id === id)
     const t = o?.invitation_details?.template
-    if (t && templates.some((x) => x.key === t)) setTemplate(t as InviteTemplateKey)
+    setTemplate(t && templates.some((x) => x.key === t) ? (t as InviteTemplateKey) : 'editorial')
     const p = o?.package?.toLowerCase()
-    if (p === 'essential' || p === 'signature' || p === 'experience') setPkg(p)
+    setPkg(p === 'essential' || p === 'signature' || p === 'experience' ? p : 'essential')
   }
 
   async function create() {
@@ -71,7 +72,7 @@ export function OrderPickerModal({ templates, onClose, onCreated }: {
     }
     const { data, error: err } = await supabase
       .from('invites')
-      .insert({ business_id: active.id, order_id: orderId, template, package: pkg, content, tokens: defaults.tokens, sections: defaults.sections, status: 'draft' })
+      .insert({ business_id: active.id, order_id: orderId, template, package: pkg, content, tokens: defaults.tokens, sections: defaultFlags(template, pkg), status: 'draft' })
       .select('id')
       .single()
     setBusy(false)

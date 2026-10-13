@@ -13,6 +13,9 @@ import { DressCode } from './sections/DressCode'
 import { Location } from './sections/Location'
 import { MusicPlayer } from '../shared/MusicPlayer'
 import { CheckInSection } from '../shared/CheckInSection'
+import { isOn } from '../../sections/sectionGate'
+
+
 
 // Section order follows the Editorial spec: Hero, [Invitation Message —
 // Week 11], Event Details, Countdown, [About/Story — Week 11], Schedule,
@@ -20,7 +23,8 @@ import { CheckInSection } from '../shared/CheckInSection'
 // Guestbook, Closing. Video is intentionally not part of Editorial's own
 // section list (it's a Celebration feature) — the `sections.video` flag
 // exists on the shared schema but Editorial doesn't render it.
-export function EditorialTemplate({ content, tokens, sections, mode, onRsvp, checkInToken, checkInAvailable }: TemplateProps) {  return (
+export function EditorialTemplate({ content, tokens, sections, mode, onRsvp, checkInToken, checkInAvailable }: TemplateProps) {
+  return (
     <div
       style={{
         ...tokenStyle(tokens),
@@ -38,16 +42,16 @@ export function EditorialTemplate({ content, tokens, sections, mode, onRsvp, che
       <MusicPlayer content={content} />
       <main>
         <Hero content={content} />
-        <InvitationMessage content={content} mode={mode} />
+        {isOn(sections, 'message') && <InvitationMessage content={content} mode={mode} />}
         <EventDetails content={content} mode={mode} />
         {sections.countdown && <Countdown eventDate={content.event_date} eventTime={content.event_time} mode={mode} />}
-        <AboutStory content={content} mode={mode} />
+        {isOn(sections, 'story') && <AboutStory content={content} mode={mode} />}
         {sections.schedule && <Schedule items={content.schedule} mode={mode} />}
         {sections.gallery && <Gallery urls={content.gallery_urls} mode={mode} />}
-        <DressCode content={content} mode={mode} />
-        <Location content={content} mode={mode} />
+        {isOn(sections, 'dress_code') && <DressCode content={content} mode={mode} />}
+        {isOn(sections, 'location') && <Location content={content} mode={mode} />}
         {sections.rsvp && <RsvpSection content={content} mode={mode} onRsvp={onRsvp} advanced={sections.rsvp_advanced || sections.guest_management} guestManagement={sections.guest_management} />}
-        <Closing content={content} mode={mode} />
+        {isOn(sections, 'closing') && <Closing content={content} mode={mode} />}
         {sections.guest_management && <CheckInSection mode={mode} token={checkInToken} available={checkInAvailable} />}
       </main>
     </div>

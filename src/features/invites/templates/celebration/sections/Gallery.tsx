@@ -37,10 +37,10 @@ useEffect(() => {
     stripRef.current?.scrollBy({ left: dir * 320, behavior: reduced ? 'auto' : 'smooth' })
   }
 
-  const arrowStyle = { borderColor: 'var(--invite-accent)', color: 'var(--invite-background)' }
+  const arrowStyle = { borderColor: 'var(--invite-accent)', color: 'inherit' }
 
   return (
-    <section className="overflow-hidden py-16 sm:py-24" style={{ backgroundColor: 'var(--invite-primary)', color: 'var(--invite-background)' }}>
+    <section className="overflow-hidden py-16 sm:py-24">
       <Reveal mode={mode}>
         <div className="mx-auto flex max-w-5xl items-end justify-between gap-4 px-5 sm:px-10">
           <h2 className={celebrationType.h2} style={{ fontFamily: 'var(--invite-heading-font)' }}>Snapshots</h2>

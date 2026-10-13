@@ -19,7 +19,7 @@ export function EventDetails({ content, mode }: { content: InviteContent; mode?:
 
   return (
     <Reveal mode={mode}>
-      <section className="px-6 py-16 text-center sm:py-24" style={{ color: 'var(--invite-primary)' }}>
+      <section id="details" className="scroll-mt-4 px-6 py-16 text-center sm:py-24" style={{ color: 'var(--invite-primary)' }}>
         <SectionLabel>Save the date</SectionLabel>
         <h2 className={`mt-3 ${romanceType.h2}`} style={{ fontFamily: 'var(--invite-heading-font)' }}>Join us</h2>
         <Divider className="my-6" />
