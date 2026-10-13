@@ -12,6 +12,7 @@ import { Modal } from '@/components/ui/Modal'
 import type { Order } from '@/types/database'
 const selectClass = 'rounded-lg border border-line bg-white px-3 py-2 text-sm'
 import { OrderForm } from '@/pages/orders/OrderForm'
+import { InviteOrderForm } from '@/pages/orders/InviteOrderForm'
 import { PackageSearch } from 'lucide-react'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ErrorState } from '@/components/ui/ErrorState'
@@ -79,6 +80,8 @@ useEffect(() => {
   const today = new Date().toISOString().slice(0, 10)
 
   if (!active) return null
+  const isInvites = active.slug === 'evia_invites'
+  const FormFor = isInvites ? InviteOrderForm : OrderForm
 
   return (
     <div>
@@ -184,9 +187,9 @@ useEffect(() => {
         </>
       )}
 
-      <Modal open={creating} onClose={() => setCreating(false)} title="New order">
+      <Modal open={creating} onClose={() => setCreating(false)} title="New order" wide={isInvites}>
         {creating && (
-          <OrderForm
+          <FormFor
             business={active}
             order={null}
             statuses={statuses}

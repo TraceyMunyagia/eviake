@@ -47,15 +47,27 @@ export function OrderPickerModal({ templates, onClose, onCreated }: {
 
   const selected = orders.find((o) => o.id === orderId)
 
+  // Start from what was captured on the order (template, package, event details)
+  function chooseOrder(id: string) {
+    setOrderId(id)
+    const o = orders.find((x) => x.id === id)
+    const t = o?.invitation_details?.template
+    if (t && templates.some((x) => x.key === t)) setTemplate(t as InviteTemplateKey)
+    const p = o?.package?.toLowerCase()
+    if (p === 'essential' || p === 'signature' || p === 'experience') setPkg(p)
+  }
+
   async function create() {
     if (!active || !orderId) return setError('Choose an order first.')
     setBusy(true)
     setError(null)
     const defaults = buildInviteDefaults(template, pkg)
+    const d = selected?.invitation_details ?? {}
     const content = {
-      couple_names: selected?.clients?.name ?? '',
-      event_name: '', event_date: '', event_time: '', venue: '',
-      description: '', dress_code: '', schedule: [],
+      couple_names: d.hostName || selected?.clients?.name || '',
+      event_name: d.eventName ?? '', event_date: d.eventDate ?? '', event_time: d.eventTime ?? '',
+      venue: d.venue ?? '', address: d.address ?? '', event_type: d.eventType ?? '',
+      description: d.description ?? '', dress_code: d.dressCode ?? '', schedule: [],
     }
     const { data, error: err } = await supabase
       .from('invites')
@@ -77,7 +89,7 @@ export function OrderPickerModal({ templates, onClose, onCreated }: {
       ) : (
         <>
           <Field label="Order" htmlFor="pick-order">
-            <select id="pick-order" value={orderId} onChange={(e) => setOrderId(e.target.value)} className={inputClass}>
+            <select id="pick-order" value={orderId} onChange={(e) => chooseOrder(e.target.value)} className={inputClass}>
               <option value="">Select an order</option>
               {orders.map((o) => <option key={o.id} value={o.id}>{formatOrderNo(o.order_no)} · {o.clients?.name} · {formatKES(o.total_kes)}</option>)}
             </select>

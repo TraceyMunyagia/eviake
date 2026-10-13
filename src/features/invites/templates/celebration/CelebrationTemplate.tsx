@@ -39,7 +39,6 @@ export function CelebrationTemplate({ content, tokens, sections, mode, onRsvp, c
         {sections.countdown && <Countdown eventDate={content.event_date} eventTime={content.event_time} mode={mode} />}
         {sections.gallery && <Gallery urls={content.gallery_urls} captions={content.gallery_captions} mode={mode} />}
         {sections.schedule && <Programme items={content.schedule} mode={mode} />}
-        <DressCode content={content} mode={mode} />
         {sections.dress_code && <DressCode content={content} mode={mode} />}
         <Location content={content} mode={mode} />
         {sections.rsvp && <RsvpSection content={content} mode={mode} onRsvp={onRsvp} advanced={sections.rsvp_advanced || sections.guest_management} guestManagement={sections.guest_management} />}

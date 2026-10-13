@@ -1,10 +1,11 @@
 import { useEffect, useRef, type ReactNode } from 'react'
 import { X } from 'lucide-react'
 
-export function Modal({ open, onClose, title, children }: {
+export function Modal({ open, onClose, title, wide, children }: {
   open: boolean
   onClose: () => void
   title: string
+  wide?: boolean
   children: ReactNode
 }) {
   const ref = useRef<HTMLDialogElement>(null)
@@ -21,7 +22,7 @@ export function Modal({ open, onClose, title, children }: {
       ref={ref}
       onClose={onClose}
       onClick={(e) => e.target === ref.current && onClose()}
-      className="m-auto w-full max-w-lg rounded-2xl p-0 shadow-xl backdrop:bg-plum-950/50"
+      className={`m-auto w-full ${wide ? 'max-w-2xl' : 'max-w-lg'} rounded-2xl p-0 shadow-xl backdrop:bg-plum-950/50`}
     >
       {open && (
         <div className="p-6">

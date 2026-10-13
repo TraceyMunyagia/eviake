@@ -43,7 +43,6 @@ export function DetailsPanel({ invite, onSaved }: { invite: Invite; onSaved: (in
         <TextInput id="d-time" label="Event time" type="time" value={form.event_time || ''} onChange={(e) => set('event_time', e.target.value)} />
       </div>
       <TextInput id="d-venue" label="Venue" value={form.venue || ''} onChange={(e) => set('venue', e.target.value)} />
-      <TextInput id="d-dress" label="Dress code" value={form.dress_code || ''} onChange={(e) => set('dress_code', e.target.value)} />
       <TextArea id="d-desc" label="Description / message to guests" value={form.description || ''} onChange={(e) => set('description', e.target.value)} />
       <ScheduleEditor items={form.schedule || []} onChange={(schedule) => set('schedule', schedule)} />
       <StoryEditor items={form.story_items || []} onChange={(story_items) => set('story_items', story_items)} />

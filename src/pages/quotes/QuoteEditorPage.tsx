@@ -10,11 +10,15 @@ import { Field, TextArea, TextInput, inputClass } from '@/components/ui/Field'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { QuoteSummary } from '@/components/quotes/QuoteSummary'
 import { QuoteToolbar } from '@/components/quotes/QuoteToolbar'
+import { InvitePackageFeatures } from '@/components/quotes/InvitePackageFeatures'
 import type { PriceItem, Quote, QuoteItem } from '@/types/database'
 
 type ClientOption = { id: string; name: string; business_name: string | null }
 type OrderOption = { id: string; order_no: number; package: string | null }
 type CustomLine = { key: number; name: string; qty: string; price: string }
+
+// Evia Invites packages only set the invite features; the price is typed per quote
+const INVITE_PACKAGES = ['Essential', 'Signature', 'Experience']
 
 const inTwoWeeks = () => new Date(Date.now() + 14 * 86_400_000).toISOString().slice(0, 10)
 
@@ -37,6 +41,7 @@ export function QuoteEditorPage() {
   const [pkg, setPkg] = useState('')
   const [addons, setAddons] = useState<Record<string, number>>({})
   const [customs, setCustoms] = useState<CustomLine[]>([])
+  const [setupPrice, setSetupPrice] = useState('')
   const [discount, setDiscount] = useState('')
   const [careName, setCareName] = useState('')
   const [monthly, setMonthly] = useState('')
@@ -79,7 +84,10 @@ export function QuoteEditorPage() {
     setSavedItems(items)
     setClientId(row.client_id)
     setOrderId(row.order_id ?? '')
-    setPkg(items.find((x) => x.kind === 'package')?.name ?? '')
+    const pkgItem = items.find((x) => x.kind === 'package')
+    setPkg(pkgItem?.name ?? '')
+    // Older invite quotes may carry a discount; fold it into the typed price
+    setSetupPrice(pkgItem ? String(Math.max(pkgItem.unit_price_kes - row.discount_kes, 0)) : '')
     setAddons(Object.fromEntries(items.filter((x) => x.kind === 'addon').map((x) => [x.name, x.quantity])))
     setCustoms(
       items
@@ -135,7 +143,7 @@ export function QuoteEditorPage() {
       return
     }
     setDirty(true)
-  }, [clientId, orderId, pkg, addons, customs, discount, careName, monthly, validUntil, notes])
+  }, [clientId, orderId, pkg, setupPrice, addons, customs, discount, careName, monthly, validUntil, notes])
 
   // Prices already saved on this quote win over today's price list
   const snapshot = useMemo(() => {
@@ -159,6 +167,7 @@ export function QuoteEditorPage() {
     return list
   }
   const packageOptions = optionsFor('package')
+  const invitePackageOptions = pkg && !INVITE_PACKAGES.includes(pkg) ? [...INVITE_PACKAGES, pkg] : INVITE_PACKAGES
   const addonOptions = optionsFor('addon')
   const careOptions = catalog.filter((c) => c.kind === 'care' && c.active)
 
@@ -166,7 +175,7 @@ export function QuoteEditorPage() {
 
   const items = useMemo<QuoteItem[]>(() => {
     const list: QuoteItem[] = []
-    if (pkg) list.push({ kind: 'package', name: pkg, description: descOf('package', pkg), quantity: 1, unit_price_kes: priceOf('package', pkg) })
+    if (pkg) list.push({ kind: 'package', name: pkg, description: descOf('package', pkg), quantity: 1, unit_price_kes: isInviteBusiness ? Number(setupPrice) || 0 : priceOf('package', pkg) })
     if (!isInviteBusiness) {
       addonOptions
         .filter((a) => addons[a.name])
@@ -179,9 +188,10 @@ export function QuoteEditorPage() {
     }
     return list
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pkg, addons, customs, catalog, savedItems, isInviteBusiness])
+  }, [pkg, setupPrice, addons, customs, catalog, savedItems, isInviteBusiness])
 
-  const totals = computeTotals(items, Number(discount) || 0)
+  const discountNum = isInviteBusiness ? 0 : Number(discount) || 0
+  const totals = computeTotals(items, discountNum)
   const monthlyNum = isInviteBusiness ? 0 : Number(monthly) || 0
   const editable = !quote || quote.status === 'draft'
 
@@ -195,6 +205,7 @@ export function QuoteEditorPage() {
     if (!active) return
     if (!clientId) return setError('Choose a client.')
     if (items.length === 0) return setError(isInviteBusiness ? 'Choose a package.' : 'Add a package, an add-on or a custom line.')
+    if (isInviteBusiness && !(Number(setupPrice) > 0)) return setError('Enter the setup price.')
     setBusy(true)
     setError(null)
     const { data, error: err } = await supabase.rpc('save_quote', {
@@ -202,7 +213,7 @@ export function QuoteEditorPage() {
       p_business_id: active.id,
       p_client_id: clientId,
       p_order_id: orderId || null,
-      p_discount: Number(discount) || 0,
+      p_discount: discountNum,
       p_care_name: isInviteBusiness ? null : careName || null,
       p_monthly: monthlyNum,
       p_valid_until: validUntil || null,
@@ -293,17 +304,32 @@ export function QuoteEditorPage() {
               {clients.length === 0 && <p className="mt-3 text-sm text-muted">Add a client first from the Clients page.</p>}
             </Card>
 
-            <Card title="Package">
-              <Field label={`${active.name} package`} htmlFor="q-package">
-                <select id="q-package" value={pkg} onChange={(e) => setPkg(e.target.value)} className={inputClass}>
-                  <option value="">No package</option>
-                  {packageOptions.map((p) => (
-                    <option key={p.name} value={p.name}>{p.name} · {formatKES(p.price)}</option>
-                  ))}
-                </select>
-              </Field>
-              {pkg && descOf('package', pkg) && <p className="mt-2 text-sm text-muted">{descOf('package', pkg)}</p>}
-            </Card>
+            {isInviteBusiness ? (
+              <Card title="Package and price">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field label="Package (sets the invite features)" htmlFor="q-package">
+                    <select id="q-package" value={pkg} onChange={(e) => setPkg(e.target.value)} className={inputClass}>
+                      <option value="" disabled>Choose a package</option>
+                      {invitePackageOptions.map((p) => <option key={p} value={p}>{p}</option>)}
+                    </select>
+                  </Field>
+                  <TextInput id="q-setup-price" label="Setup price (KSh)" type="number" min={0} value={setupPrice} onChange={(e) => setSetupPrice(e.target.value)} />
+                </div>
+                {pkg && <InvitePackageFeatures pkg={pkg} />}
+              </Card>
+            ) : (
+              <Card title="Package">
+                <Field label={`${active.name} package`} htmlFor="q-package">
+                  <select id="q-package" value={pkg} onChange={(e) => setPkg(e.target.value)} className={inputClass}>
+                    <option value="">No package</option>
+                    {packageOptions.map((p) => (
+                      <option key={p.name} value={p.name}>{p.name} · {formatKES(p.price)}</option>
+                    ))}
+                  </select>
+                </Field>
+                {pkg && descOf('package', pkg) && <p className="mt-2 text-sm text-muted">{descOf('package', pkg)}</p>}
+              </Card>
+            )}
 
             {!isInviteBusiness && <Card title="Add-ons">
               {addonOptions.length === 0 ? (
@@ -380,9 +406,9 @@ export function QuoteEditorPage() {
               </div>
             </Card>}
 
-            <Card title="Discount and notes">
+            <Card title={isInviteBusiness ? 'Notes' : 'Discount and notes'}>
               <div className="space-y-4">
-                <TextInput id="q-discount" label="Discount on setup (KSh)" type="number" min={0} value={discount} onChange={(e) => setDiscount(e.target.value)} />
+                {!isInviteBusiness && <TextInput id="q-discount" label="Discount on setup (KSh)" type="number" min={0} value={discount} onChange={(e) => setDiscount(e.target.value)} />}
                 <TextArea id="q-notes" label="Notes shown on the quote (payment terms, what is excluded)" value={notes} onChange={(e) => setNotes(e.target.value)} />
               </div>
             </Card>
@@ -392,7 +418,7 @@ export function QuoteEditorPage() {
             <QuoteSummary
               items={items}
               subtotal={totals.subtotal}
-              discount={Number(discount) || 0}
+              discount={discountNum}
               total={totals.total}
               careName={careName || null}
               monthly={monthlyNum}

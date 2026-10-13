@@ -22,6 +22,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { CommandPalette } from '@/components/layout/CommandPalette'
 import { LaunchChecklistPage } from '@/pages/settings/LaunchChecklistPage'
 import { InviteBuilderPage } from '@/pages/invites/InviteBuilderPage'
+import { InvitationsPage } from '@/pages/invites/InvitationsPage'
 import { InviteEditPage } from '@/pages/invites/InviteEditPage'
 import { PublicInvitePage } from '@/pages/public/PublicInvitePage'
 import { RsvpTrackPage } from '@/pages/public/RsvpTrackPage'
@@ -59,6 +60,7 @@ export default function App() {
                 <Route path="events" element={<EventsPage />} />
                 <Route path="events/:id" element={<EventDetailPage />} />
                 <Route path="settings/launch-checklist" element={<LaunchChecklistPage />} />
+                <Route path="invitations" element={<InvitationsPage />} />
                 <Route path="invites" element={<InviteBuilderPage />} />
                 <Route path="invites/:id" element={<InviteEditPage />} />
                 <Route path="settings" element={<SettingsPage />} />

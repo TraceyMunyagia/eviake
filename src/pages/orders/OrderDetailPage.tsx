@@ -13,6 +13,7 @@ import { WebsiteTab } from '@/components/workspace/WebsiteTab'
 import { Button } from '@/components/ui/Button'
 import { Modal } from '@/components/ui/Modal'
 import { OrderForm } from '@/pages/orders/OrderForm'
+import { InviteOrderForm } from '@/pages/orders/InviteOrderForm'
 import { PaymentsSection } from '@/pages/orders/PaymentSection'
 import type { Order } from '@/types/database'
 import { RequirementsTab } from '@/components/workspace/RequirementsTab'
@@ -78,6 +79,9 @@ export function OrderDetailPage() {
   }
 
   const isWeb = active.slug === 'evia_web'
+  const isInvites = active.slug === 'evia_invites'
+  const FormFor = isInvites ? InviteOrderForm : OrderForm
+  const event = order.invitation_details
   const tabs = TABS.filter((t) => isWeb || !t.webOnly)
   const requested = params.get('tab') ?? 'overview'
   const tab = tabs.some((t) => t.key === requested) ? requested : 'overview'
@@ -146,6 +150,32 @@ export function OrderDetailPage() {
             <p className="mt-3 text-sm">{order.clients?.email}</p>
             <p className="text-sm">{order.clients?.phone}</p>
           </section>
+          {isInvites && event && (
+            <section className="rounded-2xl border border-line bg-white p-5 shadow-sm lg:col-span-2">
+              <h2 className="mb-4 font-display text-lg text-plum-900">Event</h2>
+              <dl className="grid gap-4 text-sm sm:grid-cols-2">
+                {([
+                  ['Event', event.eventName],
+                  ['Event type', event.eventType],
+                  ['Template', event.template],
+                  ['Host', event.hostName],
+                  ['Date', event.eventDate ? formatDate(event.eventDate) : undefined],
+                  ['Time', event.eventTime],
+                  ['Venue', event.venue],
+                  ['Address', event.address],
+                  ['Dress code', event.dressCode],
+                ] as const).filter(([, v]) => v).map(([label, v]) => (
+                  <div key={label}><dt className="text-muted">{label}</dt><dd className="mt-1">{v}</dd></div>
+                ))}
+                {event.mapsUrl && (
+                  <div><dt className="text-muted">Map</dt><dd className="mt-1"><a href={event.mapsUrl} target="_blank" rel="noopener noreferrer" className="text-plum-900 underline">Open in Google Maps</a></dd></div>
+                )}
+                {event.description && (
+                  <div className="sm:col-span-2"><dt className="text-muted">Message to guests</dt><dd className="mt-1 whitespace-pre-wrap">{event.description}</dd></div>
+                )}
+              </dl>
+            </section>
+          )}
         </div>
       )}
       {tab === 'requirements' && <RequirementsTab order={order} />}
@@ -155,9 +185,9 @@ export function OrderDetailPage() {
       {tab === 'hosting' && <HostingTab order={order} />}
       {tab === 'payments' && <PaymentsSection order={order} onChanged={load} />}
 
-      <Modal open={editing} onClose={() => setEditing(false)} title="Edit order">
+      <Modal open={editing} onClose={() => setEditing(false)} title="Edit order" wide={isInvites}>
         {editing && (
-          <OrderForm
+          <FormFor
             business={active}
             order={order}
             statuses={statuses}

@@ -4,7 +4,11 @@ import { Button } from '@/components/ui/Button'
 import { Field, TextArea, TextInput, inputClass } from '@/components/ui/Field'
 import type { Business, Client, EventRecord } from '@/types/database'
 
-const EVENT_TYPES = ['Wedding', 'Corporate', 'Birthday', 'Baby shower', 'Graduation', 'Other']
+// Matches the occasions listed on the Evia Invites website
+export const EVENT_TYPES = [
+  'Wedding', 'Graduation', 'Birthday', 'Baby shower', 'Bridal shower', 'Engagement',
+  'Corporate event', 'Concert', 'Game night', 'Party', 'Other',
+]
 
 export function EventForm({ business, event, defaultClientId, onClose, onSaved }: {
   business: Business
@@ -62,6 +66,7 @@ export function EventForm({ business, event, defaultClientId, onClose, onSaved }
           <select id="ev-type" value={eventType} onChange={(e) => setEventType(e.target.value)} className={inputClass}>
             <option value="">Not set</option>
             {EVENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+            {eventType && !EVENT_TYPES.includes(eventType) && <option value={eventType}>{eventType}</option>}
           </select>
         </Field>
         <TextInput id="ev-date" label="Event date" type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} />

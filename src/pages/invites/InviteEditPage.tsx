@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { publicInviteUrl, rsvpTrackUrl } from '@/lib/inviteLinks'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Copy } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -105,16 +106,16 @@ export function InviteEditPage() {
           <div className="rounded-2xl border border-line bg-white p-4 shadow-sm">
             <p className="text-sm text-muted">Invite link</p>
             <div className="mt-1 flex items-center gap-2">
-              <code className="flex-1 truncate text-sm">{window.location.origin}/invite/{invite.public_slug}</code>
-              <button onClick={() => copy(`${window.location.origin}/invite/${invite.public_slug}`, 'invite')} className="rounded p-1.5 text-muted hover:bg-gold-100"><Copy className="size-4" /></button>
+              <code className="flex-1 truncate text-sm">{publicInviteUrl(invite.public_slug)}</code>
+              <button onClick={() => copy(publicInviteUrl(invite.public_slug!), 'invite')} className="rounded p-1.5 text-muted hover:bg-gold-100"><Copy className="size-4" /></button>
             </div>
             {copied === 'invite' && <p className="mt-1 text-xs text-green-800">Copied.</p>}
           </div>
           <div className="rounded-2xl border border-line bg-white p-4 shadow-sm">
             <p className="text-sm text-muted">Client RSVP-tracking link</p>
             <div className="mt-1 flex items-center gap-2">
-              <code className="flex-1 truncate text-sm">{window.location.origin}/rsvp-track/{invite.rsvp_track_token}</code>
-              <button onClick={() => copy(`${window.location.origin}/rsvp-track/${invite.rsvp_track_token}`, 'rsvp')} className="rounded p-1.5 text-muted hover:bg-gold-100"><Copy className="size-4" /></button>
+              <code className="flex-1 truncate text-sm">{rsvpTrackUrl(invite.rsvp_track_token ?? '')}</code>
+              <button onClick={() => copy(rsvpTrackUrl(invite.rsvp_track_token ?? ''), 'rsvp')} className="rounded p-1.5 text-muted hover:bg-gold-100"><Copy className="size-4" /></button>
             </div>
             {copied === 'rsvp' && <p className="mt-1 text-xs text-green-800">Copied.</p>}
           </div>
